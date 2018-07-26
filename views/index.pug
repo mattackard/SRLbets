@@ -2,3 +2,8 @@ extends layout
 
 block content
   h1 Hello World.
+  label(for='message') Message: 
+  input#message(type='text', placeholder='Write something here' name='message')
+  button(type='submit') Sumbit
+  
+  p #{message}
