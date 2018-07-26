@@ -1,5 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+const session = require('express-session');
+const MongoStore = require('connect-mongo')(session);
 const app = express();
 
 //set up parsing of requests
@@ -14,8 +17,20 @@ app.set('views', __dirname + '/views');
 app.use(express.static(__dirname + '/public'));
 
 //include routes
-const routes = require('./routes/index');
+const routes = require('./routes/routes');
 app.use('/', routes);
+
+//mongodb connection
+mongoose.connect('mongodb://localhost:27017/race');
+const db = mongoose.connection;
+//handle mongo errors
+db.on('error', console.log.bind(console, 'connection error: '));
+
+//expose db messages for use in templates
+app.use((req,res,next) => {                                                   //issue here? trying to get mongodb entry on index.pug
+  res.locals.currentMessage = req.message.messageID;
+  next();
+});
 
 //catch 404 and forward to error handler
 app.use((req,res,next) => {
