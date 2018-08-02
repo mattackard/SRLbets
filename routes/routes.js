@@ -2,36 +2,36 @@ const express = require('express');
 const router = express.Router();
 const Race = require('../models/race');
 
+let races = '';                               //grab all the mongo documents
+Race.find((err,data) => {
+  if (err) return console.error(err);
+  races = data;
+});
+
 //GET home route
 router.get('/', (req,res,next) => {
-  // Race.findById(req.message.messageID)                           //get messages from mongodb
-  //   .exec((error, message) => {
-  //     if(error) {
-  //       return next(error);
-  //     }
-  //     else {
-  //       return res.render('index', { title : 'SRL Bets' , message : message.message });
-  //     }
-  //   })
-    return res.render('index', { title : 'SRL Bets' , //message : req.message.message
-  });
+  console.log(races);
+  return res.render('index', { title : 'SRL Bets', data : races });
 });
 
 router.post('/', (req,res,next) => {
   console.log('post ran');              //get the post route to work
   if (req.body.message) {
     let raceData = req.body.message;
-
-    Race.create(raceData, (error, race) => {
-      if(error) {
-        return next(err);
-      }
-      else {
-
-      }
+    console.log(raceData);
+    let race = new Race({
+      message: raceData
+    });
+    race.save((err) => {
+      if (err) next(err);
+      console.log(`message saved : ${raceData}`);
+      res.redirect('/');
     });
   }
-})
+  else {
+    res.redirect('/youDidntWriteAnything');
+  }
+});
 
 
 module.exports = router;
