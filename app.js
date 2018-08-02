@@ -21,16 +21,11 @@ const routes = require('./routes/routes');
 app.use('/', routes);
 
 //mongodb connection
-mongoose.connect('mongodb://localhost:27017/race');
+mongoose.connect('mongodb://localhost:27017/race', { useNewUrlParser : true });
 const db = mongoose.connection;
 //handle mongo errors
 db.on('error', console.log.bind(console, 'connection error: '));
 
-//expose db messages for use in templates
-app.use((req,res,next) => {                                                   //issue here? trying to get mongodb entry on index.pug
-  res.locals.currentMessage = req.message.messageID;
-  next();
-});
 
 //catch 404 and forward to error handler
 app.use((req,res,next) => {
