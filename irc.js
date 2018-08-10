@@ -57,7 +57,7 @@ function parseMessage(message) {
 
   let splitText = message.args[1].trim().split(' ');
 
-  parsedData.command = splitText[0];          //command is first word (must start with a . ex: .race)
+  parsedData.command = splitText[0];          //command is first word (including the . ex: .race)
 
   parsedData.args = splitText.slice(1);       //all text after the first word is added to an array pass as
                                               //function arguments on the command called
