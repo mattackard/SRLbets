@@ -1,5 +1,5 @@
 const expect = require('chai').expect;
-const validateApiResponse = require('../apiProcessing.js').validateApiResponse;
+const validateApiResponse = require('../apiProcessing').validateApiResponse;
 
 describe('API RESPONSE TESTING', () => {
 
