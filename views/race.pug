@@ -1,0 +1,27 @@
+extends layout
+
+block content
+  
+  - let races = raceObj
+  
+  //- iterate through each race object in the races array
+  each race in races
+    .race
+      h1.gameTitle #{race.game.name}
+      p.raceGoal Goal: #{race.goal}
+      p.raceStatus Race Status: #{race.statetext}
+      p.raceTime Time: #{race.time}
+      p.numEntrant Number of entrants: #{race.numentrants}
+      
+      //- iterate through each user object enetered in each race
+      .raceEntrants
+      
+      - let entrants = race.entrants
+      
+      each user in entrants
+        ul
+          li Name: #{user.displayname}
+          li Race Status: #{user.statetext}
+          - if (user.statetext === 'Finished')
+            li Finished in position: #{user.place} 
+          li Twtich username: #{user.twitch}
