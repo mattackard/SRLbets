@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Race = require('../models/race');
+const raceApiRes = require('../exampleApiBody.json');
 
 let races = '';                               //grab all the mongo documents
 Race.find((err,data) => {
@@ -31,6 +32,11 @@ router.post('/', (req,res,next) => {
   else {
     res.redirect('/youDidntWriteAnything');
   }
+});
+
+//race directory route
+router.get('/races', (req,res,next) => {
+  return res.render('race', { raceObj : raceApiRes.races });
 });
 
 
