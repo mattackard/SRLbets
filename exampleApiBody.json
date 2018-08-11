@@ -1,0 +1,2453 @@
+{
+    "count": "45",
+    "races": [
+        {
+            "id": "qe1zd",
+            "game": {
+                "id": 4660,
+                "name": "Final Fantasy IV Hacks",
+                "abbrev": "ff4hacks",
+                "popularity": 49,
+                "popularityrank": 21
+            },
+            "goal": "FF4FE Friday Community Race! Seed: LU6MWS73 http://ff4fe.com/?flags=J2KC3T4S4BE3X2Y2GWZ&amp;seed=LU6MWS73",
+            "time": 0,
+            "state": 1,
+            "statetext": "Entry Open",
+            "filename": "",
+            "numentrants": 26,
+            "entrants": {
+                "neerrm": {
+                    "displayname": "neerrm",
+                    "place": 9994,
+                    "time": -3,
+                    "message": "",
+                    "statetext": "Ready",
+                    "twitch": "neerrm",
+                    "trueskill": "1014"
+                },
+                "Muppetsinspace": {
+                    "displayname": "Muppetsinspace",
+                    "place": 9994,
+                    "time": -3,
+                    "message": "",
+                    "statetext": "Ready",
+                    "twitch": "Muppetsinspace",
+                    "trueskill": "866"
+                },
+                "Ravlin": {
+                    "displayname": "Ravlin",
+                    "place": 9994,
+                    "time": -3,
+                    "message": "",
+                    "statetext": "Ready",
+                    "twitch": "RavlinBay",
+                    "trueskill": "709"
+                },
+                "Xyrak": {
+                    "displayname": "Xyrak",
+                    "place": 9994,
+                    "time": -3,
+                    "message": "",
+                    "statetext": "Ready",
+                    "twitch": "xyrakian",
+                    "trueskill": "682"
+                },
+                "chocosura": {
+                    "displayname": "chocosura",
+                    "place": 9994,
+                    "time": -3,
+                    "message": "",
+                    "statetext": "Ready",
+                    "twitch": "chocosura",
+                    "trueskill": "676"
+                },
+                "Mechalink": {
+                    "displayname": "Mechalink",
+                    "place": 9994,
+                    "time": -3,
+                    "message": "",
+                    "statetext": "Ready",
+                    "twitch": "mechalink",
+                    "trueskill": "669"
+                },
+                "ShamsTron": {
+                    "displayname": "ShamsTron",
+                    "place": 9994,
+                    "time": -3,
+                    "message": "",
+                    "statetext": "Ready",
+                    "twitch": "Shamstron",
+                    "trueskill": "428"
+                },
+                "aurilliux": {
+                    "displayname": "aurilliux",
+                    "place": 9994,
+                    "time": -3,
+                    "message": "",
+                    "statetext": "Ready",
+                    "twitch": "aurilliux",
+                    "trueskill": "317"
+                },
+                "Joey": {
+                    "displayname": "Joey",
+                    "place": 9994,
+                    "time": -3,
+                    "message": "",
+                    "statetext": "Ready",
+                    "twitch": "mynameisjoey",
+                    "trueskill": "240"
+                },
+                "bgrich419": {
+                    "displayname": "bgrich419",
+                    "place": 9994,
+                    "time": -3,
+                    "message": "",
+                    "statetext": "Ready",
+                    "twitch": "bgrich419",
+                    "trueskill": "0"
+                },
+                "ScratchDragon": {
+                    "displayname": "ScratchDragon",
+                    "place": 9995,
+                    "time": 0,
+                    "message": null,
+                    "statetext": "Entered",
+                    "twitch": "scratchdragon",
+                    "trueskill": "745"
+                },
+                "MrUbiq": {
+                    "displayname": "MrUbiq",
+                    "place": 9995,
+                    "time": 0,
+                    "message": null,
+                    "statetext": "Entered",
+                    "twitch": "mrubiq",
+                    "trueskill": "724"
+                },
+                "MortaleMago": {
+                    "displayname": "MortaleMago",
+                    "place": 9995,
+                    "time": 0,
+                    "message": null,
+                    "statetext": "Entered",
+                    "twitch": "MortaleMago",
+                    "trueskill": "717"
+                },
+                "Dustygriff": {
+                    "displayname": "Dustygriff",
+                    "place": 9995,
+                    "time": 0,
+                    "message": null,
+                    "statetext": "Entered",
+                    "twitch": "dustygriff",
+                    "trueskill": "714"
+                },
+                "bigdunka": {
+                    "displayname": "bigdunka",
+                    "place": 9995,
+                    "time": 0,
+                    "message": null,
+                    "statetext": "Entered",
+                    "twitch": "bigdunka",
+                    "trueskill": "660"
+                },
+                "EizanTayama": {
+                    "displayname": "EizanTayama",
+                    "place": 9995,
+                    "time": 0,
+                    "message": null,
+                    "statetext": "Entered",
+                    "twitch": "eizantayama",
+                    "trueskill": "640"
+                },
+                "SaltyPhry": {
+                    "displayname": "SaltyPhry",
+                    "place": 9995,
+                    "time": 0,
+                    "message": null,
+                    "statetext": "Entered",
+                    "twitch": "saltyphry",
+                    "trueskill": "595"
+                },
+                "neongrey": {
+                    "displayname": "neongrey",
+                    "place": 9995,
+                    "time": 0,
+                    "message": null,
+                    "statetext": "Entered",
+                    "twitch": "villainfetishist",
+                    "trueskill": "434"
+                },
+                "PMAkfal": {
+                    "displayname": "PMAkfal",
+                    "place": 9995,
+                    "time": 0,
+                    "message": null,
+                    "statetext": "Entered",
+                    "twitch": "pmakfal",
+                    "trueskill": "313"
+                },
+                "Netara": {
+                    "displayname": "Netara",
+                    "place": 9995,
+                    "time": 0,
+                    "message": null,
+                    "statetext": "Entered",
+                    "twitch": "netara",
+                    "trueskill": "310"
+                },
+                "Rumblefish82": {
+                    "displayname": "Rumblefish82",
+                    "place": 9995,
+                    "time": 0,
+                    "message": null,
+                    "statetext": "Entered",
+                    "twitch": "rumblefish82",
+                    "trueskill": "213"
+                },
+                "Liam_Atlas": {
+                    "displayname": "Liam_Atlas",
+                    "place": 9995,
+                    "time": 0,
+                    "message": null,
+                    "statetext": "Entered",
+                    "twitch": "liam_atlas",
+                    "trueskill": "197"
+                },
+                "sawneyrath11": {
+                    "displayname": "sawneyrath11",
+                    "place": 9995,
+                    "time": 0,
+                    "message": null,
+                    "statetext": "Entered",
+                    "twitch": "sawneyrath11",
+                    "trueskill": "135"
+                },
+                "simbu": {
+                    "displayname": "simbu",
+                    "place": 9995,
+                    "time": 0,
+                    "message": null,
+                    "statetext": "Entered",
+                    "twitch": "simbu9",
+                    "trueskill": "127"
+                },
+                "KwehstopherWarken": {
+                    "displayname": "KwehstopherWarken",
+                    "place": 9995,
+                    "time": 0,
+                    "message": null,
+                    "statetext": "Entered",
+                    "twitch": "kwehstopherwarken",
+                    "trueskill": "120"
+                },
+                "Poidrac": {
+                    "displayname": "Poidrac",
+                    "place": 9995,
+                    "time": 0,
+                    "message": null,
+                    "statetext": "Entered",
+                    "twitch": "Poidrac",
+                    "trueskill": "38"
+                }
+            }
+        },
+        {
+            "id": "khcm1",
+            "game": {
+                "id": 3656,
+                "name": "The Legend of Zelda: Ocarina of Time Hacks",
+                "abbrev": "oothacks",
+                "popularity": 68,
+                "popularityrank": 14
+            },
+            "goal": "Randomizer v2.0 All Medallions NMG Weekly @ 7pm EDT - ROM: https://goo.gl/zYvmra",
+            "time": 0,
+            "state": 1,
+            "statetext": "Entry Open",
+            "filename": "",
+            "numentrants": 9,
+            "entrants": {
+                "jfm2796": {
+                    "displayname": "jfm2796",
+                    "place": 9995,
+                    "time": 0,
+                    "message": null,
+                    "statetext": "Entered",
+                    "twitch": "jfm2796",
+                    "trueskill": "1095"
+                },
+                "Glitchymon": {
+                    "displayname": "Glitchymon",
+                    "place": 9995,
+                    "time": 0,
+                    "message": null,
+                    "statetext": "Entered",
+                    "twitch": "glitchymon",
+                    "trueskill": "1007"
+                },
+                "MikeKatz45": {
+                    "displayname": "MikeKatz45",
+                    "place": 9995,
+                    "time": 0,
+                    "message": null,
+                    "statetext": "Entered",
+                    "twitch": "mikekatz45",
+                    "trueskill": "909"
+                },
+                "davpat": {
+                    "displayname": "davpat",
+                    "place": 9995,
+                    "time": 0,
+                    "message": null,
+                    "statetext": "Entered",
+                    "twitch": "tdavpat",
+                    "trueskill": "900"
+                },
+                "west0pher": {
+                    "displayname": "west0pher",
+                    "place": 9995,
+                    "time": 0,
+                    "message": null,
+                    "statetext": "Entered",
+                    "twitch": "West0pher",
+                    "trueskill": "841"
+                },
+                "gusxandi": {
+                    "displayname": "gusxandi",
+                    "place": 9995,
+                    "time": 0,
+                    "message": null,
+                    "statetext": "Entered",
+                    "twitch": "gusxandi",
+                    "trueskill": "679"
+                },
+                "Letsklay": {
+                    "displayname": "Letsklay",
+                    "place": 9995,
+                    "time": 0,
+                    "message": null,
+                    "statetext": "Entered",
+                    "twitch": "klaythrough",
+                    "trueskill": "529"
+                },
+                "JOPEBUSTER": {
+                    "displayname": "JOPEBUSTER",
+                    "place": 9995,
+                    "time": 0,
+                    "message": null,
+                    "statetext": "Entered",
+                    "twitch": "",
+                    "trueskill": "0"
+                },
+                "MrMario7788": {
+                    "displayname": "MrMario7788",
+                    "place": 9995,
+                    "time": 0,
+                    "message": null,
+                    "statetext": "Entered",
+                    "twitch": "MrMario7788",
+                    "trueskill": "0"
+                }
+            }
+        },
+        {
+            "id": "a12fq",
+            "game": {
+                "id": 2961,
+                "name": "Final Fantasy Hacks",
+                "abbrev": "ffhacks",
+                "popularity": 25,
+                "popularityrank": 40
+            },
+            "goal": "Spring Tournament FInals Game 3",
+            "time": 0,
+            "state": 1,
+            "statetext": "Entry Open",
+            "filename": "",
+            "numentrants": 3,
+            "entrants": {
+                "Edgeworth": {
+                    "displayname": "Edgeworth",
+                    "place": 9995,
+                    "time": 0,
+                    "message": null,
+                    "statetext": "Entered",
+                    "twitch": "edgestream",
+                    "trueskill": "711"
+                },
+                "xIceblue": {
+                    "displayname": "xIceblue",
+                    "place": 9995,
+                    "time": 0,
+                    "message": null,
+                    "statetext": "Entered",
+                    "twitch": "xiceblue",
+                    "trueskill": "689"
+                },
+                "Czar": {
+                    "displayname": "Czar",
+                    "place": 9995,
+                    "time": 0,
+                    "message": null,
+                    "statetext": "Entered",
+                    "twitch": "czardia",
+                    "trueskill": "443"
+                }
+            }
+        },
+        {
+            "id": "50zts",
+            "game": {
+                "id": 7,
+                "name": "Super Mario Sunshine",
+                "abbrev": "sms",
+                "popularity": 220,
+                "popularityrank": 5
+            },
+            "goal": "Any%",
+            "time": 0,
+            "state": 1,
+            "statetext": "Entry Open",
+            "filename": "",
+            "numentrants": 2,
+            "entrants": {
+                "lucas2": {
+                    "displayname": "lucas2",
+                    "place": 9995,
+                    "time": 0,
+                    "message": null,
+                    "statetext": "Entered",
+                    "twitch": "",
+                    "trueskill": "0"
+                },
+                "lucas3": {
+                    "displayname": "lucas3",
+                    "place": 9995,
+                    "time": 0,
+                    "message": null,
+                    "statetext": "Entered",
+                    "twitch": "",
+                    "trueskill": "0"
+                }
+            }
+        },
+        {
+            "id": "44s42",
+            "game": {
+                "id": 7,
+                "name": "Super Mario Sunshine",
+                "abbrev": "sms",
+                "popularity": 220,
+                "popularityrank": 5
+            },
+            "goal": "Any%",
+            "time": 0,
+            "state": 1,
+            "statetext": "Entry Open",
+            "filename": "",
+            "numentrants": 1,
+            "entrants": {
+                "Libre": {
+                    "displayname": "Libre",
+                    "place": 9995,
+                    "time": 0,
+                    "message": null,
+                    "statetext": "Entered",
+                    "twitch": "libre",
+                    "trueskill": "693"
+                }
+            }
+        },
+        {
+            "id": "57hvr",
+            "game": {
+                "id": 647,
+                "name": "Gunstar Heroes",
+                "abbrev": "gheroes",
+                "popularity": 6,
+                "popularityrank": 123
+            },
+            "goal": "beat the game (easy)",
+            "time": 0,
+            "state": 1,
+            "statetext": "Entry Open",
+            "filename": "",
+            "numentrants": 1,
+            "entrants": {
+                "Chrome": {
+                    "displayname": "Chrome",
+                    "place": 9995,
+                    "time": 0,
+                    "message": null,
+                    "statetext": "Entered",
+                    "twitch": "chronoon",
+                    "trueskill": "867"
+                }
+            }
+        },
+        {
+            "id": "hxq8l",
+            "game": {
+                "id": 1575,
+                "name": "Rayman",
+                "abbrev": "rayman",
+                "popularity": 6,
+                "popularityrank": 115
+            },
+            "goal": "Darkness%",
+            "time": 1533932389,
+            "state": 3,
+            "statetext": "In Progress",
+            "filename": "",
+            "numentrants": 9,
+            "entrants": {
+                "Glackum": {
+                    "displayname": "Glackum",
+                    "place": 9994,
+                    "time": -3,
+                    "message": "",
+                    "statetext": "Ready",
+                    "twitch": "Glackum",
+                    "trueskill": "825"
+                },
+                "xer_91": {
+                    "displayname": "xer_91",
+                    "place": 9994,
+                    "time": -3,
+                    "message": "",
+                    "statetext": "Ready",
+                    "twitch": "xer_91",
+                    "trueskill": "793"
+                },
+                "tortellino5": {
+                    "displayname": "tortellino5",
+                    "place": 9994,
+                    "time": -3,
+                    "message": "",
+                    "statetext": "Ready",
+                    "twitch": "tortellino5",
+                    "trueskill": "98"
+                },
+                "Agent1729": {
+                    "displayname": "Agent1729",
+                    "place": 9994,
+                    "time": -3,
+                    "message": "",
+                    "statetext": "Ready",
+                    "twitch": "",
+                    "trueskill": "0"
+                },
+                "thextera": {
+                    "displayname": "thextera",
+                    "place": 9998,
+                    "time": -1,
+                    "message": "",
+                    "statetext": "Forfeit",
+                    "twitch": "thextera_",
+                    "trueskill": "1012"
+                },
+                "Arttles": {
+                    "displayname": "Arttles",
+                    "place": 9998,
+                    "time": -1,
+                    "message": "",
+                    "statetext": "Forfeit",
+                    "twitch": "arttles_",
+                    "trueskill": "947"
+                },
+                "araneae": {
+                    "displayname": "araneae",
+                    "place": 9998,
+                    "time": -1,
+                    "message": "",
+                    "statetext": "Forfeit",
+                    "twitch": "imaltont",
+                    "trueskill": "591"
+                },
+                "Zarcatus": {
+                    "displayname": "Zarcatus",
+                    "place": 9998,
+                    "time": -1,
+                    "message": "",
+                    "statetext": "Forfeit",
+                    "twitch": "",
+                    "trueskill": "313"
+                },
+                "wordofwind": {
+                    "displayname": "wordofwind",
+                    "place": 9998,
+                    "time": -1,
+                    "message": "",
+                    "statetext": "Forfeit",
+                    "twitch": "",
+                    "trueskill": "0"
+                }
+            }
+        },
+        {
+            "id": "k96qf",
+            "game": {
+                "id": 4828,
+                "name": "Super Mario Odyssey",
+                "abbrev": "smo",
+                "popularity": 13,
+                "popularityrank": 67
+            },
+            "goal": "Any%",
+            "time": 1533940914,
+            "state": 3,
+            "statetext": "In Progress",
+            "filename": "",
+            "numentrants": 5,
+            "entrants": {
+                "Equanimity": {
+                    "displayname": "Equanimity",
+                    "place": 9994,
+                    "time": -3,
+                    "message": "",
+                    "statetext": "Ready",
+                    "twitch": "equan",
+                    "trueskill": "1090"
+                },
+                "sefaro": {
+                    "displayname": "sefaro",
+                    "place": 9994,
+                    "time": -3,
+                    "message": "",
+                    "statetext": "Ready",
+                    "twitch": "sefaromb",
+                    "trueskill": "933"
+                },
+                "Acrid031": {
+                    "displayname": "Acrid031",
+                    "place": 9994,
+                    "time": -3,
+                    "message": "",
+                    "statetext": "Ready",
+                    "twitch": "acrid031",
+                    "trueskill": "886"
+                },
+                "Source": {
+                    "displayname": "Source",
+                    "place": 9994,
+                    "time": -3,
+                    "message": "",
+                    "statetext": "Ready",
+                    "twitch": "sourceyt_",
+                    "trueskill": "679"
+                },
+                "Tischel": {
+                    "displayname": "Tischel",
+                    "place": 9994,
+                    "time": -3,
+                    "message": "",
+                    "statetext": "Ready",
+                    "twitch": "Tischel",
+                    "trueskill": "639"
+                }
+            }
+        },
+        {
+            "id": "797g8",
+            "game": {
+                "id": 35,
+                "name": "Sonic Adventure 2 Battle",
+                "abbrev": "sa2b",
+                "popularity": 93,
+                "popularityrank": 10
+            },
+            "goal": "beat every knuckles stage 20 times",
+            "time": 1533932211,
+            "state": 3,
+            "statetext": "In Progress",
+            "filename": "",
+            "numentrants": 3,
+            "entrants": {
+                "jw13": {
+                    "displayname": "jw13",
+                    "place": 1,
+                    "time": 6592,
+                    "message": "Very good RNG overall, execution was sub-par",
+                    "statetext": "Finished",
+                    "twitch": "jw13",
+                    "trueskill": "576"
+                },
+                "savac": {
+                    "displayname": "savac",
+                    "place": 2,
+                    "time": 8871,
+                    "message": "the second stllr bop",
+                    "statetext": "Finished",
+                    "twitch": "",
+                    "trueskill": "359"
+                },
+                "stllr": {
+                    "displayname": "stllr",
+                    "place": 9994,
+                    "time": -3,
+                    "message": "",
+                    "statetext": "Ready",
+                    "twitch": "alt_account_927",
+                    "trueskill": "328"
+                }
+            }
+        },
+        {
+            "id": "zx3t1",
+            "game": {
+                "id": 157,
+                "name": "Super Mario Land 2: 6 Golden Coins",
+                "abbrev": "sml2",
+                "popularity": 4,
+                "popularityrank": 143
+            },
+            "goal": "Any% Glitchless",
+            "time": 1533939506,
+            "state": 3,
+            "statetext": "In Progress",
+            "filename": "",
+            "numentrants": 3,
+            "entrants": {
+                "oh_deer": {
+                    "displayname": "oh_deer",
+                    "place": 1,
+                    "time": 1611,
+                    "message": "",
+                    "statetext": "Finished",
+                    "twitch": "oh_deer",
+                    "trueskill": "1020"
+                },
+                "beastfrisian": {
+                    "displayname": "beastfrisian",
+                    "place": 2,
+                    "time": 1753,
+                    "message": "",
+                    "statetext": "Finished",
+                    "twitch": "beastfrisian",
+                    "trueskill": "859"
+                },
+                "RaveTuba": {
+                    "displayname": "RaveTuba",
+                    "place": 9994,
+                    "time": -3,
+                    "message": "",
+                    "statetext": "Ready",
+                    "twitch": "Ravetuba",
+                    "trueskill": "499"
+                }
+            }
+        },
+        {
+            "id": "62f6p",
+            "game": {
+                "id": 1071,
+                "name": "Mega Man Hacks",
+                "abbrev": "megamanhacks",
+                "popularity": 30,
+                "popularityrank": 34
+            },
+            "goal": "Mega Man Randomizer - any% (easy)",
+            "time": 1533793064,
+            "state": 3,
+            "statetext": "In Progress",
+            "filename": "",
+            "numentrants": 2,
+            "entrants": {
+                "Charlieboy": {
+                    "displayname": "Charlieboy",
+                    "place": 1,
+                    "time": 2965,
+                    "message": "",
+                    "statetext": "Finished",
+                    "twitch": "charlieboy_",
+                    "trueskill": "238"
+                },
+                "Bobdedbuilder": {
+                    "displayname": "Bobdedbuilder",
+                    "place": 9994,
+                    "time": -3,
+                    "message": "",
+                    "statetext": "Ready",
+                    "twitch": "bobdedbuilder",
+                    "trueskill": "256"
+                }
+            }
+        },
+        {
+            "id": "8bmmd",
+            "game": {
+                "id": 5117,
+                "name": "A Link to the Past & Super Metroid Combo Randomizer",
+                "abbrev": "alttpsm",
+                "popularity": 28,
+                "popularityrank": 35
+            },
+            "goal": "Tournament Race - HorikawaOtane v JanusZeal",
+            "time": 1533937574,
+            "state": 3,
+            "statetext": "In Progress",
+            "filename": "",
+            "numentrants": 2,
+            "entrants": {
+                "JanusZeal": {
+                    "displayname": "JanusZeal",
+                    "place": 9994,
+                    "time": -3,
+                    "message": "",
+                    "statetext": "Ready",
+                    "twitch": "Januszeal6",
+                    "trueskill": "432"
+                },
+                "HorikawaOtane": {
+                    "displayname": "HorikawaOtane",
+                    "place": 9994,
+                    "time": -3,
+                    "message": "",
+                    "statetext": "Ready",
+                    "twitch": "horikawaotane",
+                    "trueskill": "396"
+                }
+            }
+        },
+        {
+            "id": "khif5",
+            "game": {
+                "id": 4,
+                "name": "Super Mario World",
+                "abbrev": "smw",
+                "popularity": 252,
+                "popularityrank": 4
+            },
+            "goal": "96 exit",
+            "time": 1533939610,
+            "state": 3,
+            "statetext": "In Progress",
+            "filename": "",
+            "numentrants": 2,
+            "entrants": {
+                "SilverStar6609": {
+                    "displayname": "SilverStar6609",
+                    "place": 9994,
+                    "time": -3,
+                    "message": "",
+                    "statetext": "Ready",
+                    "twitch": "SilverStar6609",
+                    "trueskill": "640"
+                },
+                "authorblues": {
+                    "displayname": "authorblues",
+                    "place": 9994,
+                    "time": -3,
+                    "message": "",
+                    "statetext": "Ready",
+                    "twitch": "authorblues",
+                    "trueskill": "391"
+                }
+            }
+        },
+        {
+            "id": "nr4af",
+            "game": {
+                "id": 3680,
+                "name": "Dragon Warrior (NES) Hacks",
+                "abbrev": "dwhacks",
+                "popularity": 34,
+                "popularityrank": 31
+            },
+            "goal": "Randomizer Seed 101533949375159 Flags CDFGMPRWZ",
+            "time": 1533940667,
+            "state": 3,
+            "statetext": "In Progress",
+            "filename": "",
+            "numentrants": 2,
+            "entrants": {
+                "LordoftheSynth": {
+                    "displayname": "LordoftheSynth",
+                    "place": 9994,
+                    "time": -3,
+                    "message": "",
+                    "statetext": "Ready",
+                    "twitch": "lordofthesynth",
+                    "trueskill": "339"
+                },
+                "retro_omegax": {
+                    "displayname": "retro_omegax",
+                    "place": 9994,
+                    "time": -3,
+                    "message": "",
+                    "statetext": "Ready",
+                    "twitch": "Retro_OmegaX",
+                    "trueskill": "0"
+                }
+            }
+        },
+        {
+            "id": "vicbn",
+            "game": {
+                "id": 3,
+                "name": "Super Metroid",
+                "abbrev": "supermetroid",
+                "popularity": 197,
+                "popularityrank": 6
+            },
+            "goal": "any%",
+            "time": 1533938929,
+            "state": 3,
+            "statetext": "In Progress",
+            "filename": "",
+            "numentrants": 2,
+            "entrants": {
+                "Krauser318": {
+                    "displayname": "Krauser318",
+                    "place": 9994,
+                    "time": -3,
+                    "message": "",
+                    "statetext": "Ready",
+                    "twitch": "krauser318",
+                    "trueskill": "826"
+                },
+                "Maniacal": {
+                    "displayname": "Maniacal",
+                    "place": 9994,
+                    "time": -3,
+                    "message": "",
+                    "statetext": "Ready",
+                    "twitch": "maniacal42",
+                    "trueskill": "510"
+                }
+            }
+        },
+        {
+            "id": "vyjd0",
+            "game": {
+                "id": 1071,
+                "name": "Mega Man Hacks",
+                "abbrev": "megamanhacks",
+                "popularity": 30,
+                "popularityrank": 34
+            },
+            "goal": "mega man 2 randomizer - any% (easy)",
+            "time": 1533938660,
+            "state": 3,
+            "statetext": "In Progress",
+            "filename": "",
+            "numentrants": 2,
+            "entrants": {
+                "StuffnThings": {
+                    "displayname": "StuffnThings",
+                    "place": 1,
+                    "time": 2422,
+                    "message": "",
+                    "statetext": "Finished",
+                    "twitch": "stuffnthings42",
+                    "trueskill": "804"
+                },
+                "MetaLow": {
+                    "displayname": "MetaLow",
+                    "place": 9994,
+                    "time": -3,
+                    "message": "",
+                    "statetext": "Ready",
+                    "twitch": "MetaLow",
+                    "trueskill": "506"
+                }
+            }
+        },
+        {
+            "id": "2fr9x",
+            "game": {
+                "id": 3977,
+                "name": "The Legend of Zelda: A Link to the Past Hacks",
+                "abbrev": "alttphacks",
+                "popularity": 286,
+                "popularityrank": 3
+            },
+            "goal": "vt8 randomizer - normal open enemizer",
+            "time": 1533924219,
+            "state": 4,
+            "statetext": "Complete",
+            "filename": "",
+            "numentrants": 15,
+            "entrants": {
+                "Makinx": {
+                    "displayname": "Makinx",
+                    "place": 1,
+                    "time": 7058,
+                    "message": "muscle memory and the IPBJ troll messed me up",
+                    "statetext": "Finished",
+                    "twitch": "Makinx81",
+                    "trueskill": "43"
+                },
+                "hycutype": {
+                    "displayname": "hycutype",
+                    "place": 2,
+                    "time": 7277,
+                    "message": "",
+                    "statetext": "Finished",
+                    "twitch": "hycutype",
+                    "trueskill": "384"
+                },
+                "Bonta": {
+                    "displayname": "Bonta",
+                    "place": 3,
+                    "time": 7343,
+                    "message": "",
+                    "statetext": "Finished",
+                    "twitch": "bonta__",
+                    "trueskill": "321"
+                },
+                "Mikan": {
+                    "displayname": "Mikan",
+                    "place": 4,
+                    "time": 7646,
+                    "message": "kirby really got buffed in smash 5",
+                    "statetext": "Finished",
+                    "twitch": "mikansbox",
+                    "trueskill": "359"
+                },
+                "KhloePrower": {
+                    "displayname": "KhloePrower",
+                    "place": 5,
+                    "time": 8021,
+                    "message": "",
+                    "statetext": "Finished",
+                    "twitch": "khloe_prower",
+                    "trueskill": "196"
+                },
+                "AK_drizzt": {
+                    "displayname": "AK_drizzt",
+                    "place": 6,
+                    "time": 8284,
+                    "message": "",
+                    "statetext": "Finished",
+                    "twitch": "akdrizzt",
+                    "trueskill": "0"
+                },
+                "Hesjustaboy": {
+                    "displayname": "Hesjustaboy",
+                    "place": 7,
+                    "time": 8647,
+                    "message": "lol i got wrecked... awesome boss sprites all around",
+                    "statetext": "Finished",
+                    "twitch": "hesjustaboy",
+                    "trueskill": "226"
+                },
+                "Jixson": {
+                    "displayname": "Jixson",
+                    "place": 8,
+                    "time": 9227,
+                    "message": "Holy Fuck. Spent over 10 minutes on one boss",
+                    "statetext": "Finished",
+                    "twitch": "Jixson",
+                    "trueskill": "0"
+                },
+                "AsmadiGames": {
+                    "displayname": "AsmadiGames",
+                    "place": 9,
+                    "time": 9461,
+                    "message": "that was an....interesting GT.",
+                    "statetext": "Finished",
+                    "twitch": "asmadigames",
+                    "trueskill": "0"
+                },
+                "LyraSilveria": {
+                    "displayname": "LyraSilveria",
+                    "place": 10,
+                    "time": 9840,
+                    "message": ":thinking:",
+                    "statetext": "Finished",
+                    "twitch": "lyrasilveria",
+                    "trueskill": "0"
+                },
+                "nach": {
+                    "displayname": "nach",
+                    "place": 11,
+                    "time": 10671,
+                    "message": "I had fun~",
+                    "statetext": "Finished",
+                    "twitch": "nach212",
+                    "trueskill": "0"
+                },
+                "dataworld": {
+                    "displayname": "dataworld",
+                    "place": 9998,
+                    "time": -1,
+                    "message": "",
+                    "statetext": "Forfeit",
+                    "twitch": "dataworld",
+                    "trueskill": "329"
+                },
+                "dataplet": {
+                    "displayname": "dataplet",
+                    "place": 9998,
+                    "time": -1,
+                    "message": "",
+                    "statetext": "Forfeit",
+                    "twitch": "dataplet01",
+                    "trueskill": "0"
+                },
+                "FEARAgent": {
+                    "displayname": "FEARAgent",
+                    "place": 9998,
+                    "time": -1,
+                    "message": "for some reason I can't bomb jump IP. Idk",
+                    "statetext": "Forfeit",
+                    "twitch": "thefearagent",
+                    "trueskill": "0"
+                },
+                "eyesonic": {
+                    "displayname": "eyesonic",
+                    "place": 9998,
+                    "time": -1,
+                    "message": "",
+                    "statetext": "Forfeit",
+                    "twitch": "eyesonic",
+                    "trueskill": "0"
+                }
+            }
+        },
+        {
+            "id": "i5bx2",
+            "game": {
+                "id": 3977,
+                "name": "The Legend of Zelda: A Link to the Past Hacks",
+                "abbrev": "alttphacks",
+                "popularity": 286,
+                "popularityrank": 3
+            },
+            "goal": "Spoiler Log Race: Mode: Open with Randomized Swords.  Seed number: 874472377Permalink: https://alttpr.com/h/7LyqBmEEG2   (Log:   http://www.alttpfando.com/randoraces/spoilerraces/08052018-10pm/ALttP%20-%20VT_no-glitches-29_normal-open_randomized-ganon_874472377.txt  )   Hash: Pearl / Shroom / Flute / Cape / Net",
+            "time": 1533520876,
+            "state": 4,
+            "statetext": "Complete",
+            "filename": "",
+            "numentrants": 14,
+            "entrants": {
+                "g3rd0": {
+                    "displayname": "g3rd0",
+                    "place": 1,
+                    "time": 3507,
+                    "message": "",
+                    "statetext": "Finished",
+                    "twitch": "g3rd0",
+                    "trueskill": "568"
+                },
+                "Kyong92": {
+                    "displayname": "Kyong92",
+                    "place": 2,
+                    "time": 3796,
+                    "message": "marked swamp as pendant, had to double dip LUL",
+                    "statetext": "Finished",
+                    "twitch": "kyong92",
+                    "trueskill": "452"
+                },
+                "Chisame": {
+                    "displayname": "Chisame",
+                    "place": 3,
+                    "time": 3894,
+                    "message": "I thought SW was a crystal, and double dipped PoD LUL",
+                    "statetext": "Finished",
+                    "twitch": "Chisame",
+                    "trueskill": "450"
+                },
+                "oneup40": {
+                    "displayname": "oneup40",
+                    "place": 4,
+                    "time": 4170,
+                    "message": "apparently all I need to do to get fast times is not open the wrong chests Kappa",
+                    "statetext": "Finished",
+                    "twitch": "",
+                    "trueskill": "61"
+                },
+                "Justin_Z": {
+                    "displayname": "Justin_Z",
+                    "place": 5,
+                    "time": 4200,
+                    "message": "Protip: Don't go into Swamp without flippers",
+                    "statetext": "Finished",
+                    "twitch": "justin__z",
+                    "trueskill": "0"
+                },
+                "Trinexx": {
+                    "displayname": "Trinexx",
+                    "place": 6,
+                    "time": 4227,
+                    "message": "dont do Pendant eastern palace you fuck",
+                    "statetext": "Finished",
+                    "twitch": "Trinexx_",
+                    "trueskill": "60"
+                },
+                "FebrezeNinja": {
+                    "displayname": "FebrezeNinja",
+                    "place": 7,
+                    "time": 5467,
+                    "message": "don't walk off ganon ledge for no reason when he's one hit away from dying! Also get gud.",
+                    "statetext": "Finished",
+                    "twitch": "FebrezeN",
+                    "trueskill": "0"
+                },
+                "EternalMajin": {
+                    "displayname": "EternalMajin",
+                    "place": 8,
+                    "time": 5852,
+                    "message": "",
+                    "statetext": "Finished",
+                    "twitch": "Eternalmajin",
+                    "trueskill": "0"
+                },
+                "wessidevandal": {
+                    "displayname": "wessidevandal",
+                    "place": 9,
+                    "time": 7897,
+                    "message": "execution so terrible i somehow don't even PB what is technically an open seed FeelsBadMan (103/216)",
+                    "statetext": "Finished",
+                    "twitch": "wessidevandal",
+                    "trueskill": "0"
+                },
+                "Sakyori": {
+                    "displayname": "Sakyori",
+                    "place": 10,
+                    "time": 9020,
+                    "message": "first spoiler race! :) I need to know the chest name location! X_X",
+                    "statetext": "Finished",
+                    "twitch": "sakyori",
+                    "trueskill": "0"
+                },
+                "zerorush": {
+                    "displayname": "zerorush",
+                    "place": 9998,
+                    "time": -1,
+                    "message": "",
+                    "statetext": "Forfeit",
+                    "twitch": "zer0rush",
+                    "trueskill": "240"
+                },
+                "tadaru": {
+                    "displayname": "tadaru",
+                    "place": 9998,
+                    "time": -1,
+                    "message": "my spoilers don't match up",
+                    "statetext": "Forfeit",
+                    "twitch": "tadaru",
+                    "trueskill": "89"
+                },
+                "P-Train24": {
+                    "displayname": "P-Train24",
+                    "place": 9998,
+                    "time": -1,
+                    "message": "",
+                    "statetext": "Forfeit",
+                    "twitch": "ptrain24",
+                    "trueskill": "81"
+                },
+                "oase28": {
+                    "displayname": "oase28",
+                    "place": 9998,
+                    "time": -1,
+                    "message": "",
+                    "statetext": "Forfeit",
+                    "twitch": "oase28",
+                    "trueskill": "76"
+                }
+            }
+        },
+        {
+            "id": "ppe53",
+            "game": {
+                "id": 1,
+                "name": "Super Mario 64",
+                "abbrev": "sm64",
+                "popularity": 974,
+                "popularityrank": 1
+            },
+            "goal": "70 star",
+            "time": 1533883757,
+            "state": 4,
+            "statetext": "Complete",
+            "filename": "",
+            "numentrants": 7,
+            "entrants": {
+                "groovy": {
+                    "displayname": "groovy",
+                    "place": 1,
+                    "time": 2986,
+                    "message": "",
+                    "statetext": "Finished",
+                    "twitch": "groovy31",
+                    "trueskill": "934"
+                },
+                "LiamKings": {
+                    "displayname": "LiamKings",
+                    "place": 2,
+                    "time": 3161,
+                    "message": "",
+                    "statetext": "Finished",
+                    "twitch": "",
+                    "trueskill": "940"
+                },
+                "pete": {
+                    "displayname": "pete",
+                    "place": 3,
+                    "time": 3284,
+                    "message": "",
+                    "statetext": "Finished",
+                    "twitch": "pete__",
+                    "trueskill": "1101"
+                },
+                "BroMario28": {
+                    "displayname": "BroMario28",
+                    "place": 4,
+                    "time": 3337,
+                    "message": "",
+                    "statetext": "Finished",
+                    "twitch": "BroMario28",
+                    "trueskill": "850"
+                },
+                "SuperWeegeeX": {
+                    "displayname": "SuperWeegeeX",
+                    "place": 9998,
+                    "time": -1,
+                    "message": "",
+                    "statetext": "Forfeit",
+                    "twitch": "weegee14",
+                    "trueskill": "1119"
+                },
+                "imrainh2o": {
+                    "displayname": "imrainh2o",
+                    "place": 9998,
+                    "time": -1,
+                    "message": "",
+                    "statetext": "Forfeit",
+                    "twitch": "imrainh2o",
+                    "trueskill": "824"
+                },
+                "crabshack": {
+                    "displayname": "crabshack",
+                    "place": 9998,
+                    "time": -1,
+                    "message": "",
+                    "statetext": "Forfeit",
+                    "twitch": "",
+                    "trueskill": "778"
+                }
+            }
+        },
+        {
+            "id": "f7j1t",
+            "game": {
+                "id": 18,
+                "name": "Mario Kart: Double Dash!!",
+                "abbrev": "mkdd",
+                "popularity": 9,
+                "popularityrank": 92
+            },
+            "goal": "All Cup Tour 150cc",
+            "time": 1533936831,
+            "state": 4,
+            "statetext": "Complete",
+            "filename": "",
+            "numentrants": 5,
+            "entrants": {
+                "GoombaX": {
+                    "displayname": "GoombaX",
+                    "place": 1,
+                    "time": 2029,
+                    "message": "",
+                    "statetext": "Finished",
+                    "twitch": "goombanl",
+                    "trueskill": "1270"
+                },
+                "toastrider": {
+                    "displayname": "toastrider",
+                    "place": 2,
+                    "time": 2120,
+                    "message": "",
+                    "statetext": "Finished",
+                    "twitch": "toastrider91",
+                    "trueskill": "926"
+                },
+                "lothjon": {
+                    "displayname": "lothjon",
+                    "place": 3,
+                    "time": 2158,
+                    "message": "",
+                    "statetext": "Finished",
+                    "twitch": "",
+                    "trueskill": "0"
+                },
+                "thejackster1676": {
+                    "displayname": "thejackster1676",
+                    "place": 4,
+                    "time": 2251,
+                    "message": "",
+                    "statetext": "Finished",
+                    "twitch": "thejackster1676",
+                    "trueskill": "807"
+                },
+                "mathew10wilson": {
+                    "displayname": "mathew10wilson",
+                    "place": 5,
+                    "time": 2406,
+                    "message": "",
+                    "statetext": "Finished",
+                    "twitch": "mathew10wilson",
+                    "trueskill": "0"
+                }
+            }
+        },
+        {
+            "id": "53215",
+            "game": {
+                "id": 3977,
+                "name": "The Legend of Zelda: A Link to the Past Hacks",
+                "abbrev": "alttphacks",
+                "popularity": 286,
+                "popularityrank": 3
+            },
+            "goal": "vt8 randomizer - casual open",
+            "time": 1533905237,
+            "state": 4,
+            "statetext": "Complete",
+            "filename": "",
+            "numentrants": 4,
+            "entrants": {
+                "Buane": {
+                    "displayname": "Buane",
+                    "place": 1,
+                    "time": 6699,
+                    "message": "",
+                    "statetext": "Finished",
+                    "twitch": "buane",
+                    "trueskill": "571"
+                },
+                "dataplet": {
+                    "displayname": "dataplet",
+                    "place": 2,
+                    "time": 6940,
+                    "message": "moon pearl pyramid, ice rod ped......hell of way to start a Friday morning",
+                    "statetext": "Finished",
+                    "twitch": "dataplet01",
+                    "trueskill": "0"
+                },
+                "ProblemsIRL": {
+                    "displayname": "ProblemsIRL",
+                    "place": 3,
+                    "time": 7373,
+                    "message": "",
+                    "statetext": "Finished",
+                    "twitch": "problemsirl",
+                    "trueskill": "269"
+                },
+                "LJMnin": {
+                    "displayname": "LJMnin",
+                    "place": 9998,
+                    "time": -1,
+                    "message": "2 mistakes TR expecting Ice rod and late magic bat otherwise good",
+                    "statetext": "Forfeit",
+                    "twitch": "LJMnin",
+                    "trueskill": "0"
+                }
+            }
+        },
+        {
+            "id": "6phut",
+            "game": {
+                "id": 1,
+                "name": "Super Mario 64",
+                "abbrev": "sm64",
+                "popularity": 974,
+                "popularityrank": 1
+            },
+            "goal": "70 star",
+            "time": 1533905688,
+            "state": 4,
+            "statetext": "Complete",
+            "filename": "",
+            "numentrants": 4,
+            "entrants": {
+                "TimLittleFree": {
+                    "displayname": "TimLittleFree",
+                    "place": 1,
+                    "time": 3182,
+                    "message": "",
+                    "statetext": "Finished",
+                    "twitch": "timlittlefree1",
+                    "trueskill": "1009"
+                },
+                "Im_Sorry145": {
+                    "displayname": "Im_Sorry145",
+                    "place": 2,
+                    "time": 3414,
+                    "message": "",
+                    "statetext": "Finished",
+                    "twitch": "RWBYSorry",
+                    "trueskill": "883"
+                },
+                "BroMario28": {
+                    "displayname": "BroMario28",
+                    "place": 3,
+                    "time": 3419,
+                    "message": ";/",
+                    "statetext": "Finished",
+                    "twitch": "BroMario28",
+                    "trueskill": "850"
+                },
+                "Gainai": {
+                    "displayname": "Gainai",
+                    "place": 9998,
+                    "time": -1,
+                    "message": "",
+                    "statetext": "Forfeit",
+                    "twitch": "gainai27",
+                    "trueskill": "578"
+                }
+            }
+        },
+        {
+            "id": "7h523",
+            "game": {
+                "id": 4660,
+                "name": "Final Fantasy IV Hacks",
+                "abbrev": "ff4hacks",
+                "popularity": 49,
+                "popularityrank": 21
+            },
+            "goal": "HTTZZ League Match",
+            "time": 1533692061,
+            "state": 4,
+            "statetext": "Complete",
+            "filename": "",
+            "numentrants": 4,
+            "entrants": {
+                "penguin8r": {
+                    "displayname": "penguin8r",
+                    "place": 1,
+                    "time": 4252,
+                    "message": "",
+                    "statetext": "Finished",
+                    "twitch": "penguin8r",
+                    "trueskill": "817"
+                },
+                "SwimmyLionni": {
+                    "displayname": "SwimmyLionni",
+                    "place": 2,
+                    "time": 4927,
+                    "message": "",
+                    "statetext": "Finished",
+                    "twitch": "swimmylionni",
+                    "trueskill": "861"
+                },
+                "Zman": {
+                    "displayname": "Zman",
+                    "place": 3,
+                    "time": 5314,
+                    "message": "",
+                    "statetext": "Finished",
+                    "twitch": "Zman050778",
+                    "trueskill": "654"
+                },
+                "Kirchin": {
+                    "displayname": "Kirchin",
+                    "place": 4,
+                    "time": 6231,
+                    "message": "",
+                    "statetext": "Finished",
+                    "twitch": "kirchin",
+                    "trueskill": "941"
+                }
+            }
+        },
+        {
+            "id": "eu8zu",
+            "game": {
+                "id": 3,
+                "name": "Super Metroid",
+                "abbrev": "supermetroid",
+                "popularity": 197,
+                "popularityrank": 6
+            },
+            "goal": "100%",
+            "time": 1533928279,
+            "state": 4,
+            "statetext": "Complete",
+            "filename": "",
+            "numentrants": 4,
+            "entrants": {
+                "sloaters27": {
+                    "displayname": "sloaters27",
+                    "place": 1,
+                    "time": 4915,
+                    "message": "comedy run",
+                    "statetext": "Finished",
+                    "twitch": "sloaters27",
+                    "trueskill": "922"
+                },
+                "CanadianOwl": {
+                    "displayname": "CanadianOwl",
+                    "place": 2,
+                    "time": 5341,
+                    "message": "1:28:57 new pb",
+                    "statetext": "Finished",
+                    "twitch": "canadianowl_srl",
+                    "trueskill": "583"
+                },
+                "KarenKonou": {
+                    "displayname": "KarenKonou",
+                    "place": 3,
+                    "time": 5467,
+                    "message": "nice derust run",
+                    "statetext": "Finished",
+                    "twitch": "karenkonou",
+                    "trueskill": "622"
+                },
+                "Skarsnik": {
+                    "displayname": "Skarsnik",
+                    "place": 9998,
+                    "time": -1,
+                    "message": "too tired :(",
+                    "statetext": "Forfeit",
+                    "twitch": "Skarsnikus",
+                    "trueskill": "289"
+                }
+            }
+        },
+        {
+            "id": "g55y2",
+            "game": {
+                "id": 4660,
+                "name": "Final Fantasy IV Hacks",
+                "abbrev": "ff4hacks",
+                "popularity": 49,
+                "popularityrank": 21
+            },
+            "goal": "FF4FE League Race Supremacy/Demerine2/Xyrak/Scratchdragon",
+            "time": 1533680295,
+            "state": 4,
+            "statetext": "Complete",
+            "filename": "",
+            "numentrants": 4,
+            "entrants": {
+                "ScratchDragon": {
+                    "displayname": "ScratchDragon",
+                    "place": 1,
+                    "time": 5660,
+                    "message": "",
+                    "statetext": "Finished",
+                    "twitch": "scratchdragon",
+                    "trueskill": "745"
+                },
+                "Supremacy": {
+                    "displayname": "Supremacy",
+                    "place": 2,
+                    "time": 5944,
+                    "message": "",
+                    "statetext": "Finished",
+                    "twitch": "Supremacy037",
+                    "trueskill": "947"
+                },
+                "Xyrak": {
+                    "displayname": "Xyrak",
+                    "place": 3,
+                    "time": 5975,
+                    "message": "",
+                    "statetext": "Finished",
+                    "twitch": "xyrakian",
+                    "trueskill": "682"
+                },
+                "Demerine2": {
+                    "displayname": "Demerine2",
+                    "place": 9998,
+                    "time": -1,
+                    "message": "I know where my errors were.",
+                    "statetext": "Forfeit",
+                    "twitch": "demerine2",
+                    "trueskill": "800"
+                }
+            }
+        },
+        {
+            "id": "nmdab",
+            "game": {
+                "id": 3977,
+                "name": "The Legend of Zelda: A Link to the Past Hacks",
+                "abbrev": "alttphacks",
+                "popularity": 286,
+                "popularityrank": 3
+            },
+            "goal": "vt8 randomizer - casual open",
+            "time": 1533909949,
+            "state": 4,
+            "statetext": "Complete",
+            "filename": "",
+            "numentrants": 4,
+            "entrants": {
+                "sonicam": {
+                    "displayname": "sonicam",
+                    "place": 1,
+                    "time": 6280,
+                    "message": "",
+                    "statetext": "Finished",
+                    "twitch": "sonicam5",
+                    "trueskill": "250"
+                },
+                "MightyMike27": {
+                    "displayname": "MightyMike27",
+                    "place": 2,
+                    "time": 6318,
+                    "message": "I feel like there's a gimmick in my races...",
+                    "statetext": "Finished",
+                    "twitch": "mightymike27",
+                    "trueskill": "0"
+                },
+                "Frostbite3030": {
+                    "displayname": "Frostbite3030",
+                    "place": 3,
+                    "time": 7329,
+                    "message": "Bet no one else had Fire Rod go mode or found the bugnet kappa",
+                    "statetext": "Finished",
+                    "twitch": "Frostbite3030",
+                    "trueskill": "52"
+                },
+                "Bosco": {
+                    "displayname": "Bosco",
+                    "place": 9998,
+                    "time": -1,
+                    "message": "",
+                    "statetext": "Forfeit",
+                    "twitch": "ursula4115",
+                    "trueskill": "0"
+                }
+            }
+        },
+        {
+            "id": "tsqwe",
+            "game": {
+                "id": 1575,
+                "name": "Rayman",
+                "abbrev": "rayman",
+                "popularity": 6,
+                "popularityrank": 115
+            },
+            "goal": "Any% PS1",
+            "time": 1533925414,
+            "state": 4,
+            "statetext": "Complete",
+            "filename": "",
+            "numentrants": 4,
+            "entrants": {
+                "Glackum": {
+                    "displayname": "Glackum",
+                    "place": 1,
+                    "time": 4862,
+                    "message": "",
+                    "statetext": "Finished",
+                    "twitch": "Glackum",
+                    "trueskill": "825"
+                },
+                "araneae": {
+                    "displayname": "araneae",
+                    "place": 2,
+                    "time": 5367,
+                    "message": "",
+                    "statetext": "Finished",
+                    "twitch": "imaltont",
+                    "trueskill": "591"
+                },
+                "xer_91": {
+                    "displayname": "xer_91",
+                    "place": 3,
+                    "time": 5773,
+                    "message": "better than thex TriHard",
+                    "statetext": "Finished",
+                    "twitch": "xer_91",
+                    "trueskill": "793"
+                },
+                "thextera": {
+                    "displayname": "thextera",
+                    "place": 9998,
+                    "time": -1,
+                    "message": "",
+                    "statetext": "Forfeit",
+                    "twitch": "thextera_",
+                    "trueskill": "1012"
+                }
+            }
+        },
+        {
+            "id": "70out",
+            "game": {
+                "id": 3977,
+                "name": "The Legend of Zelda: A Link to the Past Hacks",
+                "abbrev": "alttphacks",
+                "popularity": 286,
+                "popularityrank": 3
+            },
+            "goal": "vt8 randomizer - no logic major glitches keysanity",
+            "time": 1533875165,
+            "state": 4,
+            "statetext": "Complete",
+            "filename": "",
+            "numentrants": 3,
+            "entrants": {
+                "prdwong": {
+                    "displayname": "prdwong",
+                    "place": 1,
+                    "time": 10194,
+                    "message": "",
+                    "statetext": "Finished",
+                    "twitch": "prdwong",
+                    "trueskill": "136"
+                },
+                "Chexhuman": {
+                    "displayname": "Chexhuman",
+                    "place": 2,
+                    "time": 10593,
+                    "message": "",
+                    "statetext": "Finished",
+                    "twitch": "chexhuman",
+                    "trueskill": "328"
+                },
+                "Glan": {
+                    "displayname": "Glan",
+                    "place": 3,
+                    "time": 10770,
+                    "message": "",
+                    "statetext": "Finished",
+                    "twitch": "glandragonheart9",
+                    "trueskill": "262"
+                }
+            }
+        },
+        {
+            "id": "o2f7e",
+            "game": {
+                "id": 3977,
+                "name": "The Legend of Zelda: A Link to the Past Hacks",
+                "abbrev": "alttphacks",
+                "popularity": 286,
+                "popularityrank": 3
+            },
+            "goal": "vt8 randomizer - casual open",
+            "time": 1533920565,
+            "state": 4,
+            "statetext": "Complete",
+            "filename": "",
+            "numentrants": 3,
+            "entrants": {
+                "Buane": {
+                    "displayname": "Buane",
+                    "place": 1,
+                    "time": 6497,
+                    "message": "seed bad",
+                    "statetext": "Finished",
+                    "twitch": "buane",
+                    "trueskill": "571"
+                },
+                "wessidevandal": {
+                    "displayname": "wessidevandal",
+                    "place": 2,
+                    "time": 9546,
+                    "message": "gauntlet death is the perfect way to bring this nightmare to an end (168/216) (0 connection drops PogChamp)",
+                    "statetext": "Finished",
+                    "twitch": "wessidevandal",
+                    "trueskill": "0"
+                },
+                "MightyMike27": {
+                    "displayname": "MightyMike27",
+                    "place": 9998,
+                    "time": -1,
+                    "message": "",
+                    "statetext": "Forfeit",
+                    "twitch": "mightymike27",
+                    "trueskill": "0"
+                }
+            }
+        },
+        {
+            "id": "rs673",
+            "game": {
+                "id": 130,
+                "name": "Kirby: Nightmare in Dream Land",
+                "abbrev": "knid",
+                "popularity": 44,
+                "popularityrank": 24
+            },
+            "goal": "any%",
+            "time": 1533931710,
+            "state": 4,
+            "statetext": "Complete",
+            "filename": "",
+            "numentrants": 3,
+            "entrants": {
+                "MKCocoon": {
+                    "displayname": "MKCocoon",
+                    "place": 1,
+                    "time": 2439,
+                    "message": "rtr 2k18, gg boys",
+                    "statetext": "Finished",
+                    "twitch": "MKCocoon",
+                    "trueskill": "1116"
+                },
+                "jayhawker": {
+                    "displayname": "jayhawker",
+                    "place": 2,
+                    "time": 2571,
+                    "message": "we are all chooch on this blessed day",
+                    "statetext": "Finished",
+                    "twitch": "jayhawker47",
+                    "trueskill": "418"
+                },
+                "chooch23": {
+                    "displayname": "chooch23",
+                    "place": 3,
+                    "time": 2662,
+                    "message": "",
+                    "statetext": "Finished",
+                    "twitch": "chooch236",
+                    "trueskill": "668"
+                }
+            }
+        },
+        {
+            "id": "27dbn",
+            "game": {
+                "id": 2,
+                "name": "The Legend of Zelda: Ocarina of Time",
+                "abbrev": "oot",
+                "popularity": 903,
+                "popularityrank": 2
+            },
+            "goal": "http://www.speedrunslive.com/tools/oot-bingo?mode=normal&amp;seed=888273",
+            "time": 1533920445,
+            "state": 4,
+            "statetext": "Complete",
+            "filename": "true",
+            "numentrants": 2,
+            "entrants": {
+                "Chris7M": {
+                    "displayname": "Chris7M",
+                    "place": 1,
+                    "time": 4686,
+                    "message": "col2 lost 4 mins in gv hp lol decent otherwise",
+                    "statetext": "Finished",
+                    "twitch": "chris7",
+                    "trueskill": "680"
+                },
+                "jenslang": {
+                    "displayname": "jenslang",
+                    "place": 9998,
+                    "time": -1,
+                    "message": "",
+                    "statetext": "Forfeit",
+                    "twitch": "jenslang",
+                    "trueskill": "610"
+                }
+            }
+        },
+        {
+            "id": "3mej6",
+            "game": {
+                "id": 7,
+                "name": "Super Mario Sunshine",
+                "abbrev": "sms",
+                "popularity": 220,
+                "popularityrank": 5
+            },
+            "goal": "http://nkitten.net/bingo/sms/beta/3h/?seed=253508",
+            "time": 1533913903,
+            "state": 4,
+            "statetext": "Complete",
+            "filename": "",
+            "numentrants": 2,
+            "entrants": {
+                "icedwindowsil": {
+                    "displayname": "icedwindowsil",
+                    "place": 1,
+                    "time": 3239,
+                    "message": "bl-tr Fumbled around in Sirena 1 100s for about 5 extra minutes",
+                    "statetext": "Finished",
+                    "twitch": "icedwindowsil",
+                    "trueskill": "816"
+                },
+                "imSpenc": {
+                    "displayname": "imSpenc",
+                    "place": 2,
+                    "time": 3289,
+                    "message": "TL-BR",
+                    "statetext": "Finished",
+                    "twitch": "imspenc",
+                    "trueskill": "165"
+                }
+            }
+        },
+        {
+            "id": "63wax",
+            "game": {
+                "id": 3,
+                "name": "Super Metroid",
+                "abbrev": "supermetroid",
+                "popularity": 197,
+                "popularityrank": 6
+            },
+            "goal": "any% enmet vs keku",
+            "time": 1533888430,
+            "state": 4,
+            "statetext": "Complete",
+            "filename": "",
+            "numentrants": 2,
+            "entrants": {
+                "kekumanshoyu": {
+                    "displayname": "kekumanshoyu",
+                    "place": 1,
+                    "time": 3032,
+                    "message": "",
+                    "statetext": "Finished",
+                    "twitch": "kekumanshoyu",
+                    "trueskill": "406"
+                },
+                "Enmet": {
+                    "displayname": "Enmet",
+                    "place": 9998,
+                    "time": -1,
+                    "message": "",
+                    "statetext": "Forfeit",
+                    "twitch": "enmet",
+                    "trueskill": "511"
+                }
+            }
+        },
+        {
+            "id": "6itw8",
+            "game": {
+                "id": 3,
+                "name": "Super Metroid",
+                "abbrev": "supermetroid",
+                "popularity": 197,
+                "popularityrank": 6
+            },
+            "goal": "any%",
+            "time": 1533931513,
+            "state": 4,
+            "statetext": "Complete",
+            "filename": "",
+            "numentrants": 2,
+            "entrants": {
+                "Galen83": {
+                    "displayname": "Galen83",
+                    "place": 1,
+                    "time": 3133,
+                    "message": "",
+                    "statetext": "Finished",
+                    "twitch": "galen83",
+                    "trueskill": "510"
+                },
+                "mrguyaverage": {
+                    "displayname": "mrguyaverage",
+                    "place": 2,
+                    "time": 3539,
+                    "message": "",
+                    "statetext": "Finished",
+                    "twitch": "",
+                    "trueskill": "154"
+                }
+            }
+        },
+        {
+            "id": "a5be9",
+            "game": {
+                "id": 5117,
+                "name": "A Link to the Past & Super Metroid Combo Randomizer",
+                "abbrev": "alttpsm",
+                "popularity": 28,
+                "popularityrank": 35
+            },
+            "goal": "Tournament Match on TheGameRacingChannel - Ndiaz0 vs EvilSparky1",
+            "time": 1533922717,
+            "state": 4,
+            "statetext": "Complete",
+            "filename": "",
+            "numentrants": 2,
+            "entrants": {
+                "ndiaz": {
+                    "displayname": "ndiaz",
+                    "place": 1,
+                    "time": 13496,
+                    "message": "2:07 | 1:22 | 210",
+                    "statetext": "Finished",
+                    "twitch": "ndiaz0",
+                    "trueskill": "522"
+                },
+                "EvilSparky1": {
+                    "displayname": "EvilSparky1",
+                    "place": 2,
+                    "time": 16450,
+                    "message": "why mirror, why?",
+                    "statetext": "Finished",
+                    "twitch": "evilsparky1",
+                    "trueskill": "316"
+                }
+            }
+        },
+        {
+            "id": "bq460",
+            "game": {
+                "id": 0,
+                "name": "New Game",
+                "abbrev": "newgame",
+                "popularity": 0,
+                "popularityrank": 0
+            },
+            "goal": "Mystery Co-op Tournament - Double Dragon 2 - Beat the Game (Infinite Lives)",
+            "time": 1533860690,
+            "state": 4,
+            "statetext": "Complete",
+            "filename": "",
+            "numentrants": 2,
+            "entrants": {
+                "Jakazam": {
+                    "displayname": "Jakazam",
+                    "place": 1,
+                    "time": 1811,
+                    "message": "",
+                    "statetext": "Finished",
+                    "twitch": "jakazam",
+                    "trueskill": "0"
+                },
+                "MinuteCamel": {
+                    "displayname": "MinuteCamel",
+                    "place": 2,
+                    "time": 3014,
+                    "message": "",
+                    "statetext": "Finished",
+                    "twitch": "",
+                    "trueskill": "0"
+                }
+            }
+        },
+        {
+            "id": "h2f58",
+            "game": {
+                "id": 1,
+                "name": "Super Mario 64",
+                "abbrev": "sm64",
+                "popularity": 974,
+                "popularityrank": 1
+            },
+            "goal": "16 Star",
+            "time": 1533928164,
+            "state": 4,
+            "statetext": "Complete",
+            "filename": "",
+            "numentrants": 2,
+            "entrants": {
+                "strager": {
+                    "displayname": "strager",
+                    "place": 1,
+                    "time": 1622,
+                    "message": "",
+                    "statetext": "Finished",
+                    "twitch": "strager",
+                    "trueskill": "0"
+                },
+                "hubadad": {
+                    "displayname": "hubadad",
+                    "place": 9998,
+                    "time": -1,
+                    "message": "",
+                    "statetext": "Forfeit",
+                    "twitch": "",
+                    "trueskill": "0"
+                }
+            }
+        },
+        {
+            "id": "hnfvt",
+            "game": {
+                "id": 35,
+                "name": "Sonic Adventure 2 Battle",
+                "abbrev": "sa2b",
+                "popularity": 93,
+                "popularityrank": 10
+            },
+            "goal": "beat dark story",
+            "time": 1533920992,
+            "state": 4,
+            "statetext": "Complete",
+            "filename": "",
+            "numentrants": 2,
+            "entrants": {
+                "stllr": {
+                    "displayname": "stllr",
+                    "place": 1,
+                    "time": 2655,
+                    "message": "",
+                    "statetext": "Finished",
+                    "twitch": "alt_account_927",
+                    "trueskill": "328"
+                },
+                "moester_": {
+                    "displayname": "moester_",
+                    "place": 2,
+                    "time": 2992,
+                    "message": "",
+                    "statetext": "Finished",
+                    "twitch": "moester_",
+                    "trueskill": "137"
+                }
+            }
+        },
+        {
+            "id": "jearb",
+            "game": {
+                "id": 7,
+                "name": "Super Mario Sunshine",
+                "abbrev": "sms",
+                "popularity": 220,
+                "popularityrank": 5
+            },
+            "goal": "http://nkitten.net/bingo/sms/beta/3h/?seed=973964",
+            "time": 1533931616,
+            "state": 4,
+            "statetext": "Complete",
+            "filename": "",
+            "numentrants": 2,
+            "entrants": {
+                "rimato13": {
+                    "displayname": "rimato13",
+                    "place": 1,
+                    "time": 2646,
+                    "message": "COL2- got tilted cause i thought larvi got the OP row and i cant do sirena whenever so lost atleast  2 mins to gameplay XD",
+                    "statetext": "Finished",
+                    "twitch": "rimato13",
+                    "trueskill": "934"
+                },
+                "larvitar": {
+                    "displayname": "larvitar",
+                    "place": 2,
+                    "time": 3271,
+                    "message": "heavily overestimated row3, col2 was the right option",
+                    "statetext": "Finished",
+                    "twitch": "mlarvitar",
+                    "trueskill": "755"
+                }
+            }
+        },
+        {
+            "id": "osu3q",
+            "game": {
+                "id": 1,
+                "name": "Super Mario 64",
+                "abbrev": "sm64",
+                "popularity": 974,
+                "popularityrank": 1
+            },
+            "goal": "16 Star mrlink tourney",
+            "time": 1533939005,
+            "state": 4,
+            "statetext": "Complete",
+            "filename": "",
+            "numentrants": 2,
+            "entrants": {
+                "GoodleShoes": {
+                    "displayname": "GoodleShoes",
+                    "place": 1,
+                    "time": 1183,
+                    "message": "",
+                    "statetext": "Finished",
+                    "twitch": "goodleshoes",
+                    "trueskill": "445"
+                },
+                "racerboy70": {
+                    "displayname": "racerboy70",
+                    "place": 2,
+                    "time": 1298,
+                    "message": "",
+                    "statetext": "Finished",
+                    "twitch": "",
+                    "trueskill": "17"
+                }
+            }
+        },
+        {
+            "id": "udi6u",
+            "game": {
+                "id": 1505,
+                "name": "The Elder Scrolls III: Morrowind",
+                "abbrev": "morrowind",
+                "popularity": 0,
+                "popularityrank": 3321
+            },
+            "goal": "All Main Quests",
+            "time": 1533926208,
+            "state": 4,
+            "statetext": "Complete",
+            "filename": "",
+            "numentrants": 2,
+            "entrants": {
+                "thefuncannon": {
+                    "displayname": "thefuncannon",
+                    "place": 1,
+                    "time": 1517,
+                    "message": "",
+                    "statetext": "Finished",
+                    "twitch": "thefuncannon",
+                    "trueskill": "0"
+                },
+                "JeIIy": {
+                    "displayname": "JeIIy",
+                    "place": 2,
+                    "time": 1721,
+                    "message": "",
+                    "statetext": "Finished",
+                    "twitch": "jeiiybro",
+                    "trueskill": "0"
+                }
+            }
+        },
+        {
+            "id": "uhft3",
+            "game": {
+                "id": 3977,
+                "name": "The Legend of Zelda: A Link to the Past Hacks",
+                "abbrev": "alttphacks",
+                "popularity": 286,
+                "popularityrank": 3
+            },
+            "goal": "vt8 randomizer - casual open",
+            "time": 1533881690,
+            "state": 4,
+            "statetext": "Complete",
+            "filename": "",
+            "numentrants": 2,
+            "entrants": {
+                "jmeasher": {
+                    "displayname": "jmeasher",
+                    "place": 1,
+                    "time": 5441,
+                    "message": "wonderfully routed. horribly executed",
+                    "statetext": "Finished",
+                    "twitch": "jmeasher",
+                    "trueskill": "6"
+                },
+                "FEARAgent": {
+                    "displayname": "FEARAgent",
+                    "place": 2,
+                    "time": 6213,
+                    "message": "",
+                    "statetext": "Finished",
+                    "twitch": "thefearagent",
+                    "trueskill": "0"
+                }
+            }
+        },
+        {
+            "id": "ujlm6",
+            "game": {
+                "id": 851,
+                "name": "Wario's Woods (NES)",
+                "abbrev": "wwnes",
+                "popularity": 0,
+                "popularityrank": 708
+            },
+            "goal": "1-99 type a",
+            "time": 1533932181,
+            "state": 4,
+            "statetext": "Complete",
+            "filename": "",
+            "numentrants": 2,
+            "entrants": {
+                "prisiii3": {
+                    "displayname": "prisiii3",
+                    "place": 1,
+                    "time": 5944,
+                    "message": "",
+                    "statetext": "Finished",
+                    "twitch": "prisiii3",
+                    "trueskill": "605"
+                },
+                "KatKunoichi": {
+                    "displayname": "KatKunoichi",
+                    "place": 2,
+                    "time": 5952,
+                    "message": "",
+                    "statetext": "Finished",
+                    "twitch": "kat_kunoichi",
+                    "trueskill": "837"
+                }
+            }
+        },
+        {
+            "id": "v9sl0",
+            "game": {
+                "id": 4660,
+                "name": "Final Fantasy IV Hacks",
+                "abbrev": "ff4hacks",
+                "popularity": 49,
+                "popularityrank": 21
+            },
+            "goal": "FF4FE Nicky vs Netara... FIGHT",
+            "time": 1533400510,
+            "state": 4,
+            "statetext": "Complete",
+            "filename": "",
+            "numentrants": 2,
+            "entrants": {
+                "nickynoel": {
+                    "displayname": "nickynoel",
+                    "place": 1,
+                    "time": 8226,
+                    "message": "",
+                    "statetext": "Finished",
+                    "twitch": "nickynoel",
+                    "trueskill": "681"
+                },
+                "Netara": {
+                    "displayname": "Netara",
+                    "place": 2,
+                    "time": 10947,
+                    "message": "",
+                    "statetext": "Finished",
+                    "twitch": "netara",
+                    "trueskill": "310"
+                }
+            }
+        },
+        {
+            "id": "vsgcj",
+            "game": {
+                "id": 4,
+                "name": "Super Mario World",
+                "abbrev": "smw",
+                "popularity": 252,
+                "popularityrank": 4
+            },
+            "goal": "96 Exit",
+            "time": 1533933181,
+            "state": 4,
+            "statetext": "Complete",
+            "filename": "",
+            "numentrants": 2,
+            "entrants": {
+                "Seathorne74": {
+                    "displayname": "Seathorne74",
+                    "place": 1,
+                    "time": 5158,
+                    "message": "Lost Yoshi in DP4, clipped out 4x, royfly death, extra sandbar cycle. oof",
+                    "statetext": "Finished",
+                    "twitch": "seathorne74",
+                    "trueskill": "824"
+                },
+                "DunkelGotik": {
+                    "displayname": "DunkelGotik",
+                    "place": 2,
+                    "time": 5760,
+                    "message": "",
+                    "statetext": "Finished",
+                    "twitch": "dunkelgotik",
+                    "trueskill": "541"
+                }
+            }
+        }
+    ]
+}
