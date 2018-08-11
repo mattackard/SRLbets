@@ -1,3 +1,4 @@
+const axios = require('axios');
 
 function validateApiResponse(res) {
   if (!res) {
@@ -9,4 +10,15 @@ function validateApiResponse(res) {
   }
 }
 
+function getRaceData(callback) {
+  axios.get('http://api.speedrunslive.com/races')
+       .then((response) => {
+         callback(response.data.races);
+       })
+       .catch((error) => {
+         console.error(error);
+       });
+}
+
 module.exports.validateApiResponse = validateApiResponse;
+module.exports.getRaceData = getRaceData;
