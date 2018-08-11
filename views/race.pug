@@ -10,7 +10,8 @@ block content
       h1.gameTitle #{race.game.name}
       p.raceGoal Goal: #{race.goal}
       p.raceStatus Race Status: #{race.statetext}
-      p.raceTime Time: #{race.time}
+      - if (race.statetext !== 'Entry Open')
+        p.raceTime Race Start Time: #{race.time}
       p.numEntrant Number of entrants: #{race.numentrants}
       
       //- iterate through each user object enetered in each race
