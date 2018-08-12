@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const Race = require('../models/race');
-const raceApiRes = require('../exampleApiBody.json');
 const getRaceData = require('../apiProcessing').getRaceData;
 
 let races = '';                               //grab all the mongo documents
@@ -17,7 +16,7 @@ router.get('/', (req,res,next) => {
 });
 
 router.post('/', (req,res,next) => {
-  console.log('post ran');              //get the post route to work
+  console.log('post ran');
   if (req.body.message) {
     let raceData = req.body.message;
     console.log(raceData);
@@ -40,6 +39,11 @@ router.get('/races', (req,res,next) => {
   getRaceData((raceData) => {
     return res.render('race', { raceObj : raceData });
   });
+});
+
+//race directory route
+router.get('/twitch', (req,res,next) => {
+  return res.render('twitch');
 });
 
 

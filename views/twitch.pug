@@ -1,0 +1,15 @@
+extends layout
+
+block content
+  h1 Twitch Login Test
+  img(src="http://ttv-api.s3.amazonaws.com/assets/connect_dark.png" class="twitch-connect" href="#")
+  p.loginStatus You are not logged in
+  p.twitchUsername Twitch Username : You are not logged in
+  
+  #logout
+        button Log Out
+    
+    
+  script(src="//code.jquery.com/jquery.min.js")
+  script(src="https://ttv-api.s3.amazonaws.com/twitch.min.js")
+  script(src="./js/twitch.js")
