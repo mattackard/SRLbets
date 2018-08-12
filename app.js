@@ -6,6 +6,8 @@ const MongoStore = require('connect-mongo')(session);
 const ircConnect = require('./irc.js').ircConnect;
 const app = express();
 
+const dbUpdateInterval = 60 * 1000;   //60,000 ms = 1 minute
+
 
 //set up parsing of requests
 app.use(bodyParser.json());
@@ -54,6 +56,8 @@ app.use((err,req,res,next) => {
   });
 });
 
+//get race data and update the db at set interval
+setInterval(getRacesData(), dbUpdateInterval);
 
 //run node app on port 3000
 app.listen(3000, () => {
