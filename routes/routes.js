@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Race = require('../models/race');
+const User = require('../models/user');
 const getRaceData = require('../apiProcessing').getRaceData;
 
 let races = '';                               //grab all the mongo documents

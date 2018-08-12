@@ -1,3 +1,4 @@
+
 Twitch.init({clientId: '36ajloyc79v2ccwny9v8zfog0lwr3z'}, (error, status) => {
   if (error) {
     // error encountered while loading
@@ -7,7 +8,6 @@ Twitch.init({clientId: '36ajloyc79v2ccwny9v8zfog0lwr3z'}, (error, status) => {
   if (status.authenticated) {
   // Already logged in, hide the login button
     $('.twitch-connect').hide();
-
     $('.loginStatus').text('You are logged in through Twitch!');
 
     Twitch.api({method: 'user'}, function(error, user) {
