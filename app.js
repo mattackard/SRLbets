@@ -57,7 +57,7 @@ app.use((err,req,res,next) => {
 });
 
 //get race data and update the db at set interval
-setInterval(getRacesData(), dbUpdateInterval);
+setInterval(getRacesData(updateRaceData), dbUpdateInterval);
 
 //run node app on port 3000
 app.listen(3000, () => {

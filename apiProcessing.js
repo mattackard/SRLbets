@@ -12,13 +12,28 @@ function validateApiResponse(res) {
 }
 
 
-function convertTime(sec) {
+function convertRaceStartTime(sec) {
   let readableTime = new Date(sec * 1000);
   return readableTime;
 }
 
-function convertTime(apiTime) {     //takes time from the API and returns a string
-                                  //with standard HH:MM:SS or "In Progress"
+function convertRunTime(apiTime) {         //takes entrant's time from the API and returns a string
+  if (apiTime === -3) {                 //with standard HH:MM:SS, "In Progress", or "Race not started"
+    return "Race has not started";
+  }
+  else if (apiTime === 0) {
+    return "Race in progress";
+  }
+  else if (apiTime > 0) {
+    let hours = Math.floor(apiTime / 3600);
+
+    let minutes = Math.floor((apiTime % 3600) / 60);
+    if (minutes < 10) { minutes = `0${minutes}`; }
+
+    let seconds = Math.floor((apiTime % 3600) % 60);
+    if (seconds < 10) { seconds = `0${seconds}`; }
+    return `${hours}:${minutes}:${seconds}`;
+  }
 }
 
 function getRaceData(callback) {
@@ -26,10 +41,10 @@ function getRaceData(callback) {
        .then((response) => {
          response.data.races.forEach((race) => {
            if (race.time > 0) {
-             race.time = convertTime(race.time);
+             race.time = convertRaceStartTime(race.time);
            }
          });
-         callback(response.data.races);
+         callback(response.data.races); //leave callback as argument or hard code db update?
        })
        .catch((error) => {
          console.error(error);
@@ -37,21 +52,19 @@ function getRaceData(callback) {
 }
 
 function updateRaceData(races) {
-  races.forEach(race) {
-
-     //build the array of entrants
+  races.forEach((race) => {
+    //build the array of entrants
     let entrantArray = [];
-    for ( let entrant in entrants) => {
+    for ( let entrant in entrants) {
       let entrantObj = {
         name: entrant.displayname,
         status: entrant.stateText,
         place: entrant.place,
-        time: convertTime(entrant.time),
+        time: convertRunTime(entrant.time),
         twitch: entrant.twitch
       }
       entrantArray.push(entrantObj);
-    });
-
+    }
     //create a race document for saving in db
     let raceDoc = new Race({
       raceID: race.id,
@@ -62,27 +75,14 @@ function updateRaceData(races) {
       timeStarted: race.time,
       entrants: [entrantArray]
     });
-    //     h1.gameTitle #{race.game.name}
-    //     p.raceGoal Goal: #{race.goal}
-    //     p.raceStatus Race Status: #{race.statetext}
-    //     - if (race.statetext !== 'Entry Open')
-    //       p.raceTime Race Start Time: #{race.time}
-    //     p.numEntrant Number of entrants: #{race.numentrants}
-    //
-    //     //- iterate through each user object enetered in each race
-    //     .raceEntrants
-    //
-    //     - let entrants = race.entrants
-    //
-    //     each user in entrants
-    //       ul
-    //         li Name: #{user.displayname}
-    //         li Race Status: #{user.statetext}
-    //         - if (user.statetext === 'Finished')
-    //           li Finished in position: #{user.place}
-    //         li Twtich username: #{user.twitch}
-  }
+
+    //if race's raceID can be found in the database
+      //update the entry with current data
+    //else
+      //save the data as a new document
+  });
 }
+
 
 module.exports.validateApiResponse = validateApiResponse;
 module.exports.getRaceData = getRaceData;
