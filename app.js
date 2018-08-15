@@ -39,6 +39,8 @@ db.on('error', console.log.bind(console, 'connection error: '));
 //node-irc setup function from irc.js
 ircConnect();
 
+//get race data and update the db at set interval
+setInterval(() => { getRaceData(db); }, dbUpdateInterval);
 
 //catch 404 and forward to error handler
 app.use((req,res,next) => {
@@ -56,9 +58,6 @@ app.use((err,req,res,next) => {
     error: {}
   });
 });
-
-//get race data and update the db at set interval
-setInterval(() => { getRaceData(db); }, dbUpdateInterval);
 
 //run node app on port 3000
 app.listen(3000, () => {
