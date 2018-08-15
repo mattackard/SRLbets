@@ -23,7 +23,7 @@ function ircConnect() {
   });
 
   client.addListener('message', (nick, to, text, message) => {
-    console.dir(message);
+    console.dir(parseMessage(message));
   });
 
   client.addListener('error', (message) => {
