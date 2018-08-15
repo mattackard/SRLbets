@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const RaceSchema = new mongoose.Schema({
-  raceID: { type: Number, required: true },
+  raceID: { type: String, required: true },
   gameID: { type: Number, required: true },
   gameTitle: { type: String, required: true, trim: true },
   goal: String,
@@ -10,7 +10,7 @@ const RaceSchema = new mongoose.Schema({
   entrants: [
     {
       name: { type: String, required: true, trim: true },
-      state: { type: String, required: true },
+      status: { type: String, required: true },
       place: { type: Number, required: true },
       time: String,
       twitch: String
