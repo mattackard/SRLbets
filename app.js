@@ -3,7 +3,8 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
-const ircConnect = require('./irc.js').ircConnect;
+const ircConnect = require('./public/js/irc').ircConnect;
+const getRaceData = require('./public/js/apiProcessing').getRaceData;
 const app = express();
 
 const dbUpdateInterval = 60 * 1000;   //60,000 ms = 1 minute
@@ -57,7 +58,7 @@ app.use((err,req,res,next) => {
 });
 
 //get race data and update the db at set interval
-setInterval(getRacesData(updateRaceData), dbUpdateInterval);
+setInterval(() => { getRaceData(db); }, dbUpdateInterval);
 
 //run node app on port 3000
 app.listen(3000, () => {
