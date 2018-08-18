@@ -7,12 +7,12 @@ block content
   //- iterate through each race object in the races array
   each race in races
     .race
-      h1.gameTitle #{race.game.name}
+      h1.gameTitle #{race.gameTitle}
       p.raceGoal Goal: #{race.goal}
-      p.raceStatus Race Status: #{race.statetext}
-      - if (race.statetext !== 'Entry Open')
-        p.raceTime Race Start Time: #{race.time}
-      p.numEntrant Number of entrants: #{race.numentrants}
+      p.raceStatus Race Status: #{race.status}
+      - if (race.status !== 'Entry Open')
+        p.raceTime Race Start Time: #{race.timeStarted}
+      p.numEntrant Number of entrants: #{race.entrants.length}
       
       //- iterate through each user object enetered in each race
       .raceEntrants
@@ -21,8 +21,8 @@ block content
       
       each user in entrants
         ul
-          li Name: #{user.displayname}
-          li Race Status: #{user.statetext}
-          - if (user.statetext === 'Finished')
+          li Name: #{user.name}
+          li Race Status: #{user.status}
+          - if (user.status === 'Finished')
             li Finished in position: #{user.place} 
           li Twtich username: #{user.twitch}

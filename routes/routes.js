@@ -4,16 +4,16 @@ const Race = require('../models/race');
 const User = require('../models/user');
 const getRaceData = require('../public/js/apiProcessing').getRaceData;
 
-let races = '';                               //grab all the mongo documents
-Race.find((err,data) => {
-  if (err) return console.error(err);
-  races = data;
-});
-
 //GET home route
 router.get('/', (req,res,next) => {
-  console.log(races);
-  return res.render('index', { title : 'SRL Bets', data : races });
+  Race.find().exec((err,data) => {
+    if (err) {
+      return next(err);
+    }
+    else {
+      return res.render('index', { title: 'SRL Bets', raceObj: data });
+    }
+  });
 });
 
 router.post('/', (req,res,next) => {
@@ -37,8 +37,13 @@ router.post('/', (req,res,next) => {
 
 //race directory route
 router.get('/races', (req,res,next) => {
-  getRaceData((raceData) => {
-    return res.render('race', { raceObj : raceData });
+  Race.find().exec((err,data) => {
+    if (err) {
+      return next(err);
+    }
+    else {
+      return res.render('race', { title: 'SRL Bets Live Races', raceObj: data });
+    }
   });
 });
 

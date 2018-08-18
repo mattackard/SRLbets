@@ -6,7 +6,7 @@ const RaceSchema = new mongoose.Schema({
   gameTitle: { type: String, required: true, trim: true },
   goal: String,
   status: { type: String, required: true },
-  timeStarted: Date,
+  timeStarted: { type: Date, required: true },
   entrants: [
     {
       name: { type: String, required: true, trim: true },

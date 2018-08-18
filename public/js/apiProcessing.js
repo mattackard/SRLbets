@@ -13,8 +13,10 @@ function validateApiResponse(res) {
 
 
 function convertRaceStartTime(sec) {
-  let readableTime = new Date(sec * 1000);
-  return readableTime;
+  let ms = sec * 1000;
+  let date = new Date();
+  date.setTime(ms);
+  return date;
 }
 
 function convertRunTime(apiTime) {         //takes entrant's time from the API and returns a string
@@ -68,6 +70,7 @@ function updateRaceData(races, db) {
       }
       entrantArray.push(entrantObj);
     }
+
     //create a race document for saving in db
     let raceDoc = new Race({
       raceID: race.id,
@@ -78,10 +81,18 @@ function updateRaceData(races, db) {
       timeStarted: race.time,   //timeStarted is currently evaluating to null
       entrants: entrantArray
     });
+
     //update the race database
     Race.updateOne(                                   //apparently pre-save doesn't execute using this method, just
       { raceID : raceDoc.raceID },                    //leaving a note in case I end up using pre-save and am having issues
-      {$set: {   'goal': raceDoc.goal, 'status': raceDoc.status, 'timeStarted': raceDoc.timeSatrted, 'entrants': raceDoc.entrants }},
+      {$set: {   'raceID': race.id,
+                 'gameID': race.game.id,
+                 'gameTitle': race.game.name,
+                 'goal': raceDoc.goal,
+                 'status': raceDoc.status,
+                 'timeStarted': raceDoc.timeStarted,
+                 'entrants': raceDoc.entrants
+              }},
       { upsert: true , new : true, runValidators : true },
       (err,doc) => {
         if (err) {
