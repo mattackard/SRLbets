@@ -13,7 +13,8 @@ const RaceSchema = new mongoose.Schema({
       status: { type: String, required: true },
       place: { type: Number, required: true },
       time: String,
-      twitch: String
+      twitch: String,
+      betTotal: { type: Number, required: true, default: 0 }
     }
   ]
 });

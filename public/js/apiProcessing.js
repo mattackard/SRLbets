@@ -1,18 +1,17 @@
 const axios = require('axios');
 const Race = require('../../models/race');
+const User = require('../../models/user');
 
-function validateApiResponse(res) {
+function validateApiResponse(res) {           //checks the response from the SRL API in case it is empty or not as expected
   if (!res) {
     throw Error();
   }
-
   else if (typeof res !== 'Object') {
     throw Error('The response from the API was not an object, or it was empty');
   }
 }
 
-
-function convertRaceStartTime(sec) {
+function convertRaceStartTime(sec) {       //converts seconds back into a Date
   let ms = sec * 1000;
   let date = new Date();
   date.setTime(ms);
@@ -41,8 +40,8 @@ function convertRunTime(apiTime) {         //takes entrant's time from the API a
   }
 }
 
-function getRaceData(db) {
-  axios.get('http://api.speedrunslive.com/races')
+function getRaceData(db) {                          //gets the current race json data from the SRL API
+  axios.get('http://api.speedrunslive.com/races')   //and saves/updates it in the local database
        .then((response) => {
          response.data.races.forEach((race) => {
            if (race.time > 0) {
@@ -60,13 +59,14 @@ function updateRaceData(races, db) {
   races.forEach((race) => {
     //build the array of entrants
     let entrantArray = [];
-    for ( let i in race.entrants) {
+    for ( let i in race.entrants) {                       //fills in data for the race entrant schema
       let entrantObj = {
         name: race.entrants[i].displayname,
         status: race.entrants[i].statetext,
         place: race.entrants[i].place,
         time: convertRunTime(race.entrants[i].time),
-        twitch: race.entrants[i].twitch
+        twitch: race.entrants[i].twitch,
+        betTotal: getBetTotal(race, race.entrants[i].displayname)
       }
       entrantArray.push(entrantObj);
     }
@@ -78,7 +78,7 @@ function updateRaceData(races, db) {
       gameTitle: race.game.name,
       goal: race.goal,
       status: race.statetext,
-      timeStarted: race.time,   //timeStarted is currently evaluating to null
+      timeStarted: race.time,
       entrants: entrantArray
     });
 
@@ -93,10 +93,10 @@ function updateRaceData(races, db) {
                  'timeStarted': raceDoc.timeStarted,
                  'entrants': raceDoc.entrants
               }},
-      { upsert: true , new : true, runValidators : true },
+      { upsert: true , new : true, runValidators : true },      //upsert will create a new db doc if none was found
       (err,doc) => {
         if (err) {
-          console.error(err);
+          throw Error(err);
         }
         else {
           console.log('A race was updated or saved!');
@@ -105,6 +105,24 @@ function updateRaceData(races, db) {
       }
     );
   });
+}
+
+function getBetTotal(race, entrantName) {                //searches for the race entrant and returns the current
+  Race.find({ raceID: race.id }, (err, res) => {          //bet total if present
+    if (err) {
+      throw Error(err);
+    }
+    else if (res.entrants) {
+      return res.entrants[entrantName].betTotal;
+    }
+    else {
+      return 0;
+    }
+  });
+}
+
+function makeBet(username, entrant) {
+
 }
 
 

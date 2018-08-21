@@ -7,7 +7,7 @@ const UserSchema = new mongoose.Schema({
     {
       raceId : { type: String, required: true },
       amountBet : { type: Number, required: true },
-      result : { type: String, required: true }
+      result : { type: String, required: true, default: 'Race is in progress' }
     }
   ]
 });
