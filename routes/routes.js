@@ -6,8 +6,8 @@ const Client = require('../models/client');
 const axios = require('axios');
 const getRaceData = require('../public/js/apiProcessing').getRaceData;
 
-let twitchClientData,
-    twitchClientId,
+let twitchClientData,                                             //grab all the information for OAuth interaction with the Twitch API
+    twitchClientId,                                               //from mongoDB
     twitchClientSecret,
     twitchRedirect;
 Client.findOne({clientName : 'Twitch'}).exec((err,data) => {
@@ -21,12 +21,18 @@ Client.findOne({clientName : 'Twitch'}).exec((err,data) => {
 });
 
 function getAndSaveUser(code, callback) {
+
+  //gets the access token and refresh token from Twitch using the code passed on redirect
+
   axios.post(`https://id.twitch.tv/oauth2/token?client_id=${twitchClientId}&client_secret=${twitchClientSecret}&code=${code}&grant_type=authorization_code&redirect_uri=${twitchRedirect}`)
     .then((token) => {
       if (token.status !== 200) {
         console.error(token);
       }
       else {
+
+        //gets the user information using the token information retrieved in the parent request
+
         axios.get('https://api.twitch.tv/helix/users', {headers : {Authorization: `Bearer ${token.data.access_token}`}})
           .then((userData) => {
             if (userData.status !== 200) {
@@ -60,8 +66,8 @@ function getAndSaveUser(code, callback) {
   });
 }
 
-function checkForDoc(Collection,search, callback) {
-  Collection.find(search).exec((err,docs) => {
+function checkForDoc(Collection,search, callback) {       //checks for a document in the database and runs a callback
+  Collection.find(search).exec((err,docs) => {            //passing in a boolean depeneding on if the document exists
     if (err) {
       console.error(err);
     }
@@ -77,8 +83,8 @@ function checkForDoc(Collection,search, callback) {
 
 //GET home route
 router.get('/', (req,res,next) => {
-  if (req.query.code) {
-    getAndSaveUser(req.query.code, () => {
+  if (req.query.code) {                             //if user has authenticated with twitch they will be redirected to
+    getAndSaveUser(req.query.code, () => {          //the homepage with a query string used to further authenticate
       res.redirect('/');
     });
   }
@@ -94,57 +100,13 @@ router.get('/', (req,res,next) => {
   }
 });
 
-//POST home route
-router.post('/save', (req,res,next) => {
-  accessToken = req.body.access_token;
-  //make axios request with access token to get user info to save into db
-  axios.get(
-      'https://api.twitch.tv/helix/users',
-      { headers: { 'Authorization': `Bearer ${accessToken}` } })
-      .then((res) => {
-        let twitchUser = res.data.data[0];
-        axios.post(`https://id.twitch.tv/oauth2/token
-          ?client_id=${twitchClientId}
-          &client_secret=${twitchClientSecret}
-          &code=${accessToken}
-          &grant_type=authorization_code
-          &redirect_uri=${twitchRedirect}`)
-          .then((res) => {
 
-        });
-        console.log(twitchUser);  //create/update user and save to db
-        if ( ! User.findOne({ twitchUsername : twitchUser.login }) ) {
-          User.create({
-            twitchUsername: twitchUser.login,
-            points : 100,
-            avatar : twitchUser.profile_img_url,
-            accessToken : accessToken,
-            refreshToken: String,
-            betHistory : []
-          });
-        }
-      });
-  res.send('all good');
-});
-
-//race directory route
-router.get('/races', (req,res,next) => {
-  Race.find().exec((err,data) => {
-    if (err) {
-      return next(err);
-    }
-    else {
-      return res.render('race', { title: 'SRL Bets Live Races', raceObj: data });
-    }
-  });
-});
-
-//route for twitch auth redirect
+//route for twitch auth redirect / login
 router.get('/twitchLogin', (req,res,next) => {
   res.redirect(`https://id.twitch.tv/oauth2/authorize?client_id=${twitchClientId}&redirect_uri=${twitchRedirect}&response_type=code&scope=user:read:email`);
 });
 
-//route for twitch auth redirect
+//route for twitch auth revoke / logout
 router.get('/twitchLogout', (req,res,next) => {
   res.redirect(`https://id.twitch.tv/oauth2/revoke?client_id=${twitchClientId}&token=<your OAuth token>`);
 });
