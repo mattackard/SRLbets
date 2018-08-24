@@ -23,7 +23,6 @@ Client.findOne({clientName : 'Twitch'}).exec((err,data) => {
 function getAndSaveUser(code, callback) {
 
   //gets the access token and refresh token from Twitch using the code passed on redirect
-
   axios.post(`https://id.twitch.tv/oauth2/token?client_id=${twitchClientId}&client_secret=${twitchClientSecret}&code=${code}&grant_type=authorization_code&redirect_uri=${twitchRedirect}`)
     .then((token) => {
       if (token.status !== 200) {
@@ -32,12 +31,13 @@ function getAndSaveUser(code, callback) {
       else {
 
         //gets the user information using the token information retrieved in the parent request
-
         axios.get('https://api.twitch.tv/helix/users', {headers : {Authorization: `Bearer ${token.data.access_token}`}})
           .then((userData) => {
             if (userData.status !== 200) {
               console.error(userData);
             }
+
+            //if the user doesnt already exists one is created
             checkForDoc(User,{'twitchUsername': userData.data.data[0].login}, (doc) => {
               if (!doc) {
                 User.create({
