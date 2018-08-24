@@ -20,10 +20,10 @@ block content
       - let entrants = race.entrants
       
       each user in entrants
-        ul
-          li Name: #{user.name}
-          li Total Points Bet: #{user.betTotal}
-          li Race Status: #{user.status}
+        ul.raceEntrant
+          li.entrantName Name: #{user.name}
+          li.entrantPoints Total Points Bet: #{user.betTotal}
+          li.entrantStatus Race Status: #{user.status}
           - if (user.status === 'Finished')
-            li Finished in position: #{user.place} 
-          li Twtich username: #{user.twitch}
+            li.entrantPostition Finished in position: #{user.place} 
+          li.entrantTwitch Twtich username: #{user.twitch}
