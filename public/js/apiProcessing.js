@@ -11,43 +11,9 @@ function validateApiResponse(res) {           //checks the response from the SRL
   }
 }
 
-function convertRaceStartTime(sec) {       //converts seconds back into a Date
-  let ms = sec * 1000;
-  let date = new Date();
-  date.setTime(ms);
-  return date;
-}
-
-function convertRunTime(apiTime) {         //takes entrant's time from the API and returns a string
-  if (apiTime === 0) {                 //with standard HH:MM:SS, "In Progress", or "Race not started"
-    return "Race has not started";
-  }
-  else if (apiTime === -3) {
-    return "Race in progress";
-  }
-  else if (apiTime === -1) {
-    return "Forfeit";
-  }
-  else if (apiTime > 0) {
-    let hours = Math.floor(apiTime / 3600);
-
-    let minutes = Math.floor((apiTime % 3600) / 60);
-    if (minutes < 10) { minutes = `0${minutes}`; }
-
-    let seconds = Math.floor((apiTime % 3600) % 60);
-    if (seconds < 10) { seconds = `0${seconds}`; }
-    return `${hours}:${minutes}:${seconds}`;
-  }
-}
-
 function getRaceData(db) {                          //gets the current race json data from the SRL API
   axios.get('http://api.speedrunslive.com/races')   //and saves/updates it in the local database
        .then((response) => {
-         response.data.races.forEach((race) => {
-           if (race.time > 0) {
-             race.time = convertRaceStartTime(race.time);
-           }
-         });
          updateRaceData(response.data.races, db);
        })
        .catch((error) => {
@@ -78,7 +44,8 @@ function updateRaceData(races, db) {
       gameTitle: race.game.name,
       goal: race.goal,
       status: race.statetext,
-      timeStarted: race.time,
+      timeStarted: convertRaceStartTime(race.time),
+      simpleTime: simplifyDate(convertRaceStartTime(race.time)),
       entrants: entrantArray
     });
 
@@ -91,6 +58,7 @@ function updateRaceData(races, db) {
                  'goal': raceDoc.goal,
                  'status': raceDoc.status,
                  'timeStarted': raceDoc.timeStarted,
+                 'simpleTime': raceDoc.simpleTime,
                  'entrants': raceDoc.entrants
               }},
       { upsert: true , new : true, runValidators : true },      //upsert will create a new db doc if none was found
@@ -105,6 +73,95 @@ function updateRaceData(races, db) {
       }
     );
   });
+}
+
+function convertRaceStartTime(sec) {       //converts seconds back into a Date
+  let ms = sec * 1000;
+  let date = new Date();
+  date.setTime(ms);
+  return date;
+}
+
+function simplifyDate(date) {
+	let pretty = date;
+	pretty = pretty.toString().split(' ');           //["Sun", "Feb", "05", "2322", "12:08:10", "GMT-0800", "(Pacific", "Standard", "Time)"]
+  pretty[1] = numberedMonth(pretty[1]);
+  pretty[3] = pretty[3].substring(2);         //assumes 21st century
+	pretty[4] = twelveHour(pretty[4]);
+  pretty.pop();                               //removes time zone information
+  pretty.pop();
+  return `${pretty[0]} ${pretty[1]}/${pretty[2]}/${pretty[3]} ${pretty[4]}`;
+}
+
+function twelveHour(time) {     //converts from 24 hour clock to 12 hour clock with am and pm
+	let amPm = 'am';
+	let pretty = time.split(':');
+  pretty.pop();                 //remove seconds from time
+  pretty.forEach((x) => {
+  	return parseInt(x);
+  });
+  if (pretty[0] > 12) {
+  	pretty[0] -= 12;
+  	amPm = 'pm';
+  }
+  if (pretty[0] == 12) {
+    amPm = 'pm';
+  }
+  if (pretty[0] == 0) {
+    pretty[0] = 12;
+  }
+  return `${pretty.join(':')} ${amPm}`
+}
+
+function numberedMonth(month) {         //takes an abbreviated month string and returns the number of the month
+	switch (month) {
+  	case 'Jan':
+    	return 1;
+    case 'Feb':
+    	return 2;
+    case 'Mar':
+    	return 3;
+    case 'Apr':
+    	return 4;
+    case 'May':
+    	return 5;
+    case 'Jun':
+    	return 6;
+    case 'Jul':
+    	return 7;
+    case 'Aug':
+    	return 8;
+    case 'Sep':
+    	return 9;
+    case 'Oct':
+    	return 10;
+    case 'Nov':
+    	return 11;
+    case 'Dec':
+    	return 12;
+  }
+}
+
+function convertRunTime(apiTime) {         //takes entrant's time from the API and returns a string
+  if (apiTime === 0) {                 //with standard HH:MM:SS, "In Progress", or "Race not started"
+    return "Race has not started";
+  }
+  else if (apiTime === -3) {
+    return "Race in progress";
+  }
+  else if (apiTime === -1) {
+    return "Forfeit";
+  }
+  else if (apiTime > 0) {
+    let hours = Math.floor(apiTime / 3600);
+
+    let minutes = Math.floor((apiTime % 3600) / 60);
+    if (minutes < 10) { minutes = `0${minutes}`; }
+
+    let seconds = Math.floor((apiTime % 3600) % 60);
+    if (seconds < 10) { seconds = `0${seconds}`; }
+    return `${hours}:${minutes}:${seconds}`;
+  }
 }
 
 function getBetTotal(race, entrantName) {                //searches for the race entrant and returns the current

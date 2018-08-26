@@ -5,13 +5,13 @@ block content
   - let races = raceObj
   
   //- iterate through each race object in the races array
-  each race in races
+  each race in races  
     .race
       h1.gameTitle #{race.gameTitle}
       p.raceGoal Goal: #{race.goal}
       p.raceStatus Race Status: #{race.status}
       - if (race.status !== 'Entry Open')
-        p.raceTime Race Start Time: #{race.timeStarted}
+        p.raceTime Race Start Time: #{race.simpleTime}
       p.numEntrant Number of entrants: #{race.entrants.length}
       
       //- iterate through each user object enetered in each race
