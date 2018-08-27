@@ -23,18 +23,23 @@ app.set('views', __dirname + '/views');
 //set path for static assets
 app.use(express.static(__dirname + '/public'));
 
-
-//include routes
-const routes = require('./routes/routes');
-app.use('/', routes);
-
-
 //mongodb connection
 mongoose.connect('mongodb://localhost:27017/race', { useNewUrlParser : true });
 const db = mongoose.connection;
 //handle mongo errors
 db.on('error', console.log.bind(console, 'connection error: '));
 
+//setup session storage
+app.use(session({
+  secret: 'keyboard cat',
+  resave: true,
+  saveUninitialized: true,
+  store: new MongoStore({ mongooseConnection : db })
+}));
+
+//include routes
+const routes = require('./routes/routes');
+app.use('/', routes);
 
 //node-irc setup function from irc.js
 ircConnect();
@@ -48,7 +53,6 @@ app.use((req,res,next) => {
   err.status = 404;
   next(err);
 });
-
 
 //handle all other errors, must be last app.use call
 app.use((err,req,res,next) => {
