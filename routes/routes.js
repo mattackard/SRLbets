@@ -37,6 +37,9 @@ function getUser(req, code, callback) {
               handleTwitchError(userData);
             }
             req.session.username = userData.data.data[0].login;
+            req.session.access_token = token.data.access_token;
+            req.session.refresh_token = token.data.refresh_token;
+            req.session.token_type = token.data.token_type;
             req.session.save();
             callback(userData, token);
       });
@@ -115,11 +118,11 @@ function handleUnauthorized() {
   })
 }
 
-function tokenRefresh(access, refresh, clientId, clientSecret) {
+function tokenRefresh(refresh) {
   console.log('attempting to refresh token');
-  axios.post(`https://id.twitch.tv/oauth2/token--data-urlencode?grant_type=refresh_token&refresh_token=${encodeURIComponent(refresh)}&client_id=${clientId}&client_secret=${clientSecret}`)
+  axios.post(`https://id.twitch.tv/oauth2/token--data-urlencode?grant_type=refresh_token&refresh_token=${encodeURIComponent(refresh)}&client_id=${twitchClientId}&client_secret=${twitchClientSecret}`)
        .then((err,res) => {
-         if (err) throw Error(err);
+         if (err) throw Error('Error in token refresh request');
          return res;
        });
 }
@@ -150,7 +153,13 @@ router.get('/twitchLogin', (req,res,next) => {
 
 //route for twitch auth revoke / logout
 router.get('/twitchLogout', (req,res,next) => {
-  res.redirect(`https://id.twitch.tv/oauth2/revoke?client_id=${twitchClientId}&token=<your OAuth token>`);
+  axios.post(`https://id.twitch.tv/oauth2/revoke?client_id=${twitchClientId}&token=${req.session.access_token}`)
+      .then(() => {
+        req.session.destroy((err) => {
+          if (err) {throw Error('Error on session destroy');}
+        });
+      });
+  res.redirect('/');
 });
 
 router.get('/username', (req,res,next) => {
