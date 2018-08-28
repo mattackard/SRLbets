@@ -40,6 +40,7 @@ function getUser(req, code, callback) {
             req.session.access_token = token.data.access_token;
             req.session.refresh_token = token.data.refresh_token;
             req.session.token_type = token.data.token_type;
+            req.session.twitchUserId = userData.data.data[0].id;
             req.session.save();
             callback(userData, token);
       });
@@ -130,11 +131,11 @@ function tokenRefresh(refresh) {
 
 //GET home route
 router.get('/', (req,res,next) => {
-  if (req.query.code) {                         //if user has authenticated with twitch they will be redirected to
+  if (req.query.code) {                         //checks if twitch has redirected to home with an access code and gets the user information
     getUser(req, req.query.code, saveUser);
     res.redirect('/');
   }
-  else {
+  else {                                         //if no code is present, show homepage
     Race.find().exec((err,data) => {
       if (err) {
         return next(err);
@@ -162,9 +163,22 @@ router.get('/twitchLogout', (req,res,next) => {
   res.redirect('/');
 });
 
+//route for checking if username is stored in session
 router.get('/username', (req,res,next) => {
   console.log(req.session.username);
   res.redirect('/');
+});
+
+//get follows for twitch user
+router.get('/follows', (req,res,next) => {
+  axios.get(`https://api.twitch.tv/helix/users/follows?from_id=${req.session.twitchUserId}`, {headers: {'Client-ID' : `${twitchClientId}`}})
+        .then((response) => {
+            console.log(response.data);
+        })
+        .catch((err) => {
+          err.message = 'Error in user follow request';
+          return next(err);
+        });
 });
 
 
