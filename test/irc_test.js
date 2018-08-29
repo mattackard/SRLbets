@@ -1,12 +1,12 @@
 const expect = require('chai').expect;
-const parseMessage = require('../irc.js').parseMessage;
+const parseMessage = require('../public/js/irc.js').parseMessage;
 
 describe('IRC TESTS', () => {
 
   describe('parseMessage', () => {
 
     let testMessage;
-    
+
     beforeEach(() => {
       testMessage = { prefix: 'Trueskill61094!Mibbit@58DE7B47.B2F30159.BE07DCBF.IP',
         nick: 'Trueskill61094',
