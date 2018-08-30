@@ -4,7 +4,8 @@ const mongoose = require('mongoose');
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
 const ircConnect = require('./public/js/irc').ircConnect;
-const getRaceData = require('./public/js/apiProcessing').getRaceData;
+const getRaceDataFromSRL = require('./public/js/apiProcessing').getRaceDataFromSRL;
+const updateRaceData = require('./public/js/apiProcessing').updateRaceData;
 const app = express();
 
 const dbUpdateInterval = 60 * 1000;   //60,000 ms = 1 minute
@@ -45,7 +46,7 @@ app.use('/', routes);
 ircConnect();
 
 //get race data and update the db at set interval
-setInterval(() => { getRaceData(db); }, dbUpdateInterval);
+setInterval(() => { getRaceDataFromSRL(updateRaceData); }, dbUpdateInterval);
 
 //catch 404 and forward to error handler
 app.use((req,res,next) => {
@@ -65,5 +66,5 @@ app.use((err,req,res,next) => {
 
 //run node app on port 3000
 app.listen(3000, () => {
-  console.log('Node app running on port 3000');
+  console.log('App running on port 3000');
 });

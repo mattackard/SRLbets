@@ -11,17 +11,28 @@ function validateApiResponse(res) {           //checks the response from the SRL
   }
 }
 
-function getRaceData(db) {                          //gets the current race json data from the SRL API
+function getRaceDataFromSRL(callback) {                          //gets the current race json data from the SRL API
   axios.get('http://api.speedrunslive.com/races')   //and saves/updates it in the local database
        .then((response) => {
-         updateRaceData(response.data.races, db);
+         callback(response.data.races);
        })
        .catch((error) => {
          console.error(error);
        });
 }
 
-function updateRaceData(races, db) {
+function getRaceDataFromDB(callback) {
+  Race.find().exec((err,data) => {
+    if (err) {
+      throw Error('Error getting race data from db (getRaceDataFromDB)');
+    }
+    else {
+      callback(data);
+    }
+  });
+}
+
+function updateRaceData(races) {
   races.forEach((race) => {
     //build the array of entrants
     let entrantArray = [];
@@ -178,11 +189,22 @@ function getBetTotal(race, entrantName) {                //searches for the race
   });
 }
 
-function makeBet(username, entrant) {
+function getOpenRaces() {
 
+}
+
+function makeBet(username, entrant) {
+  Race.find({ 'entrants.name': entrant.toLower() }, (err,race) => {
+    if (err) {
+      throw Error('There was a problem getting the race requested for the bet');
+    }
+    console.log(race);
+    return race;
+  });
 }
 
 
 module.exports.validateApiResponse = validateApiResponse;
-module.exports.getRaceData = getRaceData;
+module.exports.getRaceDataFromSRL = getRaceDataFromSRL;
+module.exports.getRaceDataFromDB = getRaceDataFromDB;
 module.exports.updateRaceData = updateRaceData;

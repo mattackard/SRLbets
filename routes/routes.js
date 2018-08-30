@@ -4,7 +4,8 @@ const Race = require('../models/race');
 const User = require('../models/user');
 const Client = require('../models/client');
 const axios = require('axios');
-const getRaceData = require('../public/js/apiProcessing').getRaceData;
+const getRaceDataFromDB = require('../public/js/apiProcessing').getRaceDataFromDB;
+const updateRaceData = require('../public/js/apiProcessing').updateRaceData;
 
 let twitchClientData,                                             //grab all the information for OAuth interaction with the Twitch API
     twitchClientId,                                               //from mongoDB
@@ -20,8 +21,8 @@ Client.findOne({clientName : 'Twitch'}).exec((err,data) => {
   twitchRedirect = 'http://localhost:3000';
 });
 
-function getUser(req, code, callback) {
-  //gets the access token and refresh token from Twitch using the code passed on redirect
+function getUserFromTwitch(req, code, callback) {
+  //gets oAuth tokens and user data from Twitch
   axios.post(`https://id.twitch.tv/oauth2/token?client_id=${twitchClientId}&client_secret=${twitchClientSecret}&code=${code}&grant_type=authorization_code&redirect_uri=${twitchRedirect}`)
     .then((token) => {
       if (token.status !== 200) {
@@ -132,17 +133,12 @@ function tokenRefresh(refresh) {
 //GET home route
 router.get('/', (req,res,next) => {
   if (req.query.code) {                         //checks if twitch has redirected to home with an access code and gets the user information
-    getUser(req, req.query.code, saveUser);
+    getUserFromTwitch(req, req.query.code, saveUser);
     res.redirect('/');
   }
-  else {                                         //if no code is present, show homepage
-    Race.find().exec((err,data) => {
-      if (err) {
-        return next(err);
-      }
-      else {
-        return res.render('index', { title: 'SRL Bets', raceObj: data });
-      }
+  else {                                     //if no code is present, show homepage
+    getRaceDataFromDB((data) => {
+      return res.render('index', { title: 'SRL Bets', raceObj: data });
     });
   }
 });
@@ -174,6 +170,7 @@ router.get('/follows', (req,res,next) => {
   axios.get(`https://api.twitch.tv/helix/users/follows?from_id=${req.session.twitchUserId}`, {headers: {'Client-ID' : `${twitchClientId}`}})
         .then((response) => {
             console.log(response.data);
+            res.redirect('/');
         })
         .catch((err) => {
           err.message = 'Error in user follow request';
