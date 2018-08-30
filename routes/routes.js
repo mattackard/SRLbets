@@ -63,7 +63,7 @@ function saveUser(userData, tokens) {
         }
         else {
           console.log('user was saved : ');
-          return saved;
+          console.log(saved);
         }
       });
     }
