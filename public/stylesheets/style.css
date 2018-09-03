@@ -20,6 +20,7 @@ header {
 }
 
 nav {
+  display: none;
   position: fixed;
   height: 100%;
   top: 0;
@@ -51,4 +52,12 @@ nav li {
 nav li a {
   text-decoration: none;
   color: white;
+}
+
+
+
+/*******RACE STYLING******/
+
+.raceEntrant {
+  list-style: none;
 }
