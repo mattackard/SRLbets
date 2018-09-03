@@ -21,8 +21,8 @@ function getRaceDataFromSRL(callback) {                          //gets the curr
        });
 }
 
-function getRaceDataFromDB(callback) {
-  Race.find().exec((err,data) => {
+function getRaceDataFromDB(search, limit, callback) {
+  Race.find(search).limit(limit).exec((err,data) => {
     if (err) {
       throw Error('Error getting race data from db (getRaceDataFromDB)');
     }
@@ -187,10 +187,6 @@ function getBetTotal(race, entrantName) {                //searches for the race
       return 0;
     }
   });
-}
-
-function getOpenRaces() {
-
 }
 
 function makeBet(username, entrant) {
