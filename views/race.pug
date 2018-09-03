@@ -17,6 +17,7 @@ each race in races
     .raceEntrants
       each user in entrants
         
+        button.entrantDropDown #{user.name} &#9660
         ul.raceEntrant
           li.entrantName Name: #{user.name}
           li.entrantPoints Total Points Bet: #{user.betTotal}

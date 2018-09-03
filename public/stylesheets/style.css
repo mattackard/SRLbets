@@ -12,11 +12,10 @@ header {
   display: flex;
   flex-direction: row;
   background-color: gray;
-  justify-content: space-around;
 }
 
-#header h1 {
-  flex-grow: 2;
+header img {
+  width: 60px;
 }
 
 nav {
@@ -30,10 +29,10 @@ nav {
 nav ul {
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
+  justify-content: flex-start;
   width: 100vw;
   height: 100%;
-  background-color: rgba(100,100,100,0.9);
+  background-color: rgba(100,100,100,0.98);
   list-style: none;
   padding: 0;
   margin: 0;
@@ -41,7 +40,7 @@ nav ul {
 
 nav img {
   width: 60px;
-  margin-left: 80%;
+  margin-left: 82%;
 }
 
 nav li {
@@ -58,6 +57,16 @@ nav li a {
 
 /*******RACE STYLING******/
 
+.race {
+  padding: 0 5%;
+}
+
+.entrantDropDown {
+  height: 2.5em;
+  font-size: 1.5em;
+}
+
 .raceEntrant {
   list-style: none;
+  display: none;
 }
