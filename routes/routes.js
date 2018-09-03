@@ -137,8 +137,18 @@ router.get('/', (req,res,next) => {
     res.redirect('/');
   }
   else {                                     //if no code is present, show homepage
-    getRaceDataFromDB((data) => {
-      return res.render('index', { title: 'SRL Bets', raceObj: data });
+    let open,
+        ongoing,
+        finished;
+    getRaceDataFromDB({ 'status' : 'Entry Open' }, null, (data) => {
+      open = data;
+      getRaceDataFromDB({ 'status' : 'In Progress' }, null, (data) => {
+        ongoing = data;
+        getRaceDataFromDB({ 'status' : 'Complete' }, 10, (data) => {
+          finished = data;
+          return res.render('index', { title: 'SRL Bets', openRaceData: open, ongoingRaceData: ongoing, finishedRaceData: finished });
+        });
+      });
     });
   }
 });
