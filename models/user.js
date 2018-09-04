@@ -8,6 +8,7 @@ const UserSchema = new mongoose.Schema({
   betHistory : [
     {
       raceId : { type: String, required: true },
+      entrant : { type: String, required: true },
       amountBet : { type: Number, required: true },
       result : { type: String, required: true, default: 'Race has not finished' }
     }

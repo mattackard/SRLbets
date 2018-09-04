@@ -6,6 +6,7 @@ const Client = require('../models/client');
 const axios = require('axios');
 const getRaceDataFromDB = require('../public/js/apiProcessing').getRaceDataFromDB;
 const updateRaceData = require('../public/js/apiProcessing').updateRaceData;
+const makeBet = require('../public/js/apiProcessing').makeBet;
 
 let twitchClientData,                                             //grab all the information for OAuth interaction with the Twitch API
     twitchClientId,                                               //from mongoDB
@@ -186,6 +187,27 @@ router.get('/follows', (req,res,next) => {
           err.message = 'Error in user follow request';
           return next(err);
         });
+});
+
+router.get('/makeBet', (req,res,next) => {
+  res.render('makeBet');
+});
+
+router.post('/makeBet', (req,res,next) => {
+  console.log(req.body, req.session.username);
+  if (!req.session.username) {
+    res.message = 'User is not logged in';
+  }
+  else if (!req.body.entrant) {
+    res.message = 'No race user entered';
+  }
+  else if (!req.body.betAmount) {
+    res.message = 'No bet amount entered';
+  }
+  else {
+    makeBet(req.session.username, req.body.entrant, req.body.betAmount);
+  }
+  res.send(res.message);
 });
 
 

@@ -189,13 +189,38 @@ function getBetTotal(race, entrantName) {                //searches for the race
   });
 }
 
-function makeBet(username, entrant) {
-  Race.find({ 'entrants.name': entrant.toLower() }, (err,race) => {
-    if (err) {
-      throw Error('There was a problem getting the race requested for the bet');
+function makeBet(username, entrant, amount) {
+  User.findOne({ 'twitchUsername' : username }, (err,user) => {
+    if (user.points >= amount) {
+      Race.findOne({ 'entrants.name' : entrant, status : 'Entry Open' }, (err,race) => {
+        if (err) {
+          throw Error('There was a problem getting the race requested for the bet');
+        }
+        if (!race) {
+          console.log(`Could not find any races that ${username} is entered in. They could be in a race that has already started.`);
+        }
+        for (let i=0; i < race.entrants.length; i++) {           //finds the entrant that was bet on within the race document
+          if (race.entrants[i].name === entrant) {
+            race.entrants[i].betTotal += parseInt(amount);
+            user.betHistory.push({
+              'raceId' : race.raceID,
+              'entrant' : entrant,
+              'amountBet' : amount
+            });
+            user.points -= amount;
+          }
+        }
+        race.save((err,savedRace) => {
+          console.log(savedRace);
+          user.save((err,savedUser) => {
+            console.log(savedUser);
+          });
+        });
+      });
     }
-    console.log(race);
-    return race;
+    else {
+      console.log(`@${username} can't bet ${amount}. You only have ${user.points} points!`);
+    }
   });
 }
 
@@ -204,3 +229,4 @@ module.exports.validateApiResponse = validateApiResponse;
 module.exports.getRaceDataFromSRL = getRaceDataFromSRL;
 module.exports.getRaceDataFromDB = getRaceDataFromDB;
 module.exports.updateRaceData = updateRaceData;
+module.exports.makeBet = makeBet;
