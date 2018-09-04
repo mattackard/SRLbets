@@ -12,7 +12,8 @@ const UserSchema = new mongoose.Schema({
       amountBet : { type: Number, required: true },
       result : { type: String, required: true, default: 'Race has not finished' }
     }
-  ]
+  ],
+  following : []
 });
 
 const User = mongoose.model('user', UserSchema);

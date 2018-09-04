@@ -213,7 +213,7 @@ function makeBet(username, entrant, amount) {
         race.save((err,savedRace) => {
           console.log(savedRace);
           user.save((err,savedUser) => {
-            console.log(savedUser);
+            console.log(savedUser);     //user save is returning undefined?
           });
         });
       });

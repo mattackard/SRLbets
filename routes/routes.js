@@ -38,19 +38,22 @@ function getUserFromTwitch(req, code, callback) {
               console.log('error in user request');
               handleTwitchError(userData);
             }
+            userData.following = [];
             req.session.username = userData.data.data[0].login;
             req.session.access_token = token.data.access_token;
             req.session.refresh_token = token.data.refresh_token;
             req.session.token_type = token.data.token_type;
             req.session.twitchUserId = userData.data.data[0].id;
             req.session.save();
-            callback(userData, token);
+            getUserFollows(req, (followList) => {
+              callback(userData, token, followList);
+            });
       });
     }
   });
 }
 
-function saveUser(userData, tokens) {
+function saveUser(userData, tokens, followList) {
   //if the user doesnt already exists one is created
   checkForDoc(User, {'twitchUsername': userData.data.data[0].login}, (doc) => {
     if (!doc) {
@@ -58,6 +61,7 @@ function saveUser(userData, tokens) {
         twitchUsername: userData.data.data[0].login,
         avatar : userData.data.data[0].profile_image_url,
         oAuth : tokens.data,
+        following : followList
       }, (err, saved) => {
         if (err) {
           throw Error(err);
@@ -70,8 +74,45 @@ function saveUser(userData, tokens) {
     }
     else {
       console.log('user already exists');
+      User.update({
+        avatar : userData.data.data[0].profile_image_url,
+        oAuth : tokens.data,
+        following : followList
+      });
     }
   });
+}
+
+function getUserFollows(req, callback) {
+  let follows = [];
+  let pagination = '';
+  axios.get(`https://api.twitch.tv/helix/users/follows?from_id=${req.session.twitchUserId}`, {headers: {'Client-ID' : `${twitchClientId}`}})
+        .then((response) => {
+          pagination = response.data.pagination.cursor;
+          console.log(pagination);
+          response.data.data.forEach((follow) => {
+            follows.push(follow.to_id);
+          });
+          if (follows.length + 1 < response.data.total) {
+            console.log(follows.length);
+            axios.get(`https://api.twitch.tv/helix/users/follows?from_id=${req.session.twitchUserId}&after=${pagination}`, {headers: {'Client-ID' : `${twitchClientId}`}})
+                  .then((response) => {
+                    pagination = response.data.pagination.cursor;
+                    response.data.data.forEach((follow) => {
+                      follows.push(follow.to_id);
+                    });
+                    callback(follows);
+                  })
+                  .catch((err) => {
+                    throw Error(err);
+                  });
+          }
+            //get the rest of the follows --recursion? --promises?
+        })
+        .catch((err) => {
+          err.message = 'Error in user follow request';
+          throw Error(err);
+        });
 }
 
 function checkForDoc(Collection, search, callback) {       //checks for a document in the database and runs a callback
@@ -178,15 +219,10 @@ router.get('/username', (req,res,next) => {
 
 //get follows for twitch user
 router.get('/follows', (req,res,next) => {
-  axios.get(`https://api.twitch.tv/helix/users/follows?from_id=${req.session.twitchUserId}`, {headers: {'Client-ID' : `${twitchClientId}`}})
-        .then((response) => {
-            console.log(response.data);
-            res.redirect('/');
-        })
-        .catch((err) => {
-          err.message = 'Error in user follow request';
-          return next(err);
-        });
+    getUserFollows(req, (res) => {
+      console.log(res);
+    });
+    res.redirect('/');
 });
 
 router.get('/makeBet', (req,res,next) => {
