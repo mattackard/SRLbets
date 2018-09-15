@@ -113,7 +113,7 @@ function getUserFollows(req, callback) {
           err.message = 'Error in user follow request';
           throw Error(err);
         });
-}
+}                   //unfinished
 
 function checkForDoc(Collection, search, callback) {       //checks for a document in the database and runs a callback
   Collection.find(search).exec((err,docs) => {            //passing in a boolean depeneding on if the document exists

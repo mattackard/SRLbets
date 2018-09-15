@@ -197,25 +197,33 @@ function makeBet(username, entrant, amount) {
           throw Error('There was a problem getting the race requested for the bet');
         }
         if (!race) {
-          console.log(`Could not find any races that ${username} is entered in. They could be in a race that has already started.`);
+          console.log(`Could not find any races that ${entrant} is entered in. They could be in a race that has already started, or they might not have their twitch username linked to SRL.`);
         }
-        for (let i=0; i < race.entrants.length; i++) {           //finds the entrant that was bet on within the race document
-          if (race.entrants[i].name === entrant) {
-            race.entrants[i].betTotal += parseInt(amount);
-            user.betHistory.push({
-              'raceId' : race.raceID,
-              'entrant' : entrant,
-              'amountBet' : amount
-            });
-            user.points -= amount;
+        else {
+          for (let i=0; i < race.entrants.length; i++) {           //finds the entrant that was bet on within the race document
+            if (race.entrants[i].name === entrant) {
+              race.entrants[i].betTotal += parseInt(amount);
+              user.betHistory.push({
+                'raceId' : race.raceID,
+                'entrant' : entrant,
+                'amountBet' : amount
+              });
+              user.points -= amount;
+            }
           }
-        }
-        race.save((err,savedRace) => {
-          console.log(savedRace);
           user.save((err,savedUser) => {
-            console.log(savedUser);                               //user save is returning undefined?
+            if(err) {
+              console.log(err);
+            }
+            console.log(savedUser);
           });
-        });
+          race.save((err,savedRace) => {
+            if(err) {
+              console.log(err);
+            }
+            console.log(savedRace);
+          });
+        }
       });
     }
     else {
