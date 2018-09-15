@@ -12,7 +12,7 @@ function validateApiResponse(res) {           //checks the response from the SRL
 }
 
 function getRaceDataFromSRL(callback) {                          //gets the current race json data from the SRL API
-  axios.get('http://api.speedrunslive.com/races')   //and saves/updates it in the local database
+  axios.get('http://api.speedrunslive.com/races')               //and saves/updates it in the local database
        .then((response) => {
          callback(response.data.races);
        })
@@ -22,7 +22,7 @@ function getRaceDataFromSRL(callback) {                          //gets the curr
 }
 
 function getRaceDataFromDB(search, limit, callback) {
-  Race.find(search).limit(limit).exec((err,data) => {
+  Race.find(search).sort({timeStarted: -1}).limit(limit).exec((err,data) => {
     if (err) {
       throw Error('Error getting race data from db (getRaceDataFromDB)');
     }
@@ -213,7 +213,7 @@ function makeBet(username, entrant, amount) {
         race.save((err,savedRace) => {
           console.log(savedRace);
           user.save((err,savedUser) => {
-            console.log(savedUser);     //user save is returning undefined?
+            console.log(savedUser);                               //user save is returning undefined?
           });
         });
       });

@@ -73,7 +73,7 @@ function saveUser(userData, tokens, followList) {
       });
     }
     else {
-      console.log('user already exists');
+      console.log('user already exists, updated data is being sent');
       User.update({
         avatar : userData.data.data[0].profile_image_url,
         oAuth : tokens.data,
@@ -230,7 +230,6 @@ router.get('/makeBet', (req,res,next) => {
 });
 
 router.post('/makeBet', (req,res,next) => {
-  console.log(req.body, req.session.username);
   if (!req.session.username) {
     res.message = 'User is not logged in';
   }

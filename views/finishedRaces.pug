@@ -8,6 +8,7 @@ each race in finishedRaces
   .race
     h1.gameTitle #{race.gameTitle}
     p.raceGoal Goal: #{race.goal}
+    p.startTime Race started at #{race.simpleTime}
     
     //- iterate through each user object enetered in each race
     - let entrants = race.entrants
