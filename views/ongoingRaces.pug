@@ -5,6 +5,7 @@ h1 Currently Ongoing Races
 
 //- iterate through each race object in the races array
 each race in ongoingRaces  
+  - let multiTwitch = 'http://multitwitch.tv'
   .race
     h1.gameTitle #{race.gameTitle}
     p.raceGoal Goal: #{race.goal}
@@ -26,4 +27,11 @@ each race in ongoingRaces
           li.entrantStatus Race Status: #{user.status}
           - if (user.status === 'Finished')
             li.entrantPostition Finished in position: #{user.place} 
-          li.entrantTwitch Twitch username: #{user.twitch}
+          - if (user.twitch)
+            - multiTwitch += `/${user.twitch}`
+            - let twitchLink = `https://twitch.tv/${user.twitch}`
+            li.entrantTwitch Twitch username: 
+              a.userTwitchLink(href=twitchLink target='_blank') twitch.tv/#{user.twitch}
+    
+    - if (multiTwitch !== 'http://multitwitch.tv')          
+      a.multiTwitchLink(href=multiTwitch target='_blank') Multitwitch Link

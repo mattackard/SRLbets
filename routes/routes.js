@@ -8,7 +8,7 @@ const getRaceDataFromDB = require('../public/js/apiProcessing').getRaceDataFromD
 const updateRaceData = require('../public/js/apiProcessing').updateRaceData;
 const makeBet = require('../public/js/apiProcessing').makeBet;
 
-let twitchClientData,                                             //grab all the information for OAuth interaction with the Twitch API
+let twitchClientData,                                             //grab all the client information for OAuth interaction with the Twitch API
     twitchClientId,                                               //from mongoDB
     twitchClientSecret,
     twitchRedirect;
