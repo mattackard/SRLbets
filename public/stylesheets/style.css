@@ -1,82 +1,80 @@
 * {
-  box-sizing: border-box;
-  width: 100%;
+	box-sizing: border-box;
+	width: 100%;
 }
 
 body {
-  border: 2px solid black;
+	border: 2px solid black;
 }
 
 header {
-  padding: 0 5%;
-  display: flex;
-  flex-direction: row;
-  background-color: gray;
+	padding: 0 5%;
+	display: flex;
+	flex-direction: row;
+	background-color: gray;
 }
 
 header img {
-  width: 60px;
+	width: 60px;
 }
 
 nav {
-  display: none;
-  position: fixed;
-  height: 100%;
-  top: 0;
-  left: 0;
+	display: none;
+	position: fixed;
+	height: 100%;
+	top: 0;
+	left: 0;
 }
 
 nav ul {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  width: 100vw;
-  height: 100%;
-  background-color: rgba(100,100,100,0.98);
-  list-style: none;
-  padding: 0;
-  margin: 0;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	width: 100vw;
+	height: 100%;
+	background-color: rgba(100, 100, 100, 0.98);
+	list-style: none;
+	padding: 0;
+	margin: 0;
 }
 
 nav img {
-  width: 60px;
-  margin-left: 82%;
+	width: 60px;
+	margin-left: 82%;
 }
 
 nav li {
-  margin: auto;
-  text-align: center;
+	margin: auto;
+	text-align: center;
 }
 
 nav li a {
-  text-decoration: none;
-  color: white;
+	text-decoration: none;
+	color: white;
 }
-
-
 
 /*******RACE STYLING******/
 
 .race {
-  padding: 0 5%;
+	padding: 0 5%;
 }
 
 .entrantDropDown {
-  height: 1.5em;
-  font-size: 1.2em;
+	height: 1.5em;
+	font-size: 1.2em;
 }
 
 .raceEntrant {
-  list-style: none;
-  display: none;
+	list-style: none;
+	display: none;
 }
 
 .entrantFinished {
-  list-style: square;
-  border: 1px solid black;
+	list-style: square;
+	border: 1px solid black;
 }
 
 .entrantFinished li {
-  display: inline;
-  margin-left: 1em;
+	display: inline;
+	margin-left: 1em;
 }
