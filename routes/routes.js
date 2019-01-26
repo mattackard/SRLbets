@@ -52,7 +52,7 @@ function getUserFromTwitch(req, code, callback) {
 						req.session.token_type = token.data.token_type;
 						req.session.twitchUserId = userData.data.data[0].id;
 						req.session.save();
-						getUserFollows(req, followList => {
+						getUserFollowsFromAPI(req, "", [], followList => {
 							callback(userData, token, followList);
 						});
 					});
@@ -91,49 +91,44 @@ function saveUser(userData, tokens, followList) {
 	});
 }
 
-function getUserFollows(req, callback) {
-	let follows = [];
-	let pagination = "";
-	axios
-		.get(
-			`https://api.twitch.tv/helix/users/follows?from_id=${
+//gets the user ids for all twitch users followed by the signed in user
+function getUserFollowsFromAPI(
+	req,
+	lastPagination = "",
+	followList = [],
+	callback
+) {
+	//sets pagination string, get url, and updated follow list for recursive calls
+	let follows = followList;
+	let pagination = lastPagination;
+	let getUrl = pagination
+		? `https://api.twitch.tv/helix/users/follows?from_id=${
 				req.session.twitchUserId
-			}`,
-			{ headers: { "Client-ID": `${twitchClientId}` } }
-		)
+		  }&after=${pagination}`
+		: `https://api.twitch.tv/helix/users/follows?from_id=${
+				req.session.twitchUserId
+		  }`;
+	axios
+		.get(getUrl, { headers: { "Client-ID": `${twitchClientId}` } })
 		.then(response => {
+			//sets the new pagination string for the next request
 			pagination = response.data.pagination.cursor;
-			console.log(pagination);
 			response.data.data.forEach(follow => {
 				follows.push(follow.to_id);
 			});
-			if (follows.length + 1 < response.data.total) {
-				console.log(follows.length);
-				axios
-					.get(
-						`https://api.twitch.tv/helix/users/follows?from_id=${
-							req.session.twitchUserId
-						}&after=${pagination}`,
-						{ headers: { "Client-ID": `${twitchClientId}` } }
-					)
-					.then(response => {
-						pagination = response.data.pagination.cursor;
-						response.data.data.forEach(follow => {
-							follows.push(follow.to_id);
-						});
-						callback(follows);
-					})
-					.catch(err => {
-						throw Error(err);
-					});
+			//continues to get more following ids until the total has been reached
+			if (follows.length < response.data.total) {
+				getUserFollowsFromAPI(req, pagination, follows, callback);
 			}
-			//get the rest of the follows --recursion? --promises?
+			//runs the callback to send the complete unpaginated data
+			if (follows.length === response.data.total) {
+				callback(follows);
+			}
 		})
 		.catch(err => {
-			err.message = "Error in user follow request";
 			throw Error(err);
 		});
-} //unfinished
+}
 
 function checkForDoc(Collection, search, callback) {
 	//checks for a document in the database and runs a callback
@@ -152,13 +147,17 @@ function checkForDoc(Collection, search, callback) {
 
 function handleTwitchError(res) {
 	switch (res.status) {
-		case 401: //unauthorized
+		//unauthorized
+		case 401:
 			handleUnauthorized();
-		case 200: //ok
+		//ok
+		case 200:
 			return res;
-		case 400: //bad request
+		//bad request
+		case 400:
 			throw Error(res);
-		case 403: //forbidden
+		//forbidden
+		case 403:
 			throw Error(res);
 	}
 	throw Error(res);
@@ -262,10 +261,22 @@ router.get("/username", (req, res, next) => {
 
 //get follows for twitch user
 router.get("/follows", (req, res, next) => {
-	getUserFollows(req, res => {
-		console.log(res);
+	getUserFollowsFromAPI(req, "", [], follows => {
+		res.render("follows", {
+			username: req.session.username,
+			followingData: follows,
+		});
 	});
-	res.redirect("/");
+});
+
+router.get("/profile", (req, res, next) => {
+	User.findOne({ twitchUsername: req.session.username }).exec((err, data) => {
+		if (err) {
+			return next(err);
+		} else {
+			res.render("profile", { user: data });
+		}
+	});
 });
 
 router.get("/makeBet", (req, res, next) => {

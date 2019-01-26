@@ -90,12 +90,12 @@ function updateRaceData(races) {
 				if (err) {
 					throw Error(err);
 				} else {
-					console.log("A race was updated or saved!");
 					return doc;
 				}
 			}
 		);
 	});
+	console.log("Races have been updated!");
 }
 
 function convertRaceStartTime(sec) {
