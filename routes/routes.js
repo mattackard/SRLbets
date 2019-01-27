@@ -4,6 +4,7 @@ const Race = require("../models/race");
 const User = require("../models/user");
 const Client = require("../models/client");
 const axios = require("axios");
+const crypto = require("crypto");
 const getRaceDataFromDB = require("../public/js/apiProcessing")
 	.getRaceDataFromDB;
 const updateRaceData = require("../public/js/apiProcessing").updateRaceData;
@@ -21,6 +22,13 @@ Client.findOne({ clientName: "Twitch" }).exec((err, data) => {
 	twitchClientSecret = twitchClientData.clientSecret;
 	twitchRedirect = "http://localhost:3000";
 });
+
+//creates a hash from a string
+const hash = x =>
+	crypto
+		.createHash("sha256")
+		.update(x, "utf8")
+		.digest("hex");
 
 function getUserFromTwitch(req, code, callback) {
 	//gets oAuth tokens and user data from Twitch
@@ -187,6 +195,7 @@ function handleUnauthorized() {
 	});
 }
 
+//needs state added for request
 function tokenRefresh(refresh) {
 	console.log("attempting to refresh token");
 	axios
@@ -203,12 +212,21 @@ function tokenRefresh(refresh) {
 
 //GET home route
 router.get("/", (req, res, next) => {
+	//checks if twitch has redirected to home with an access code and gets the user information
 	if (req.query.code) {
-		//checks if twitch has redirected to home with an access code and gets the user information
-		getUserFromTwitch(req, req.query.code, saveUser);
-		res.redirect("/");
+		//checks that api response oauth state is valid
+		let state = hash(req.session.id);
+		if (req.query.state != state) {
+			let err = new Error();
+			err.message =
+				"User not logged in. The OAuth state does not match the request.";
+			return next(err);
+		} else {
+			getUserFromTwitch(req, req.query.code, saveUser);
+			res.redirect("/");
+		}
 	} else {
-		//if no code is present, show homepage
+		//if no auth code is present, show homepage
 		let open, ongoing, finished;
 		getRaceDataFromDB({ status: "Entry Open" }, null, data => {
 			open = data;
@@ -230,43 +248,35 @@ router.get("/", (req, res, next) => {
 
 //route for twitch auth redirect / login
 router.get("/twitchLogin", (req, res, next) => {
+	let state = hash(req.session.id);
 	res.redirect(
-		`https://id.twitch.tv/oauth2/authorize?client_id=${twitchClientId}&redirect_uri=${twitchRedirect}&response_type=code&scope=user:read:email`
+		`https://id.twitch.tv/oauth2/authorize?client_id=${twitchClientId}&redirect_uri=${twitchRedirect}&response_type=code&scope=user:read:email&force_verify=true&state=${state}`
 	);
 });
 
 //route for twitch auth revoke / logout
 router.get("/twitchLogout", (req, res, next) => {
-	axios
-		.post(
-			`https://id.twitch.tv/oauth2/revoke?client_id=${twitchClientId}&token=${
-				req.session.access_token
-			}`
-		)
-		.then(() => {
-			req.session.destroy(err => {
-				if (err) {
-					throw Error("Error on session destroy");
-				}
+	if (req.session.username) {
+		axios
+			.post(
+				`https://id.twitch.tv/oauth2/revoke?client_id=${twitchClientId}&token=${
+					req.session.access_token
+				}`
+			)
+			.then(() => {
+				req.session.destroy(err => {
+					if (err) {
+						throw Error("Error on session destroy");
+					}
+				});
 			});
-		});
-	res.redirect("/");
-});
+	} else {
+		let err = new Error();
+		err.message = "There is currently no user logged in";
+		return next(err);
+	}
 
-//route for checking if username is stored in session
-router.get("/username", (req, res, next) => {
-	console.log(req.session.username);
 	res.redirect("/");
-});
-
-//get follows for twitch user
-router.get("/follows", (req, res, next) => {
-	getUserFollowsFromAPI(req, "", [], follows => {
-		res.render("follows", {
-			username: req.session.username,
-			followingData: follows,
-		});
-	});
 });
 
 router.get("/profile", (req, res, next) => {
