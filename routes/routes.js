@@ -289,6 +289,18 @@ router.get("/profile", (req, res, next) => {
 	});
 });
 
+//GET recent route
+router.get("/recent", (req, res, next) => {
+	let finished;
+	getRaceDataFromDB({ status: "Complete" }, 10, data => {
+		finished = data;
+		return res.render("index", {
+			title: "SRL Bets",
+			finishedRaceData: finished,
+		});
+	});
+});
+
 router.get("/makeBet", (req, res, next) => {
 	res.render("makeBet");
 });

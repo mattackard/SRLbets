@@ -1,7 +1,7 @@
 extends layout
 
 block content
-    img(src=`${user.avatar}` alt=`${user.twitchUsername}'s avatar`)
+    img(src=`${user.avatar}` alt=`${user.twitchUsername}'s avatar` id="profileAvatar")
     h1 #{user.twitchUsername}'s profile
     h2 #{user.points} points
     span Bet History
