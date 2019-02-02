@@ -62,3 +62,6 @@ typings/
 
 #configuration files
 config.js
+
+#notes
+*.txt
