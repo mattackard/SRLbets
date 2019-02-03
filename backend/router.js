@@ -9,8 +9,7 @@ const User = require("./models/user");
 const Client = require("./models/client");
 const axios = require("axios");
 const crypto = require("crypto");
-const getRaceDataFromDB = require("./apiProcessing")
-	.getRaceDataFromDB;
+const getRaceDataFromDB = require("./apiProcessing").getRaceDataFromDB;
 const updateRaceData = require("./apiProcessing").updateRaceData;
 const makeBet = require("./apiProcessing").makeBet;
 
@@ -214,100 +213,85 @@ function tokenRefresh(refresh) {
 		});
 }
 
-// //GET home route
-// router.get("/", (req, res, next) => {
-// 	//checks if twitch has redirected to home with an access code and gets the user information
-// 	if (req.query.code) {
-// 		//checks that api response oauth state is valid
-// 		let state = hash(req.session.id);
-// 		if (req.query.state != state) {
-// 			let err = new Error();
-// 			err.message =
-// 				"User not logged in. The OAuth state does not match the request.";
-// 			return next(err);
-// 		} else {
-// 			getUserFromTwitch(req, req.query.code, saveUser);
-// 			res.redirect("/");
-// 		}
-// 	} else {
-// 		//if no auth code is present, show homepage
-// 		let open, ongoing, finished;
-// 		getRaceDataFromDB({ status: "Entry Open" }, null, data => {
-// 			open = data;
-// 			getRaceDataFromDB({ status: "In Progress" }, null, data => {
-// 				ongoing = data;
-// 				getRaceDataFromDB({ status: "Complete" }, 10, data => {
-// 					finished = data;
-// 					return res.render("index", {
-// 						title: "SRL Bets",
-// 						openRaceData: open,
-// 						ongoingRaceData: ongoing,
-// 						finishedRaceData: finished,
-// 					});
-// 				});
-// 			});
-// 		});
-// 	}
-// });
+//GET home route
+router.get("/getRaces", (req, res) => {
+	let open, current, finished;
+	getRaceDataFromDB({ status: "Entry Open" }, null, data => {
+		open = data;
+		getRaceDataFromDB({ status: "In Progress" }, null, data => {
+			ongoing = data;
+			getRaceDataFromDB({ status: "Complete" }, 10, data => {
+				finished = data;
+				return res.json({
+					races: {
+						open: open,
+						ongoing: ongoing,
+						finished: finished,
+					},
+				});
+			});
+		});
+	});
+});
 
-// //route for twitch auth redirect / login
-// router.get("/twitchLogin", (req, res, next) => {
-// 	let state = hash(req.session.id);
-// 	res.redirect(
-// 		`https://id.twitch.tv/oauth2/authorize?client_id=${twitchClientId}&redirect_uri=${twitchRedirect}&response_type=code&scope=user:read:email&force_verify=true&state=${state}`
-// 	);
-// });
+//route for twitch auth redirect / login
+router.get("/twitchLogin", (req, res, next) => {
+	let state = hash(req.session.id);
+	res.redirect(
+		`https://id.twitch.tv/oauth2/authorize?client_id=${twitchClientId}&redirect_uri=${twitchRedirect}&response_type=code&scope=user:read:email&force_verify=true&state=${state}`
+	);
+});
 
-// //route for twitch auth revoke / logout
-// router.get("/twitchLogout", (req, res, next) => {
-// 	if (req.session.username) {
-// 		axios
-// 			.post(
-// 				`https://id.twitch.tv/oauth2/revoke?client_id=${twitchClientId}&token=${
-// 					req.session.access_token
-// 				}`
-// 			)
-// 			.then(() => {
-// 				req.session.destroy(err => {
-// 					if (err) {
-// 						throw Error("Error on session destroy");
-// 					}
-// 				});
-// 			});
-// 	} else {
-// 		let err = new Error();
-// 		err.message = "There is currently no user logged in";
-// 		return next(err);
-// 	}
+//route for twitch auth revoke / logout
+router.get("/twitchLogout", (req, res, next) => {
+	if (req.session.username) {
+		axios
+			.post(
+				`https://id.twitch.tv/oauth2/revoke?client_id=${twitchClientId}&token=${
+					req.session.access_token
+				}`
+			)
+			.then(() => {
+				req.session.destroy(err => {
+					if (err) {
+						throw Error("Error on session destroy");
+					}
+				});
+			});
+	} else {
+		let err = new Error();
+		err.message = "There is currently no user logged in";
+		return next(err);
+	}
 
-// 	res.redirect("/");
-// });
+	res.redirect("/");
+});
 
-// router.get("/profile", (req, res, next) => {
-// 	User.findOne({ twitchUsername: req.session.username }).exec((err, data) => {
-// 		if (err) {
-// 			return next(err);
-// 		} else {
-// 			res.render("profile", { user: data });
-// 		}
-// 	});
-// });
+router.get("/profile", (req, res, next) => {
+	User.findOne({ twitchUsername: req.session.username }).exec((err, data) => {
+		if (err) {
+			return next(err);
+		} else {
+			return res.json({ user: data });
+		}
+	});
+});
 
-// //GET recent route
-// router.get("/recent", (req, res, next) => {
-// 	let finished;
-// 	getRaceDataFromDB({ status: "Complete" }, 10, data => {
-// 		finished = data;
-// 		return res.render("index", {
-// 			title: "SRL Bets",
-// 			finishedRaceData: finished,
-// 		});
-// 	});
-// });
+//GET recent route
+router.get("/recent", (req, res, next) => {
+	let finished;
+	getRaceDataFromDB({ status: "Complete" }, 10, data => {
+		finished = data;
+		return res.json({
+			title: "SRL Bets",
+			finishedRaceData: finished,
+		});
+	});
+});
 
-// router.get("/makeBet", (req, res, next) => {
-// 	res.render("makeBet");
-// });
+router.get("/makeBet", (req, res, next) => {
+	res.render("makeBet");
+});
 
 router.post("/makeBet", (req, res, next) => {
 	if (!req.session.username) {
@@ -328,50 +312,50 @@ router.post("/makeBet", (req, res, next) => {
 // this method fetches all available data in our database
 router.get("/getData", (req, res) => {
 	Data.find((err, data) => {
-	  if (err) return res.json({ success: false, error: err });
-	  return res.json({ success: true, data: data });
+		if (err) return res.json({ success: false, error: err });
+		return res.json({ success: true, data: data });
 	});
-  });
-  
-  // this is our update method
-  // this method overwrites existing data in our database
-  router.post("/updateData", (req, res) => {
+});
+
+// this is our update method
+// this method overwrites existing data in our database
+router.post("/updateData", (req, res) => {
 	const { id, update } = req.body;
 	Data.findOneAndUpdate(id, update, err => {
-	  if (err) return res.json({ success: false, error: err });
-	  return res.json({ success: true });
+		if (err) return res.json({ success: false, error: err });
+		return res.json({ success: true });
 	});
-  });
-  
-  // this is our delete method
-  // this method removes existing data in our database
-  router.delete("/deleteData", (req, res) => {
+});
+
+// this is our delete method
+// this method removes existing data in our database
+router.delete("/deleteData", (req, res) => {
 	const { id } = req.body;
 	Data.findOneAndDelete(id, err => {
-	  if (err) return res.send(err);
-	  return res.json({ success: true });
+		if (err) return res.send(err);
+		return res.json({ success: true });
 	});
-  });
-  
-  // this is our create methid
-  // this method adds new data in our database
-  router.post("/putData", (req, res) => {
+});
+
+// this is our create methid
+// this method adds new data in our database
+router.post("/putData", (req, res) => {
 	let data = new Data();
-  
+
 	const { id, message } = req.body;
-  
+
 	if ((!id && id !== 0) || !message) {
-	  return res.json({
-		success: false,
-		error: "INVALID INPUTS"
-	  });
+		return res.json({
+			success: false,
+			error: "INVALID INPUTS",
+		});
 	}
 	data.message = message;
 	data.id = id;
 	data.save(err => {
-	  if (err) return res.json({ success: false, error: err });
-	  return res.json({ success: true });
+		if (err) return res.json({ success: false, error: err });
+		return res.json({ success: true });
 	});
-  });
+});
 
 module.exports = router;

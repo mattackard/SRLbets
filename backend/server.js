@@ -6,15 +6,14 @@ const logger = require("morgan");
 const session = require("express-session");
 const MongoStore = require("connect-mongo")(session);
 const ircConnect = require("./irc").ircConnect;
-const getRaceDataFromSRL = require("./apiProcessing")
-	.getRaceDataFromSRL;
+const getRaceDataFromSRL = require("./apiProcessing").getRaceDataFromSRL;
 const updateRaceData = require("./apiProcessing").updateRaceData;
 
 //60,000 ms = 1 minute
-const dbUpdateInterval = 60 * 1000; 
+const dbUpdateInterval = 60 * 1000;
 
 //mongodb configuration
-const config = require('./config');
+const config = require("./config");
 
 const API_PORT = 3001;
 const app = express();
@@ -28,17 +27,14 @@ app.use(bodyParser.json());
 //app.use(logger("dev"));
 
 // append /api for our http requests
-const router = require('./router');
+const router = require("./router");
 app.use("/api", router);
 
 // this is our MongoDB database
 const dbRoute = config.database.url;
 
 // connects our back end code with the database
-mongoose.connect(
-  dbRoute,
-  { useNewUrlParser: true }
-);
+mongoose.connect(dbRoute, { useNewUrlParser: true });
 
 let db = mongoose.connection;
 
