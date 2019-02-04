@@ -12,14 +12,13 @@ const updateRaceData = require("./apiProcessing").updateRaceData;
 //60,000 ms = 1 minute
 const dbUpdateInterval = 60 * 1000;
 
-//mongodb configuration
+//import mongodb configuration data
 const config = require("./config");
 
 const API_PORT = 3001;
 const app = express();
 
-// (optional) only made for logging and
-// bodyParser, parses the request body to be a readable json format
+//parses the request body to be a readable json format
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 

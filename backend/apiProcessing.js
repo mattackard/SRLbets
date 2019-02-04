@@ -72,7 +72,8 @@ function updateRaceData(races) {
 		//update the race database
 		Race.updateOne(
 			//apparently pre-save doesn't execute using this method, just
-			{ raceID: raceDoc.raceID }, //leaving a note in case I end up using pre-save and am having issues
+			//leaving a note in case I end up using pre-save and am having issues
+			{ raceID: raceDoc.raceID },
 			{
 				$set: {
 					raceID: race.id,
@@ -117,8 +118,8 @@ function simplifyDate(date) {
 	return `${pretty[0]} ${pretty[1]}/${pretty[2]}/${pretty[3]} ${pretty[4]}`;
 }
 
+//converts from 24 hour clock to 12 hour clock with am and pm
 function twelveHour(time) {
-	//converts from 24 hour clock to 12 hour clock with am and pm
 	let amPm = "am";
 	let pretty = time.split(":");
 	pretty.pop(); //remove seconds from time
@@ -138,8 +139,8 @@ function twelveHour(time) {
 	return `${pretty.join(":")} ${amPm}`;
 }
 
+//takes an abbreviated month string and returns the number of the month
 function numberedMonth(month) {
-	//takes an abbreviated month string and returns the number of the month
 	switch (month) {
 		case "Jan":
 			return 1;
@@ -168,8 +169,8 @@ function numberedMonth(month) {
 	}
 }
 
+//takes entrant's time from the API and returns a string
 function convertRunTime(apiTime) {
-	//takes entrant's time from the API and returns a string
 	if (apiTime === 0) {
 		//with standard HH:MM:SS, "In Progress", or "Race not started"
 		return "Race has not started";
@@ -193,8 +194,8 @@ function convertRunTime(apiTime) {
 	}
 }
 
+//searches for the race entrant and returns the current
 function getBetTotal(race, entrantName) {
-	//searches for the race entrant and returns the current
 	Race.find({ raceID: race.id }, (err, res) => {
 		//bet total if present
 		if (err) {
