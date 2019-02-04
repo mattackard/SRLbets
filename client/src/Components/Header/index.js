@@ -1,36 +1,43 @@
 import React from "react";
+import { NavLink } from "react-router-dom";
 import "./style.scss";
 
 const Header = props => {
 	return (
 		<header>
-			<a href="http://localhost:3000">
+			<NavLink to="/">
 				<h1>SRL Bets</h1>
-			</a>
+			</NavLink>
 			<nav>
 				<li>
-					<a href="http://localhost:3000">Home</a>
+					<NavLink to="/" activeClassName="activeLink">
+						Home
+					</NavLink>
 				</li>
 				<li>
-					<a href="http://localhost:3000/profile">My Profile</a>
+					<NavLink to="/profile" activeClassName="activeLink">
+						My Profile
+					</NavLink>
 				</li>
 				<li>
-					<a href="http://localhost:3000/makeBet">Make a Bet</a>
+					<NavLink to="/makeBet" activeClassName="activeLink">
+						Make a Bet
+					</NavLink>
 				</li>
 				<li>
-					<a href="http://localhost:3000/recent">
+					<NavLink to="/recent" activeClassName="activeLink">
 						Recently Finished Races
-					</a>
+					</NavLink>
 				</li>
 				<li>
-					<a href="http://localhost:3000/twitchLogin">
-						Log In with Twitch
-					</a>
+					<button onClick={props.twitchLogin}>
+						Log In With Twitch
+					</button>
 				</li>
 				<li>
-					<a href="http://localhost:3000/twitchLogout">
-						Log Out with Twtich
-					</a>
+					<button onClick={props.twitchLogout}>
+						Log Out With Twitch
+					</button>
 				</li>
 			</nav>
 		</header>

@@ -12,7 +12,7 @@ const Race = props => {
 			<h1>{race.gameTitle}</h1>
 			<p>Goal: {race.goal}</p>
 			<p>Race Status: {race.status}</p>
-			{race.status === "Entry Open" ? (
+			{race.status !== "Entry Open" ? (
 				<p>Race Start Time: {race.simpleTime}</p>
 			) : null}
 			<p>Number of Entrants: {race.entrants.length}</p>

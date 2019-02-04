@@ -4,21 +4,24 @@ import "./style.scss";
 const RaceEntrant = ({ entrant }) => {
 	return (
 		<div>
-			<button className="entrant-dropdown">{entrant.name} &#9660</button>
+			<button className="entrant-dropdown">{entrant.name} &#9660;</button>
 			<ul className="race-entrant">
 				<li>Name: {entrant.name}</li>
 				<li>Total Points Bet: {entrant.betTotal}</li>
 				<li>Race Status: {entrant.status}</li>
 				{entrant.status === "Finished" ? (
-					<li>Finished in Position: {entrant.position}</li>
+					<React.Fragment>
+						<li>Finished in Position: {entrant.place}</li>
+						<li>Time: {entrant.time}</li>
+					</React.Fragment>
 				) : null}
 				{entrant.twitch ? (
 					<li>
-						Twitch Username:{" "}
+						Twitch Username:
 						<a
 							href={`https://twitch.tv/${entrant.twitch}`}
 							target="_blank"
-							rel="noopener noreferrer">{`twitch.tv/${
+							rel="noopener noreferrer">{` twitch.tv/${
 							entrant.twitch
 						}`}</a>
 					</li>

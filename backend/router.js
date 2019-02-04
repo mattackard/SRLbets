@@ -73,7 +73,7 @@ function getUserFromTwitch(req, code, callback) {
 
 function saveUser(userData, tokens, followList) {
 	//if the user doesnt already exists one is created
-	checkForDoc(User, { twitchUsername: userData.data.data[0].login }, doc => {
+	getDoc(User, { twitchUsername: userData.data.data[0].login }, doc => {
 		if (!doc) {
 			User.create(
 				{
@@ -141,7 +141,7 @@ function getUserFollowsFromAPI(
 		});
 }
 
-function checkForDoc(Collection, search, callback) {
+function getDoc(Collection, search, callback) {
 	//checks for a document in the database and runs a callback
 	Collection.find(search).exec((err, docs) => {
 		//passing in a boolean depeneding on if the document exists
@@ -213,9 +213,9 @@ function tokenRefresh(refresh) {
 		});
 }
 
-//GET home route
+//GET race data and send to client
 router.get("/getRaces", (req, res) => {
-	let open, current, finished;
+	let open, ongoing, finished;
 	getRaceDataFromDB({ status: "Entry Open" }, null, data => {
 		open = data;
 		getRaceDataFromDB({ status: "In Progress" }, null, data => {
@@ -231,6 +231,15 @@ router.get("/getRaces", (req, res) => {
 				});
 			});
 		});
+	});
+});
+
+//GET twitch client data and send to client
+router.get("/getTwitchClientData", (req, res) => {
+	return res.json({
+		twitchClientId: this.twitchClientId,
+		twitchRedirect: this.twitchRedirect,
+		state: hash(req.session.id),
 	});
 });
 
@@ -267,7 +276,8 @@ router.get("/twitchLogout", (req, res, next) => {
 	res.redirect("/");
 });
 
-router.get("/profile", (req, res, next) => {
+//GET currently logged in user's information
+router.get("/getLoggedInUser", (req, res, next) => {
 	User.findOne({ twitchUsername: req.session.username }).exec((err, data) => {
 		if (err) {
 			return next(err);
@@ -277,20 +287,17 @@ router.get("/profile", (req, res, next) => {
 	});
 });
 
-//GET recent route
-router.get("/recent", (req, res, next) => {
+//GET recently finished races with a race return limit
+router.get("/getFinishedRaces", (req, res, next) => {
 	let finished;
-	getRaceDataFromDB({ status: "Complete" }, 10, data => {
+	let limit = 10;
+	getRaceDataFromDB({ status: "Complete" }, limit, data => {
 		finished = data;
 		return res.json({
 			title: "SRL Bets",
 			finishedRaceData: finished,
 		});
 	});
-});
-
-router.get("/makeBet", (req, res, next) => {
-	res.render("makeBet");
 });
 
 router.post("/makeBet", (req, res, next) => {
@@ -304,58 +311,6 @@ router.post("/makeBet", (req, res, next) => {
 		makeBet(req.session.username, req.body.entrant, req.body.betAmount);
 	}
 	res.send(res.message);
-});
-
-//tutorial routes
-//
-// this is our get method
-// this method fetches all available data in our database
-router.get("/getData", (req, res) => {
-	Data.find((err, data) => {
-		if (err) return res.json({ success: false, error: err });
-		return res.json({ success: true, data: data });
-	});
-});
-
-// this is our update method
-// this method overwrites existing data in our database
-router.post("/updateData", (req, res) => {
-	const { id, update } = req.body;
-	Data.findOneAndUpdate(id, update, err => {
-		if (err) return res.json({ success: false, error: err });
-		return res.json({ success: true });
-	});
-});
-
-// this is our delete method
-// this method removes existing data in our database
-router.delete("/deleteData", (req, res) => {
-	const { id } = req.body;
-	Data.findOneAndDelete(id, err => {
-		if (err) return res.send(err);
-		return res.json({ success: true });
-	});
-});
-
-// this is our create methid
-// this method adds new data in our database
-router.post("/putData", (req, res) => {
-	let data = new Data();
-
-	const { id, message } = req.body;
-
-	if ((!id && id !== 0) || !message) {
-		return res.json({
-			success: false,
-			error: "INVALID INPUTS",
-		});
-	}
-	data.message = message;
-	data.id = id;
-	data.save(err => {
-		if (err) return res.json({ success: false, error: err });
-		return res.json({ success: true });
-	});
 });
 
 module.exports = router;
