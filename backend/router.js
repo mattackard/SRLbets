@@ -41,7 +41,7 @@ function getUserFromTwitch(req, code, callback) {
 		)
 		.then(token => {
 			if (token.status !== 200) {
-				console.log("error in access token request");
+				console.error("error in access token request");
 				handleTwitchError(token);
 			} else {
 				//gets the user information using the token information retrieved in the parent request
@@ -51,23 +51,28 @@ function getUserFromTwitch(req, code, callback) {
 							Authorization: `Bearer ${token.data.access_token}`,
 						},
 					})
+					//
 					.then(userData => {
 						if (userData.status !== 200) {
-							console.log("error in user request");
+							console.error("error in user request");
 							handleTwitchError(userData);
 						}
 						userData.following = [];
-						// req.session.username = userData.data.data[0].login;
-						// req.session.access_token = token.data.access_token;
-						// req.session.refresh_token = token.data.refresh_token;
-						// req.session.token_type = token.data.token_type;
-						// req.session.twitchUserId = userData.data.data[0].id;
-						// req.session.save();
 						getUserFollowsFromAPI(
 							userData.data.data[0].id,
 							"",
 							[],
 							followList => {
+								req.session.username =
+									userData.data.data[0].login;
+								req.session.access_token =
+									token.data.access_token;
+								req.session.refresh_token =
+									token.data.refresh_token;
+								req.session.token_type = token.data.token_type;
+								req.session.twitchUserId =
+									userData.data.data[0].id;
+								req.session.save();
 								return saveUser(
 									userData,
 									token,
@@ -255,14 +260,6 @@ router.get("/twitchAuth", (req, res) => {
 	getUserFromTwitch(req, req.query.code, data => res.json(data));
 });
 
-//route for twitch auth redirect / login
-router.get("/twitchLogin", (req, res, next) => {
-	let state = hash(req.session.id);
-	res.redirect(
-		`https://id.twitch.tv/oauth2/authorize?client_id=${twitchClientId}&redirect_uri=${twitchRedirect}&response_type=code&scope=user:read:email&force_verify=true&state=${state}`
-	);
-});
-
 //route for twitch auth revoke / logout
 router.get("/twitchLogout", (req, res, next) => {
 	if (req.session.username) {
@@ -285,13 +282,14 @@ router.get("/twitchLogout", (req, res, next) => {
 		return next(err);
 	}
 
-	res.redirect("/");
+	res.send("success, session destroyed");
 });
 
 //GET currently logged in user's information
 router.get("/getLoggedInUser", (req, res, next) => {
 	User.findOne({ twitchUsername: req.session.username }).exec((err, data) => {
 		if (err) {
+			err.message = "error in getLoggedInUserRoute";
 			return next(err);
 		} else {
 			return res.json({ user: data });
@@ -306,7 +304,6 @@ router.get("/getFinishedRaces", (req, res, next) => {
 	getRaceDataFromDB({ status: "Complete" }, limit, data => {
 		finished = data;
 		return res.json({
-			title: "SRL Bets",
 			finishedRaceData: finished,
 		});
 	});

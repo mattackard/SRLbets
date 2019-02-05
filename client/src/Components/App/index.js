@@ -18,7 +18,7 @@ class App extends Component {
 			finished: [],
 		},
 		user: {},
-		twitchAuthPath: `https://id.twitch.tv/oauth2/authorize?client_id=36ajloyc79v2ccwny9v8zfog0lwr3z&redirect_uri=http://localhost:3000&response_type=code&scope=user:read:email&force_verify=true`,
+		twitchAuthPath: `https://id.twitch.tv/oauth2/authorize?client_id=36ajloyc79v2ccwny9v8zfog0lwr3z&redirect_uri=http://localhost:3000&response_type=code&scope=user:read:email`,
 		intervalIsSet: false,
 	};
 
@@ -68,8 +68,17 @@ class App extends Component {
 	};
 
 	twitchLogout = () => {
-		this.getTwitchClientData(data => {
-			console.log(data);
+		axios
+			.get("http://localhost:3001/api/twitchLogout")
+			.then(data => console.log(data));
+	};
+
+	getUser = () => {
+		axios.get("http://localhost:3001/api/getLoggedInUser", res => {
+			console.log(res);
+			this.setState({
+				user: res,
+			});
 		});
 	};
 
@@ -98,7 +107,11 @@ class App extends Component {
 					<Route
 						path="/profile"
 						render={props => (
-							<Profile {...props} user={this.state.user} />
+							<Profile
+								{...props}
+								user={this.state.user}
+								getUser={this.getUser}
+							/>
 						)}
 					/>
 				</Switch>
