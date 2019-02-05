@@ -1,9 +1,0 @@
-extends layout
-
-block content
-  form.makeBet(action='/makeBet' method='post')
-    label username for bet 
-      input(type='text' name='entrant')
-    label amount to bet
-      input(type='text' name='betAmount')
-    button(type='submit') submit
