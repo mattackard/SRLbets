@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { withRouter } from "react-router-dom";
 import queryString from "query-string";
 import "./style.scss";
 
@@ -11,6 +12,7 @@ class Home extends Component {
 		if (Object.keys(parsed).length) {
 			console.log(parsed);
 			this.props.twitchLogin(parsed.code);
+			this.props.history.push("/");
 		}
 	}
 	render() {
@@ -33,4 +35,4 @@ class Home extends Component {
 	}
 }
 
-export default Home;
+export default withRouter(Home);
