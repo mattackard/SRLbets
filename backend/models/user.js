@@ -2,9 +2,11 @@ const mongoose = require("mongoose");
 
 const UserSchema = new mongoose.Schema({
 	twitchUsername: { type: String, required: true, trim: true },
+	srlUserName: { type: String, trim: true },
 	points: { type: Number, default: 100, required: true },
 	avatar: String,
-	oAuth: {},
+	following: [],
+	//oAuth: {},
 	betHistory: [
 		{
 			raceId: { type: String, required: true },
@@ -17,7 +19,8 @@ const UserSchema = new mongoose.Schema({
 			},
 		},
 	],
-	following: [],
+	//just race ids
+	raceHistory: [],
 });
 
 module.exports = mongoose.model("user", UserSchema);

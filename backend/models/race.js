@@ -15,7 +15,7 @@ const RaceSchema = new mongoose.Schema({
 			place: { type: Number, required: true },
 			time: String,
 			twitch: String,
-			betTotal: { type: Number, required: true, default: 0 },
+			betUser: { type: Number, required: true, default: 0 },
 		},
 	],
 });
