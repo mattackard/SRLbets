@@ -1,10 +1,18 @@
 import React, { Component } from "react";
+import queryString from "query-string";
 import "./style.scss";
 
 //component imports
 import Race from "../Race";
 
 class Home extends Component {
+	componentDidMount() {
+		const parsed = queryString.parse(this.props.location.search);
+		if (Object.keys(parsed).length) {
+			console.log(parsed);
+			this.props.twitchLogin(parsed.code);
+		}
+	}
 	render() {
 		return (
 			<div>

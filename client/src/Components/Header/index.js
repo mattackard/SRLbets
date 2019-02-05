@@ -30,9 +30,7 @@ const Header = props => {
 					</NavLink>
 				</li>
 				<li>
-					<button onClick={props.twitchLogin}>
-						Log In With Twitch
-					</button>
+					<a href={props.twitchAuthPath}>Log In With Twitch</a>
 				</li>
 				<li>
 					<button onClick={props.twitchLogout}>

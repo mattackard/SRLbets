@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Route, Switch } from "react-router-dom"; //withRouter?
+import axios from "axios";
 import "./style.scss";
 
 //component imports
@@ -17,6 +18,7 @@ class App extends Component {
 			finished: [],
 		},
 		user: {},
+		twitchAuthPath: `https://id.twitch.tv/oauth2/authorize?client_id=36ajloyc79v2ccwny9v8zfog0lwr3z&redirect_uri=http://localhost:3000&response_type=code&scope=user:read:email&force_verify=true`,
 		intervalIsSet: false,
 	};
 
@@ -50,15 +52,19 @@ class App extends Component {
 
 	//get twitch client data nexessary for an oAuth login redirect
 	getTwitchClientData = callback => {
-		fetch("http://localhost:3001/api/getTwitchClientData").then(data =>
-			callback(data)
-		);
+		fetch("http://localhost:3001/api/getTwitchClientData")
+			.then(data => data.json())
+			.then(res => console.log(res));
 	};
 
-	twitchLogin = () => {
-		this.getTwitchClientData(data => {
-			console.log(data);
-		});
+	twitchLogin = queryCode => {
+		axios
+			.get("http://localhost:3001/api/twitchAuth", {
+				params: {
+					code: queryCode,
+				},
+			})
+			.then(data => console.log(data));
 	};
 
 	twitchLogout = () => {
@@ -73,6 +79,7 @@ class App extends Component {
 				<Header
 					twitchLogin={this.twitchLogin}
 					twitchLogout={this.twitchLogout}
+					twitchAuthPath={this.state.twitchAuthPath}
 				/>
 				<Switch>
 					<Route
@@ -84,6 +91,7 @@ class App extends Component {
 								races={this.state.races}
 								getDataFromDb={this.getDataFromDb}
 								intervalIsSet={this.state.intervalIsSet}
+								twitchLogin={this.twitchLogin}
 							/>
 						)}
 					/>

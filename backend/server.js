@@ -23,7 +23,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 //logs a bunch of stuff
-//app.use(logger("dev"));
+app.use(logger("dev"));
 
 // append /api for our http requests
 const router = require("./router");
@@ -41,6 +41,16 @@ db.once("open", () => console.log("connected to the database"));
 
 // checks if connection with the database is successful
 db.on("error", console.error.bind(console, "MongoDB connection error:"));
+
+//setup session storage
+app.use(
+	session({
+		secret: "keyboard cat",
+		resave: true,
+		saveUninitialized: true,
+		store: new MongoStore({ mongooseConnection: db }),
+	})
+);
 
 //get race data and update the db at set interval
 setInterval(() => {

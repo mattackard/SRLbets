@@ -57,21 +57,31 @@ function getUserFromTwitch(req, code, callback) {
 							handleTwitchError(userData);
 						}
 						userData.following = [];
-						req.session.username = userData.data.data[0].login;
-						req.session.access_token = token.data.access_token;
-						req.session.refresh_token = token.data.refresh_token;
-						req.session.token_type = token.data.token_type;
-						req.session.twitchUserId = userData.data.data[0].id;
-						req.session.save();
-						getUserFollowsFromAPI(req, "", [], followList => {
-							callback(userData, token, followList);
-						});
+						// req.session.username = userData.data.data[0].login;
+						// req.session.access_token = token.data.access_token;
+						// req.session.refresh_token = token.data.refresh_token;
+						// req.session.token_type = token.data.token_type;
+						// req.session.twitchUserId = userData.data.data[0].id;
+						// req.session.save();
+						getUserFollowsFromAPI(
+							userData.data.data[0].id,
+							"",
+							[],
+							followList => {
+								return saveUser(
+									userData,
+									token,
+									followList,
+									callback
+								);
+							}
+						);
 					});
 			}
 		});
 }
 
-function saveUser(userData, tokens, followList) {
+function saveUser(userData, tokens, followList, callback) {
 	//if the user doesnt already exists one is created
 	getDoc(User, { twitchUsername: userData.data.data[0].login }, doc => {
 		if (!doc) {
@@ -88,6 +98,11 @@ function saveUser(userData, tokens, followList) {
 					} else {
 						console.log("user was saved : ");
 						console.log(saved);
+						callback({
+							twitchUsername: userData.data.data[0].login,
+							avatar: userData.data.data[0].profile_image_url,
+							following: followList,
+						});
 					}
 				}
 			);
@@ -98,13 +113,18 @@ function saveUser(userData, tokens, followList) {
 				oAuth: tokens.data,
 				following: followList,
 			});
+			callback({
+				twitchUsername: userData.data.data[0].login,
+				avatar: userData.data.data[0].profile_image_url,
+				following: followList,
+			});
 		}
 	});
 }
 
 //gets the user ids for all twitch users followed by the signed in user
 function getUserFollowsFromAPI(
-	req,
+	twitchId,
 	lastPagination = "",
 	followList = [],
 	callback
@@ -113,12 +133,8 @@ function getUserFollowsFromAPI(
 	let follows = followList;
 	let pagination = lastPagination;
 	let getUrl = pagination
-		? `https://api.twitch.tv/helix/users/follows?from_id=${
-				req.session.twitchUserId
-		  }&after=${pagination}`
-		: `https://api.twitch.tv/helix/users/follows?from_id=${
-				req.session.twitchUserId
-		  }`;
+		? `https://api.twitch.tv/helix/users/follows?from_id=${twitchId}&after=${pagination}`
+		: `https://api.twitch.tv/helix/users/follows?from_id=${twitchId}`;
 	axios
 		.get(getUrl, { headers: { "Client-ID": `${twitchClientId}` } })
 		.then(response => {
@@ -129,7 +145,7 @@ function getUserFollowsFromAPI(
 			});
 			//continues to get more following ids until the total has been reached
 			if (follows.length < response.data.total) {
-				getUserFollowsFromAPI(req, pagination, follows, callback);
+				getUserFollowsFromAPI(twitchId, pagination, follows, callback);
 			}
 			//runs the callback to send the complete unpaginated data
 			if (follows.length === response.data.total) {
@@ -235,12 +251,8 @@ router.get("/getRaces", (req, res) => {
 });
 
 //GET twitch client data and send to client
-router.get("/getTwitchClientData", (req, res) => {
-	return res.json({
-		twitchClientId: this.twitchClientId,
-		twitchRedirect: this.twitchRedirect,
-		state: hash(req.session.id),
-	});
+router.get("/twitchAuth", (req, res) => {
+	getUserFromTwitch(req, req.query.code, data => res.json(data));
 });
 
 //route for twitch auth redirect / login
