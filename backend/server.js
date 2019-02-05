@@ -23,11 +23,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 //logs a bunch of stuff
-app.use(logger("dev"));
-
-// append /api for our http requests
-const router = require("./router");
-app.use("/api", router);
+//app.use(logger("dev"));
 
 // this is our MongoDB database
 const dbRoute = config.database.url;
@@ -47,10 +43,14 @@ app.use(
 	session({
 		secret: "keyboard cat",
 		resave: true,
-		saveUninitialized: true,
+		saveUninitialized: false,
 		store: new MongoStore({ mongooseConnection: db }),
 	})
 );
+
+// append /api for our http requests
+const router = require("./router");
+app.use("/api", router);
 
 //get race data and update the db at set interval
 setInterval(() => {
