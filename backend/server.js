@@ -29,7 +29,10 @@ app.use(bodyParser.json());
 const dbRoute = config.database.url;
 
 // connects our back end code with the database
-mongoose.connect(dbRoute, { useNewUrlParser: true });
+mongoose.connect(
+	dbRoute,
+	{ useNewUrlParser: true }
+);
 
 let db = mongoose.connection;
 
@@ -42,7 +45,7 @@ db.on("error", console.error.bind(console, "MongoDB connection error:"));
 app.use(
 	session({
 		secret: "keyboard cat",
-		resave: true,
+		resave: false,
 		saveUninitialized: false,
 		store: new MongoStore({ mongooseConnection: db }),
 	})

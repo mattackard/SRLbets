@@ -1,9 +1,6 @@
 const express = require("express");
 const router = express.Router();
 
-//temporary
-const Data = require("./models/data");
-
 const Race = require("./models/race");
 const User = require("./models/user");
 const Client = require("./models/client");
@@ -26,6 +23,9 @@ Client.findOne({ clientName: "Twitch" }).exec((err, data) => {
 	twitchRedirect = "http://localhost:3000";
 });
 
+//sets a variable to save the generated state for oAuth requests to validate against
+let authState = "";
+
 //creates a hash from a string
 const hash = x =>
 	crypto
@@ -33,57 +33,60 @@ const hash = x =>
 		.update(x, "utf8")
 		.digest("hex");
 
-function getUserFromTwitch(req, code, callback) {
-	//gets oAuth tokens and user data from Twitch
-	axios
-		.post(
-			`https://id.twitch.tv/oauth2/token?client_id=${twitchClientId}&client_secret=${twitchClientSecret}&code=${code}&grant_type=authorization_code&redirect_uri=${twitchRedirect}`
-		)
-		.then(token => {
-			if (token.status !== 200) {
-				console.error("error in access token request");
-				handleTwitchError(token);
-			} else {
-				//gets the user information using the token information retrieved in the parent request
-				axios
-					.get("https://api.twitch.tv/helix/users", {
-						headers: {
-							Authorization: `Bearer ${token.data.access_token}`,
-						},
-					})
-					//
-					.then(userData => {
-						if (userData.status !== 200) {
-							console.error("error in user request");
-							handleTwitchError(userData);
-						}
-						userData.following = [];
-						getUserFollowsFromAPI(
-							userData.data.data[0].id,
-							"",
-							[],
-							followList => {
-								req.session.username =
-									userData.data.data[0].login;
-								req.session.access_token =
-									token.data.access_token;
-								req.session.refresh_token =
-									token.data.refresh_token;
-								req.session.token_type = token.data.token_type;
-								req.session.twitchUserId =
-									userData.data.data[0].id;
-								req.session.save();
-								return saveUser(
-									userData,
-									token,
-									followList,
-									callback
-								);
+function getUserFromTwitch(req, code, state, callback) {
+	if (state !== authState) {
+		console.error("request state does not match response state");
+	} else {
+		//gets oAuth tokens and user data from Twitch
+		axios
+			.post(
+				`https://id.twitch.tv/oauth2/token?client_id=${twitchClientId}&client_secret=${twitchClientSecret}&code=${code}&grant_type=authorization_code&redirect_uri=${twitchRedirect}`
+			)
+			.then(token => {
+				if (token.status !== 200) {
+					console.error("error in access token request");
+					handleTwitchError(token);
+				} else {
+					//gets the user information using the token information retrieved in the parent request
+					axios
+						.get("https://api.twitch.tv/helix/users", {
+							headers: {
+								Authorization: `Bearer ${
+									token.data.access_token
+								}`,
+							},
+						})
+						//saves the user data into db session and user db
+						.then(userData => {
+							if (userData.status !== 200) {
+								console.error("error in user request");
+								handleTwitchError(userData);
 							}
-						);
-					});
-			}
-		});
+							userData.following = [];
+							req.session.username = userData.data.data[0].login;
+							req.session.access_token = token.data.access_token;
+							req.session.refresh_token =
+								token.data.refresh_token;
+							req.session.token_type = token.data.token_type;
+							req.session.twitchUserId = userData.data.data[0].id;
+							req.session.save();
+							getUserFollowsFromAPI(
+								userData.data.data[0].id,
+								"",
+								[],
+								followList => {
+									return saveUser(
+										userData,
+										token,
+										followList,
+										callback
+									);
+								}
+							);
+						});
+				}
+			});
+	}
 }
 
 function saveUser(userData, tokens, followList, callback) {
@@ -103,26 +106,26 @@ function saveUser(userData, tokens, followList, callback) {
 					} else {
 						console.log("user was saved : ");
 						console.log(saved);
-						callback({
-							twitchUsername: userData.data.data[0].login,
-							avatar: userData.data.data[0].profile_image_url,
-							following: followList,
-						});
+						callback(saved);
 					}
 				}
 			);
 		} else {
 			console.log("user already exists, updated data is being sent");
-			User.update({
-				avatar: userData.data.data[0].profile_image_url,
-				oAuth: tokens.data,
-				following: followList,
-			});
-			callback({
-				twitchUsername: userData.data.data[0].login,
-				avatar: userData.data.data[0].profile_image_url,
-				following: followList,
-			});
+			User.updateOne(
+				{
+					avatar: userData.data.data[0].profile_image_url,
+					oAuth: tokens.data,
+					following: followList,
+				},
+				err => {
+					if (err) {
+						throw Error(err);
+					} else {
+						callback(doc);
+					}
+				}
+			);
 		}
 	});
 }
@@ -162,18 +165,14 @@ function getUserFollowsFromAPI(
 		});
 }
 
+//checks for a document in the database and runs a callback
 function getDoc(Collection, search, callback) {
-	//checks for a document in the database and runs a callback
-	Collection.find(search).exec((err, docs) => {
-		//passing in a boolean depeneding on if the document exists
+	Collection.findOne(search).exec((err, doc) => {
+		//returns the found document if it exists
 		if (err) {
 			console.error(err);
 		}
-		if (docs.length > 0) {
-			callback(true);
-		} else {
-			callback(false);
-		}
+		callback(doc);
 	});
 }
 
@@ -255,38 +254,49 @@ router.get("/getRaces", (req, res) => {
 	});
 });
 
+//GET Twitch authorization url
+router.get("/twitchLoginUrl", (req, res) => {
+	authState = hash(req.session.id);
+	return res.json({
+		twitchUrl: `https://id.twitch.tv/oauth2/authorize?response_type=code&client_id=${twitchClientId}&redirect_uri=${twitchRedirect}&scope=user:read:email&state=${authState}`,
+	});
+});
+
 //GET twitch client data and send to client
 router.get("/twitchAuth", (req, res) => {
-	getUserFromTwitch(req, req.query.code, data => res.json(data));
+	getUserFromTwitch(req, req.query.code, authState, data => {
+		req.session.save();
+		res.json(data);
+	});
 });
 
 //route for twitch auth revoke / logout
 router.get("/twitchLogout", (req, res, next) => {
-	if (req.session.username) {
-		axios
-			.post(
-				`https://id.twitch.tv/oauth2/revoke?client_id=${twitchClientId}&token=${
-					req.session.access_token
-				}`
-			)
-			.then(() => {
-				req.session.destroy(err => {
-					if (err) {
-						throw Error("Error on session destroy");
-					}
-				});
+	//req.session.access_token is undefined
+	console.log(req.session.access_token);
+	axios
+		.post(
+			`https://id.twitch.tv/oauth2/revoke
+				?client_id=${twitchClientId}
+				&token=${req.session.access_token}`
+		)
+		.then(() => {
+			req.session.destroy(err => {
+				if (err) {
+					throw Error("Error on session destroy");
+				}
 			});
-	} else {
-		let err = new Error();
-		err.message = "There is currently no user logged in";
-		return next(err);
-	}
+		})
+		.catch(err =>
+			console.error("didnt work ... ps. im in router.js twitchlogout")
+		);
 
-	res.send("success, session destroyed");
+	return res.send("success, session destroyed");
 });
 
 //GET currently logged in user's information
 router.get("/getLoggedInUser", (req, res, next) => {
+	console.log(req.session.access_token, req.session.username);
 	User.findOne({ twitchUsername: req.session.username }).exec((err, data) => {
 		if (err) {
 			err.message = "error in getLoggedInUserRoute";

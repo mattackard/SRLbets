@@ -18,7 +18,6 @@ class App extends Component {
 			finished: [],
 		},
 		user: {},
-		twitchAuthPath: `https://id.twitch.tv/oauth2/authorize?client_id=36ajloyc79v2ccwny9v8zfog0lwr3z&redirect_uri=http://localhost:3000&response_type=code&scope=user:read:email`,
 		intervalIsSet: false,
 	};
 
@@ -64,7 +63,11 @@ class App extends Component {
 					code: queryCode,
 				},
 			})
-			.then(data => console.log(data));
+			.then(res =>
+				this.setState({
+					user: res.data,
+				})
+			);
 	};
 
 	twitchLogout = () => {
@@ -89,6 +92,7 @@ class App extends Component {
 					twitchLogin={this.twitchLogin}
 					twitchLogout={this.twitchLogout}
 					twitchAuthPath={this.state.twitchAuthPath}
+					user={this.state.user}
 				/>
 				<Switch>
 					<Route
