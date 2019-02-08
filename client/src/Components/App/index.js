@@ -40,28 +40,34 @@ class App extends Component {
 
 	//gets open,ongoing,finished races from db
 	getDataFromDb = () => {
-		fetch("http://localhost:3001/api/getRaces")
-			.then(data => data.json())
-			.then(res =>
+		axios
+			.get("http://localhost:3001/api/getRaces", {
+				withCredentials: true,
+			})
+			.then(res => {
 				this.setState({
-					races: res.races,
-				})
-			);
+					races: res.data.races,
+				});
+			});
 	};
 
 	//get twitch client data nexessary for an oAuth login redirect
 	getTwitchClientData = callback => {
-		fetch("http://localhost:3001/api/getTwitchClientData")
-			.then(data => data.json())
-			.then(res => console.log(res));
+		axios
+			.get("http://localhost:3001/api/getTwitchClientData", {
+				withCredentials: true,
+			})
+			.then(res => console.log(res.data));
 	};
 
-	twitchLogin = queryCode => {
+	twitchLogin = (queryCode, state) => {
 		axios
 			.get("http://localhost:3001/api/twitchAuth", {
 				params: {
 					code: queryCode,
+					state: state,
 				},
+				withCredentials: true,
 			})
 			.then(res =>
 				this.setState({
@@ -72,17 +78,23 @@ class App extends Component {
 
 	twitchLogout = () => {
 		axios
-			.get("http://localhost:3001/api/twitchLogout")
-			.then(data => console.log(data));
+			.get("http://localhost:3001/api/twitchLogout", {
+				withCredentials: true,
+			})
+			.then(res => console.log(res.data));
 	};
 
 	getUser = () => {
-		axios.get("http://localhost:3001/api/getLoggedInUser", res => {
-			console.log(res);
-			this.setState({
-				user: res,
+		axios
+			.get("http://localhost:3001/api/getLoggedInUser", {
+				withCredentials: true,
+			})
+			.then(res => {
+				console.log(res.data);
+				this.setState({
+					user: res.data,
+				});
 			});
-		});
 	};
 
 	render() {

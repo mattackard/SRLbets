@@ -18,38 +18,44 @@ const config = require("./config");
 const API_PORT = 3001;
 const app = express();
 
-//parses the request body to be a readable json format
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
-
 //logs a bunch of stuff
 //app.use(logger("dev"));
 
 // this is our MongoDB database
 const dbRoute = config.database.url;
 
+//enable cors for development
+const cors = require("cors");
+
+const corsOptions = {
+	origin: "http://localhost:3000",
+	credentials: true,
+};
+app.use(cors(corsOptions));
+
 // connects our back end code with the database
-mongoose.connect(
-	dbRoute,
-	{ useNewUrlParser: true }
-);
+mongoose.connect(dbRoute, { useNewUrlParser: true });
 
 let db = mongoose.connection;
+
+//setup session storage
+app.use(
+	session({
+		secret: "bigSecrets",
+		resave: false,
+		saveUninitialized: true,
+		store: new MongoStore({ mongooseConnection: db }),
+	})
+);
 
 db.once("open", () => console.log("connected to the database"));
 
 // checks if connection with the database is successful
 db.on("error", console.error.bind(console, "MongoDB connection error:"));
 
-//setup session storage
-app.use(
-	session({
-		secret: "keyboard cat",
-		resave: false,
-		saveUninitialized: false,
-		store: new MongoStore({ mongooseConnection: db }),
-	})
-);
+//parses the request body to be a readable json format
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 // append /api for our http requests
 const router = require("./router");

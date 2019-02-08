@@ -23,9 +23,6 @@ Client.findOne({ clientName: "Twitch" }).exec((err, data) => {
 	twitchRedirect = "http://localhost:3000";
 });
 
-//sets a variable to save the generated state for oAuth requests to validate against
-let authState = "";
-
 //creates a hash from a string
 const hash = x =>
 	crypto
@@ -34,7 +31,7 @@ const hash = x =>
 		.digest("hex");
 
 function getUserFromTwitch(req, code, state, callback) {
-	if (state !== authState) {
+	if (state !== hash(req.session.id)) {
 		console.error("request state does not match response state");
 	} else {
 		//gets oAuth tokens and user data from Twitch
@@ -256,7 +253,7 @@ router.get("/getRaces", (req, res) => {
 
 //GET Twitch authorization url
 router.get("/twitchLoginUrl", (req, res) => {
-	authState = hash(req.session.id);
+	let authState = hash(req.session.id);
 	return res.json({
 		twitchUrl: `https://id.twitch.tv/oauth2/authorize?response_type=code&client_id=${twitchClientId}&redirect_uri=${twitchRedirect}&scope=user:read:email&state=${authState}`,
 	});
@@ -264,8 +261,7 @@ router.get("/twitchLoginUrl", (req, res) => {
 
 //GET twitch client data and send to client
 router.get("/twitchAuth", (req, res) => {
-	getUserFromTwitch(req, req.query.code, authState, data => {
-		req.session.save();
+	getUserFromTwitch(req, req.query.code, req.query.state, data => {
 		res.json(data);
 	});
 });

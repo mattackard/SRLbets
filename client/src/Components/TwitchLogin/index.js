@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import axios from "axios";
 import "./style.scss";
 
 class TwitchLogin extends Component {
@@ -7,11 +8,13 @@ class TwitchLogin extends Component {
 	};
 
 	componentWillMount() {
-		fetch("http://localhost:3001/api/twitchLoginUrl")
-			.then(data => data.json())
+		axios
+			.get("http://localhost:3001/api/twitchLoginUrl", {
+				withCredentials: true,
+			})
 			.then(res => {
 				this.setState({
-					twitchUrl: res.twitchUrl,
+					twitchUrl: res.data.twitchUrl,
 				});
 			});
 	}

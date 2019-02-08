@@ -10,7 +10,8 @@ class Home extends Component {
 	componentDidMount() {
 		const parsed = queryString.parse(this.props.location.search);
 		if (Object.keys(parsed).length) {
-			this.props.twitchLogin(parsed.code);
+			console.log(parsed);
+			this.props.twitchLogin(parsed.code, parsed.state);
 			//redirects to home to remove query string
 			this.props.history.push("/");
 		}
