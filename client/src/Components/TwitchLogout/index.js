@@ -9,8 +9,10 @@ class TwitchLogout extends Component {
 				withCredentials: true,
 			})
 			.then(res => {
-				console.log(res.data);
-			});
+				this.props.clearUserState();
+				this.props.getLoginUrl();
+			})
+			.catch(err => console.error(err));
 	};
 	render() {
 		return <button onClick={this.logOut}>Log Out of Twitch</button>;

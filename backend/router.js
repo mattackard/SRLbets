@@ -37,7 +37,8 @@ function getUserFromTwitch(req, code, state, callback) {
 		//gets oAuth tokens and user data from Twitch
 		axios
 			.post(
-				`https://id.twitch.tv/oauth2/token?client_id=${twitchClientId}&client_secret=${twitchClientSecret}&code=${code}&grant_type=authorization_code&redirect_uri=${twitchRedirect}`
+				`https://id.twitch.tv/oauth2/token?client_id=${twitchClientId}&client_secret=${twitchClientSecret}&code=${code}&grant_type=authorization_code&redirect_uri=${twitchRedirect}`,
+				{ withCredentials: true }
 			)
 			.then(token => {
 				if (token.status !== 200) {
@@ -52,6 +53,7 @@ function getUserFromTwitch(req, code, state, callback) {
 									token.data.access_token
 								}`,
 							},
+							withCredentials: true,
 						})
 						//saves the user data into db session and user db
 						.then(userData => {
@@ -141,7 +143,10 @@ function getUserFollowsFromAPI(
 		? `https://api.twitch.tv/helix/users/follows?from_id=${twitchId}&after=${pagination}`
 		: `https://api.twitch.tv/helix/users/follows?from_id=${twitchId}`;
 	axios
-		.get(getUrl, { headers: { "Client-ID": `${twitchClientId}` } })
+		.get(getUrl, {
+			headers: { "Client-ID": `${twitchClientId}` },
+			withCredentials: true,
+		})
 		.then(response => {
 			//sets the new pagination string for the next request
 			pagination = response.data.pagination.cursor;
@@ -222,7 +227,8 @@ function tokenRefresh(refresh) {
 		.post(
 			`https://id.twitch.tv/oauth2/token--data-urlencode?grant_type=refresh_token&refresh_token=${encodeURIComponent(
 				refresh
-			)}&client_id=${twitchClientId}&client_secret=${twitchClientSecret}`
+			)}&client_id=${twitchClientId}&client_secret=${twitchClientSecret}`,
+			{ withCredentials: true }
 		)
 		.then((err, res) => {
 			if (err) throw Error("Error in token refresh request");
@@ -253,6 +259,7 @@ router.get("/getRaces", (req, res) => {
 
 //GET Twitch authorization url
 router.get("/twitchLoginUrl", (req, res) => {
+	console.log(req.session.id);
 	let authState = hash(req.session.id);
 	return res.json({
 		twitchUrl: `https://id.twitch.tv/oauth2/authorize?response_type=code&client_id=${twitchClientId}&redirect_uri=${twitchRedirect}&scope=user:read:email&state=${authState}`,
@@ -261,6 +268,7 @@ router.get("/twitchLoginUrl", (req, res) => {
 
 //GET twitch client data and send to client
 router.get("/twitchAuth", (req, res) => {
+	console.log(req.session.id);
 	getUserFromTwitch(req, req.query.code, req.query.state, data => {
 		res.json(data);
 	});
@@ -272,9 +280,10 @@ router.get("/twitchLogout", (req, res, next) => {
 	console.log(req.session.access_token);
 	axios
 		.post(
-			`https://id.twitch.tv/oauth2/revoke
-				?client_id=${twitchClientId}
-				&token=${req.session.access_token}`
+			`https://id.twitch.tv/oauth2/revoke?client_id=${twitchClientId}&token=${
+				req.session.access_token
+			}`,
+			{ withCredentials: true }
 		)
 		.then(() => {
 			req.session.destroy(err => {
@@ -283,11 +292,9 @@ router.get("/twitchLogout", (req, res, next) => {
 				}
 			});
 		})
-		.catch(err =>
-			console.error("didnt work ... ps. im in router.js twitchlogout")
-		);
+		.catch(err => next(err));
 
-	return res.send("success, session destroyed");
+	return res.send("success");
 });
 
 //GET currently logged in user's information

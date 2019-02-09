@@ -1,11 +1,28 @@
 import React, { Component } from "react";
 import { NavLink } from "react-router-dom";
+import axios from "axios";
 import "./style.scss";
 
 import TwitchLogin from "../TwitchLogin";
 import TwitchLogout from "../TwitchLogout";
 
 class Header extends Component {
+	state = {
+		twitchUrl: "",
+	};
+
+	getLoginUrl = () => {
+		axios
+			.get("http://localhost:3001/api/twitchLoginUrl", {
+				withCredentials: true,
+			})
+			.then(res => {
+				this.setState({
+					twitchUrl: res.data.twitchUrl,
+				});
+			});
+	};
+
 	render() {
 		return (
 			<header>
@@ -35,9 +52,15 @@ class Header extends Component {
 					</li>
 					<li>
 						{Object.keys(this.props.user).length ? (
-							<TwitchLogout />
+							<TwitchLogout
+								clearUserState={this.props.clearUserState}
+								getLoginUrl={this.getLoginUrl}
+							/>
 						) : (
-							<TwitchLogin />
+							<TwitchLogin
+								getLoginUrl={this.getLoginUrl}
+								twitchUrl={this.state.twitchUrl}
+							/>
 						)}
 					</li>
 				</nav>

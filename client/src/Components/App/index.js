@@ -60,6 +60,7 @@ class App extends Component {
 			.then(res => console.log(res.data));
 	};
 
+	//logs user into twitch after authorize redirect
 	twitchLogin = (queryCode, state) => {
 		axios
 			.get("http://localhost:3001/api/twitchAuth", {
@@ -69,32 +70,43 @@ class App extends Component {
 				},
 				withCredentials: true,
 			})
-			.then(res =>
+			.then(res => {
 				this.setState({
 					user: res.data,
-				})
-			);
+				});
+			});
 	};
 
+	//logs user out of twitch and destroys session
 	twitchLogout = () => {
 		axios
 			.get("http://localhost:3001/api/twitchLogout", {
 				withCredentials: true,
 			})
-			.then(res => console.log(res.data));
+			.then(res => {
+				this.setState({
+					user: {},
+				});
+			});
 	};
 
+	//gets the logged in user by checking the session storage
 	getUser = () => {
 		axios
 			.get("http://localhost:3001/api/getLoggedInUser", {
 				withCredentials: true,
 			})
 			.then(res => {
-				console.log(res.data);
 				this.setState({
-					user: res.data,
+					user: res.data.user,
 				});
 			});
+	};
+
+	clearUserState = () => {
+		this.setState({
+			user: {},
+		});
 	};
 
 	render() {
@@ -105,6 +117,7 @@ class App extends Component {
 					twitchLogout={this.twitchLogout}
 					twitchAuthPath={this.state.twitchAuthPath}
 					user={this.state.user}
+					clearUserState={this.clearUserState}
 				/>
 				<Switch>
 					<Route
