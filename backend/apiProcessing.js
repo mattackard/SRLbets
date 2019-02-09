@@ -16,7 +16,7 @@ function validateApiResponse(res) {
 function getRaceDataFromSRL(callback) {
 	//gets the current race json data from the SRL API
 	axios
-		.get("http://api.speedrunslive.com/races") //and saves/updates it in the local database
+		.get("http://api.speedrunslive.com/races", { withCredentails: true }) //and saves/updates it in the local database
 		.then(response => {
 			callback(response.data.races);
 		})

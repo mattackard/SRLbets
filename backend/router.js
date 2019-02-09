@@ -259,7 +259,6 @@ router.get("/getRaces", (req, res) => {
 
 //GET Twitch authorization url
 router.get("/twitchLoginUrl", (req, res) => {
-	console.log(req.session.id);
 	let authState = hash(req.session.id);
 	return res.json({
 		twitchUrl: `https://id.twitch.tv/oauth2/authorize?response_type=code&client_id=${twitchClientId}&redirect_uri=${twitchRedirect}&scope=user:read:email&state=${authState}`,
@@ -268,7 +267,6 @@ router.get("/twitchLoginUrl", (req, res) => {
 
 //GET twitch client data and send to client
 router.get("/twitchAuth", (req, res) => {
-	console.log(req.session.id);
 	getUserFromTwitch(req, req.query.code, req.query.state, data => {
 		res.json(data);
 	});
@@ -276,8 +274,6 @@ router.get("/twitchAuth", (req, res) => {
 
 //route for twitch auth revoke / logout
 router.get("/twitchLogout", (req, res, next) => {
-	//req.session.access_token is undefined
-	console.log(req.session.access_token);
 	axios
 		.post(
 			`https://id.twitch.tv/oauth2/revoke?client_id=${twitchClientId}&token=${
@@ -286,20 +282,19 @@ router.get("/twitchLogout", (req, res, next) => {
 			{ withCredentials: true }
 		)
 		.then(() => {
-			req.session.destroy(err => {
-				if (err) {
-					throw Error("Error on session destroy");
-				}
-			});
+			req.session.username = "";
+			req.session.access_token = "";
+			req.session.refresh_token = "";
+			req.session.token_type = "";
+			req.session.twitchUserId = "";
+			req.session.save();
 		})
 		.catch(err => next(err));
-
 	return res.send("success");
 });
 
 //GET currently logged in user's information
 router.get("/getLoggedInUser", (req, res, next) => {
-	console.log(req.session.access_token, req.session.username);
 	User.findOne({ twitchUsername: req.session.username }).exec((err, data) => {
 		if (err) {
 			err.message = "error in getLoggedInUserRoute";
