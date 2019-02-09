@@ -1,7 +1,7 @@
 import React from "react";
 import "./style.scss";
 
-const RaceEntrant = ({ entrant }) => {
+const RaceTileEntrant = ({ entrant }) => {
 	return (
 		<div>
 			<button className="entrant-dropdown">{entrant.name} &#9660;</button>
@@ -31,4 +31,4 @@ const RaceEntrant = ({ entrant }) => {
 	);
 };
 
-export default RaceEntrant;
+export default RaceTileEntrant;

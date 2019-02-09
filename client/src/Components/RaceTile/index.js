@@ -1,9 +1,9 @@
 import React from "react";
 import "./style.scss";
 
-import RaceEntrant from "../RaceEntrant";
+import RaceTileEntrant from "../RaceTileEntrant";
 
-const Race = props => {
+const RaceTile = props => {
 	let multiTwitch = "http://multitwitch.tv";
 	let race = props.race;
 
@@ -18,7 +18,7 @@ const Race = props => {
 			<p>Number of Entrants: {race.entrants.length}</p>
 			<div className="race-entrants">
 				{race.entrants.map(entrant => (
-					<RaceEntrant key={entrant._id} entrant={entrant} />
+					<RaceTileEntrant key={entrant._id} entrant={entrant} />
 				))}
 			</div>
 			{multiTwitch === "http://multitwitch.tv" ? null : (
@@ -30,4 +30,4 @@ const Race = props => {
 	);
 };
 
-export default Race;
+export default RaceTile;
