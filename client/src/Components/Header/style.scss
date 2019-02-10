@@ -1,14 +1,32 @@
 @import "../../variables.scss";
 #page-header {
     padding: 0;
+    position: relative;
     background-color: $color-content-bg;
     font-size: 1em;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
     a {
         text-decoration: none;
         color: white;
     }
     nav {
-        font-size: 0.5rem;
-        background-color: $color-content-bg;
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: 100%;
+        right: 3rem;
+        font-size: 1rem;
+        li {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid $color-bg;
+            background-color: $color-content-bg;
+        }
+    }
+    i {
+        padding-top: 1rem;
+        font-size: 3rem;
     }
 }
