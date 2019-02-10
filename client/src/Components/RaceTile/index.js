@@ -10,15 +10,24 @@ const RaceTile = props => {
 	return (
 		<div className="race">
 			<h1>{race.gameTitle}</h1>
-			<p>Goal: {race.goal}</p>
-			<p>Race Status: {race.status}</p>
+			<p className="race-goal">{race.goal}</p>
+			<p>{race.status}</p>
 			{race.status !== "Entry Open" ? (
-				<p>Race Start Time: {race.simpleTime}</p>
+				<p>Started {race.simpleTime}</p>
 			) : null}
-			<p>Number of Entrants: {race.entrants.length}</p>
+			<p>
+				{/* determines whether entrant needs to be plural */}
+				{race.entrants.length === 1
+					? `${race.entrants.length} Race Entrant`
+					: `${race.entrants.length} Race Entrants`}
+			</p>
 			<div className="race-entrants">
 				{race.entrants.map(entrant => (
-					<RaceTileEntrant key={entrant._id} entrant={entrant} />
+					<RaceTileEntrant
+						key={entrant._id}
+						entrant={entrant}
+						raceStatus={race.status}
+					/>
 				))}
 			</div>
 			{multiTwitch === "http://multitwitch.tv" ? null : (

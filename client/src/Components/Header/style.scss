@@ -1,30 +1,14 @@
-header {
-	padding: 0 5%;
-	display: flex;
-	flex-direction: row;
-	background-color: gray;
-}
-
-header img {
-	width: 60px;
-}
-
-nav {
-	display: flex;
-	flex-direction: row;
-	justify-content: flex-start;
-	background-color: rgba(100, 100, 100, 0.98);
-	list-style: none;
-	padding: 0;
-	margin: 0;
-}
-
-nav li {
-	margin: auto;
-	text-align: center;
-}
-
-nav li a {
-	text-decoration: none;
-	color: white;
+@import "../../variables.scss";
+#page-header {
+    padding: 0;
+    background-color: $color-content-bg;
+    font-size: 1em;
+    a {
+        text-decoration: none;
+        color: white;
+    }
+    nav {
+        font-size: 0.5rem;
+        background-color: $color-content-bg;
+    }
 }

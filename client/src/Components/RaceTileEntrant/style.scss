@@ -1,0 +1,40 @@
+@import "../../variables.scss";
+.race-entrant {
+    display: flex;
+    flex-direction: row;
+    list-style: none;
+    justify-content: space-evenly;
+    padding: 0;
+    margin: 0 1rem;
+    border: 2px solid $color-bg;
+    li {
+        padding: 0.5rem;
+    }
+}
+
+.twitch-svg {
+    fill: white;
+    width: 1rem;
+}
+
+.entrant-dropdown {
+    background-color: $color-content-bg;
+    color: white;
+    border: none;
+}
+
+.Entered {
+    color: rgb(73, 160, 73);
+}
+
+.Ready {
+    color: rgb(115, 171, 255);
+}
+
+.Forfeit {
+    color: rgb(255, 110, 110);
+}
+
+.Finished {
+    color: rgb(248, 234, 107);
+}

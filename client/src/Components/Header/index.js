@@ -25,9 +25,9 @@ class Header extends Component {
 
 	render() {
 		return (
-			<header>
+			<header id="page-header">
 				<NavLink to="/">
-					<h1>SRL Bets</h1>
+					<h1 className="page-logo">SRL Bets</h1>
 				</NavLink>
 				<nav>
 					<li>
