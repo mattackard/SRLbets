@@ -103,8 +103,7 @@ function saveUser(userData, tokens, followList, callback) {
 					if (err) {
 						throw Error(err);
 					} else {
-						console.log("user was saved : ");
-						console.log(saved);
+						console.log("user was saved");
 						callback(saved);
 					}
 				}
@@ -319,15 +318,20 @@ router.get("/getFinishedRaces", (req, res, next) => {
 
 router.post("/makeBet", (req, res, next) => {
 	if (!req.session.username) {
-		res.message = "User is not logged in";
+		res.message = "You must be logged in to make a bet";
 	} else if (!req.body.entrant) {
-		res.message = "No race user entered";
+		res.message = "Race user can not be blank";
 	} else if (!req.body.betAmount) {
 		res.message = "No bet amount entered";
 	} else {
-		makeBet(req.session.username, req.body.entrant, req.body.betAmount);
+		makeBet(
+			req.session.username,
+			req.body.raceID,
+			req.body.entrant,
+			req.body.betAmount
+		);
 	}
-	res.send(res.message);
+	res.send(res.message || "success");
 });
 
 module.exports = router;

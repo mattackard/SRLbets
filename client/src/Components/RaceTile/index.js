@@ -10,7 +10,7 @@ const RaceTile = props => {
 	return (
 		<div className="race">
 			<h1>{race.gameTitle}</h1>
-			<p className="race-goal">{race.goal}</p>
+			<p className="race-goal">{race.goal || "No Goal Set"}</p>
 			<p>{race.status}</p>
 			{race.status !== "Entry Open" ? (
 				<p>Started {race.simpleTime}</p>
@@ -27,6 +27,7 @@ const RaceTile = props => {
 						key={entrant._id}
 						entrant={entrant}
 						raceStatus={race.status}
+						raceID={race.raceID}
 					/>
 				))}
 			</div>

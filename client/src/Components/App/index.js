@@ -22,8 +22,10 @@ class App extends Component {
 	};
 
 	//gets data from mongo at a recurring interval as long as app is mounted
+	//checks if user has a logged in session to continue
 	componentDidMount() {
 		this.getDataFromDb();
+		this.getUser();
 		if (!this.state.intervalIsSet) {
 			let interval = setInterval(this.getDataFromDb, 10000);
 			this.setState({ intervalIsSet: interval });

@@ -1,0 +1,20 @@
+@import "../../variables.scss";
+.inline-bet-form {
+	padding: 1rem;
+	input {
+		margin-right: 1rem;
+		padding: 0.4rem;
+	}
+	button {
+		padding: 0.4rem 1rem;
+		background-color: $color-bg;
+		border: none;
+		color: white;
+		font-size: 1rem;
+	}
+	p {
+		font-size: 0.8rem;
+		color: red;
+		text-align: left;
+	}
+}

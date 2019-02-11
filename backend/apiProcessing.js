@@ -52,7 +52,8 @@ function updateRaceData(races) {
 				place: race.entrants[i].place,
 				time: convertRunTime(race.entrants[i].time),
 				twitch: race.entrants[i].twitch,
-				betTotal: getBetTotal(race, race.entrants[i].displayname),
+				//need to wait for get bet to finish before anything else
+				betUser: getBetUser(race, race.entrants[i].displayname),
 			};
 			entrantArray.push(entrantObj);
 		}
@@ -70,7 +71,7 @@ function updateRaceData(races) {
 		});
 
 		//update the race database
-		Race.updateOne(
+		Race.findOneAndUpdate(
 			//apparently pre-save doesn't execute using this method, just
 			//leaving a note in case I end up using pre-save and am having issues
 			{ raceID: raceDoc.raceID },
@@ -91,6 +92,7 @@ function updateRaceData(races) {
 				if (err) {
 					throw Error(err);
 				} else {
+					console.log("race updated");
 					return doc;
 				}
 			}
@@ -195,24 +197,33 @@ function convertRunTime(apiTime) {
 }
 
 //searches for the race entrant and returns the current
-function getBetTotal(race, entrantName) {
-	Race.find({ raceID: race.id }, (err, res) => {
-		//bet total if present
+function getBetUser(race, entrantName) {
+	Race.findOne({ raceID: race.id }, (err, doc) => {
+		//bet total on user if present
 		if (err) {
 			throw Error(err);
-		} else if (res.entrants) {
-			return res.entrants[entrantName].betTotal;
+		} else if (doc) {
+			//doc.entrants is an array of objects
+			let bet = 0;
+			doc.entrants.forEach(entrant => {
+				if (entrant.name === entrantName) {
+					bet = entrant.betUser;
+				}
+			});
+			console.log(`found and used the previous entrant bet of ${bet}`);
+			return bet;
 		} else {
+			console.log("couldn't find the user's bet amount so set it at 0");
 			return 0;
 		}
 	});
 }
 
-function makeBet(username, entrant, amount) {
+function makeBet(username, raceID, entrant, amount) {
 	User.findOne({ twitchUsername: username }, (err, user) => {
 		if (user.points >= amount) {
 			Race.findOne(
-				{ "entrants.name": entrant, status: "Entry Open" },
+				{ raceID: raceID, status: "Entry Open" },
 				(err, race) => {
 					if (err) {
 						throw Error(
@@ -227,7 +238,8 @@ function makeBet(username, entrant, amount) {
 						for (let i = 0; i < race.entrants.length; i++) {
 							//finds the entrant that was bet on within the race document
 							if (race.entrants[i].name === entrant) {
-								race.entrants[i].betTotal += parseInt(amount);
+								race.entrants[i].betUser += parseInt(amount);
+								race.betTotal += parseInt(amount);
 								user.betHistory.push({
 									raceId: race.raceID,
 									entrant: entrant,
@@ -240,13 +252,13 @@ function makeBet(username, entrant, amount) {
 							if (err) {
 								console.log(err);
 							}
-							console.log(savedUser);
+							console.log("user bet saved to history");
 						});
 						race.save((err, savedRace) => {
 							if (err) {
 								console.log(err);
 							}
-							console.log(savedRace);
+							console.log(savedRace.betTotal);
 						});
 					}
 				}
