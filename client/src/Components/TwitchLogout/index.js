@@ -15,7 +15,11 @@ class TwitchLogout extends Component {
 			.catch(err => console.error(err));
 	};
 	render() {
-		return <button onClick={this.logOut}>Log Out of Twitch</button>;
+		return (
+			<button onClick={this.logOut} className="twitch-logout">
+				Log Out of Twitch
+			</button>
+		);
 	}
 }
 

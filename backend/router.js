@@ -324,7 +324,7 @@ router.post("/makeBet", (req, res, next) => {
 	} else if (!req.body.betAmount) {
 		res.message = "No bet amount entered";
 	} else {
-		makeBet(
+		req.message = makeBet(
 			req.session.username,
 			req.body.raceID,
 			req.body.entrant,

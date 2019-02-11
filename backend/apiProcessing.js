@@ -15,8 +15,9 @@ function validateApiResponse(res) {
 
 function getRaceDataFromSRL(callback) {
 	//gets the current race json data from the SRL API
+	//and saves/updates it in the local database
 	axios
-		.get("http://api.speedrunslive.com/races", { withCredentails: true }) //and saves/updates it in the local database
+		.get("http://api.speedrunslive.com/races", { withCredentails: true })
 		.then(response => {
 			callback(response.data.races);
 		})
@@ -52,8 +53,6 @@ function updateRaceData(races) {
 				place: race.entrants[i].place,
 				time: convertRunTime(race.entrants[i].time),
 				twitch: race.entrants[i].twitch,
-				//need to wait for get bet to finish before anything else
-				betUser: getBetUser(race, race.entrants[i].displayname),
 			};
 			entrantArray.push(entrantObj);
 		}
@@ -70,35 +69,25 @@ function updateRaceData(races) {
 			entrants: entrantArray,
 		});
 
-		//update the race database
-		Race.findOneAndUpdate(
-			//apparently pre-save doesn't execute using this method, just
-			//leaving a note in case I end up using pre-save and am having issues
-			{ raceID: raceDoc.raceID },
-			{
-				$set: {
-					raceID: race.id,
-					gameID: race.game.id,
-					gameTitle: race.game.name,
-					goal: raceDoc.goal,
-					status: raceDoc.status,
-					timeStarted: raceDoc.timeStarted,
-					simpleTime: raceDoc.simpleTime,
-					entrants: raceDoc.entrants,
-				},
-			},
-			{ upsert: true, new: true, runValidators: true }, //upsert will create a new db doc if none was found
-			(err, doc) => {
-				if (err) {
-					throw Error(err);
-				} else {
-					console.log("race updated");
-					return doc;
-				}
+		Race.find({ raceID: race.id }).exec((err, doc) => {
+			if (err) {
+				throw Error(err);
 			}
-		);
+			if (doc.raceID) {
+				doc.raceID = race.id;
+				doc.gameID = race.game.id;
+				doc.gameTitle = race.game.name;
+				doc.goal = race.goal;
+				doc.status = race.statetext;
+				doc.timeStarted = convertRaceStartTime(race.time);
+				doc.simpleTime = simplifyDate(convertRaceStartTime(race.time));
+				doc.entrants = [...entrantArray, ...doc.entrants];
+				doc.save();
+			} else {
+				Race.create(raceDoc);
+			}
+		});
 	});
-	console.log("Races have been updated!");
 }
 
 function convertRaceStartTime(sec) {
@@ -203,17 +192,14 @@ function getBetUser(race, entrantName) {
 		if (err) {
 			throw Error(err);
 		} else if (doc) {
-			//doc.entrants is an array of objects
 			let bet = 0;
 			doc.entrants.forEach(entrant => {
 				if (entrant.name === entrantName) {
 					bet = entrant.betUser;
 				}
 			});
-			console.log(`found and used the previous entrant bet of ${bet}`);
 			return bet;
 		} else {
-			console.log("couldn't find the user's bet amount so set it at 0");
 			return 0;
 		}
 	});
@@ -231,9 +217,7 @@ function makeBet(username, raceID, entrant, amount) {
 						);
 					}
 					if (!race) {
-						console.log(
-							`Could not find any races that ${entrant} is entered in. They could be in a race that has already started, or they might not have their twitch username linked to SRL.`
-						);
+						return `Could not find any races that ${entrant} is entered in. They could be in a race that has already started, or they might not have their twitch username linked to SRL.`;
 					} else {
 						for (let i = 0; i < race.entrants.length; i++) {
 							//finds the entrant that was bet on within the race document
@@ -252,23 +236,19 @@ function makeBet(username, raceID, entrant, amount) {
 							if (err) {
 								console.log(err);
 							}
-							console.log("user bet saved to history");
 						});
 						race.save((err, savedRace) => {
 							if (err) {
 								console.log(err);
 							}
-							console.log(savedRace.betTotal);
 						});
 					}
 				}
 			);
 		} else {
-			console.log(
-				`@${username} can't bet ${amount}. You only have ${
-					user.points
-				} points!`
-			);
+			return `@${username} can't bet ${amount}. You only have ${
+				user.points
+			} points!`;
 		}
 	});
 }
