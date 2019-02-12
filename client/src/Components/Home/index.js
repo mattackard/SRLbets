@@ -7,10 +7,15 @@ import "./style.scss";
 import RaceTile from "../RaceTile";
 
 class Home extends Component {
+	state = {
+		minimizeOpen: true,
+		minimizeOngoing: true,
+		minimizeFinished: true,
+	};
+
 	componentDidMount() {
 		const parsed = queryString.parse(this.props.location.search);
 		if (Object.keys(parsed).length) {
-			console.log(parsed);
 			this.props.twitchLogin(parsed.code, parsed.state);
 			//redirects to home to remove query string
 			this.props.history.push("/");

@@ -7,6 +7,7 @@ const RaceTile = props => {
 	let multiTwitch = "http://multitwitch.tv";
 	let race = props.race;
 
+	let entrantKeys = Object.keys(race.entrants);
 	return (
 		<div className="race">
 			<h1>{race.gameTitle}</h1>
@@ -17,15 +18,15 @@ const RaceTile = props => {
 			) : null}
 			<p>
 				{/* determines whether entrant needs to be plural */}
-				{race.entrants.length === 1
-					? `${race.entrants.length} Race Entrant`
-					: `${race.entrants.length} Race Entrants`}
+				{entrantKeys.length === 1
+					? `${entrantKeys.length} Race Entrant`
+					: `${entrantKeys.length} Race Entrants`}
 			</p>
 			<div className="race-entrants">
-				{race.entrants.map(entrant => (
+				{entrantKeys.map(entrant => (
 					<RaceTileEntrant
-						key={entrant._id}
-						entrant={entrant}
+						key={race.entrants[entrant].name}
+						entrant={race.entrants[entrant]}
 						raceStatus={race.status}
 						raceID={race.raceID}
 					/>

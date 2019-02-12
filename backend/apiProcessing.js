@@ -43,37 +43,33 @@ function getRaceDataFromDB(search, limit, callback) {
 
 function updateRaceData(races) {
 	races.forEach(race => {
-		//build the array of entrants
-		let entrantArray = [];
+		//build the object of entrants
+		let entrantObj = {};
 		for (let i in race.entrants) {
 			//fills in data for the race entrant schema
-			let entrantObj = {
+			entrantObj[race.entrants[i].displayname] = {
 				name: race.entrants[i].displayname,
 				status: race.entrants[i].statetext,
 				place: race.entrants[i].place,
 				time: convertRunTime(race.entrants[i].time),
 				twitch: race.entrants[i].twitch,
+				betUser: 0,
 			};
-			entrantArray.push(entrantObj);
 		}
 
-		//create a race document for saving in db
-		let raceDoc = new Race({
-			raceID: race.id,
-			gameID: race.game.id,
-			gameTitle: race.game.name,
-			goal: race.goal,
-			status: race.statetext,
-			timeStarted: convertRaceStartTime(race.time),
-			simpleTime: simplifyDate(convertRaceStartTime(race.time)),
-			entrants: entrantArray,
-		});
-
-		Race.find({ raceID: race.id }).exec((err, doc) => {
-			if (err) {
-				throw Error(err);
-			}
-			if (doc.raceID) {
+		Race.findOne({ raceID: race.id }, (err, doc) => {
+			if (entrantObj)
+				if (err) {
+					throw Error(err);
+				}
+			if (doc) {
+				//checks if entrant is already in the db and uses previous bet amount if so, otherwise set at 0
+				for (let entrant in entrantObj) {
+					if (doc.entrants[entrant]) {
+						entrantObj[entrant].betUser =
+							doc.entrants[entrant].betUser;
+					}
+				}
 				doc.raceID = race.id;
 				doc.gameID = race.game.id;
 				doc.gameTitle = race.game.name;
@@ -81,9 +77,25 @@ function updateRaceData(races) {
 				doc.status = race.statetext;
 				doc.timeStarted = convertRaceStartTime(race.time);
 				doc.simpleTime = simplifyDate(convertRaceStartTime(race.time));
-				doc.entrants = [...entrantArray, ...doc.entrants];
-				doc.save();
+				doc.entrants = entrantObj;
+				doc.save(err => {
+					if (err) {
+						err.message("error on race update save");
+						throw Error(err);
+					}
+				});
 			} else {
+				//create a race document for saving in db
+				let raceDoc = new Race({
+					raceID: race.id,
+					gameID: race.game.id,
+					gameTitle: race.game.name,
+					goal: race.goal,
+					status: race.statetext,
+					timeStarted: convertRaceStartTime(race.time),
+					simpleTime: simplifyDate(convertRaceStartTime(race.time)),
+					entrants: entrantObj,
+				});
 				Race.create(raceDoc);
 			}
 		});
@@ -219,27 +231,33 @@ function makeBet(username, raceID, entrant, amount) {
 					if (!race) {
 						return `Could not find any races that ${entrant} is entered in. They could be in a race that has already started, or they might not have their twitch username linked to SRL.`;
 					} else {
-						for (let i = 0; i < race.entrants.length; i++) {
-							//finds the entrant that was bet on within the race document
-							if (race.entrants[i].name === entrant) {
-								race.entrants[i].betUser += parseInt(amount);
-								race.betTotal += parseInt(amount);
-								user.betHistory.push({
-									raceId: race.raceID,
-									entrant: entrant,
-									amountBet: amount,
-								});
-								user.points -= amount;
-							}
-						}
-						user.save((err, savedUser) => {
+						//finds the entrant that was bet on within the race document
+						//generally resets betUser to 0 but in one case kept the previous value - what's up? -- user left the race so no updates were sent -- currently will always reset to 0
+						let previousEntrant = race.entrants.get(entrant);
+						race.entrants.set(entrant, {
+							...previousEntrant,
+							betUser: previousEntrant.betUser + parseInt(amount),
+						});
+						race.betTotal += parseInt(amount);
+						user.betHistory.push({
+							raceId: race.raceID,
+							entrant: entrant,
+							amountBet: amount,
+						});
+						user.points -= amount;
+
+						user.save(err => {
 							if (err) {
-								console.log(err);
+								err.message =
+									"User changes from bet could not be saved";
+								throw Error(err);
 							}
 						});
-						race.save((err, savedRace) => {
+						race.save(err => {
 							if (err) {
-								console.log(err);
+								err.message =
+									"Race changes from bet could not be saved";
+								throw Error(err);
 							}
 						});
 					}
