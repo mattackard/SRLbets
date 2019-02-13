@@ -65,9 +65,10 @@ function updateRaceData(races) {
 			if (doc) {
 				//checks if entrant is already in the db and uses previous bet amount if so, otherwise set at 0
 				for (let entrant in entrantObj) {
-					if (doc.entrants[entrant]) {
-						entrantObj[entrant].betUser =
-							doc.entrants[entrant].betUser;
+					if (doc.entrants.get(entrant)) {
+						entrantObj[entrant].betUser = doc.entrants.get(
+							entrant
+						).betUser;
 					}
 				}
 				doc.raceID = race.id;
