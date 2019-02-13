@@ -44,31 +44,32 @@ function getRaceDataFromDB(search, limit, callback) {
 function updateRaceData(races) {
 	races.forEach(race => {
 		//build the object of entrants
-		let entrantObj = {};
+		let entrantObj = new Map();
 		for (let i in race.entrants) {
 			//fills in data for the race entrant schema
-			entrantObj[race.entrants[i].displayname] = {
+			entrantObj.set(race.entrants[i].displayname, {
 				name: race.entrants[i].displayname,
 				status: race.entrants[i].statetext,
 				place: race.entrants[i].place,
 				time: convertRunTime(race.entrants[i].time),
 				twitch: race.entrants[i].twitch,
 				betUser: 0,
-			};
+			});
 		}
-
+		console.log("check");
 		Race.findOne({ raceID: race.id }, (err, doc) => {
-			if (entrantObj)
-				if (err) {
-					throw Error(err);
-				}
+			if (err) {
+				throw Error(err);
+			}
 			if (doc) {
 				//checks if entrant is already in the db and uses previous bet amount if so, otherwise set at 0
-				for (let entrant in entrantObj) {
-					if (doc.entrants.get(entrant)) {
-						entrantObj[entrant].betUser = doc.entrants.get(
-							entrant
-						).betUser;
+				for (let entrant of entrantObj.keys()) {
+					let obj = doc.entrants.get(entrant);
+					if (obj) {
+						entrantObj.set(entrant, {
+							...obj,
+							betUser: doc.entrants.get(entrant).betUser,
+						});
 					}
 				}
 				doc.raceID = race.id;
@@ -78,6 +79,7 @@ function updateRaceData(races) {
 				doc.status = race.statetext;
 				doc.timeStarted = convertRaceStartTime(race.time);
 				doc.simpleTime = simplifyDate(convertRaceStartTime(race.time));
+				//why are old entrants not removed when setting equal to new generated map?
 				doc.entrants = entrantObj;
 				doc.save(err => {
 					if (err) {
@@ -233,7 +235,6 @@ function makeBet(username, raceID, entrant, amount) {
 						return `Could not find any races that ${entrant} is entered in. They could be in a race that has already started, or they might not have their twitch username linked to SRL.`;
 					} else {
 						//finds the entrant that was bet on within the race document
-						//generally resets betUser to 0 but in one case kept the previous value - what's up? -- user left the race so no updates were sent -- currently will always reset to 0
 						let previousEntrant = race.entrants.get(entrant);
 						race.entrants.set(entrant, {
 							...previousEntrant,
