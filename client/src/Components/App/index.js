@@ -19,6 +19,7 @@ class App extends Component {
 		},
 		user: {},
 		intervalIsSet: false,
+		loggedIn: false,
 	};
 
 	//gets data from mongo at a recurring interval as long as app is mounted
@@ -53,7 +54,7 @@ class App extends Component {
 			});
 	};
 
-	//get twitch client data nexessary for an oAuth login redirect
+	//get twitch client data necessary for an oAuth login redirect
 	getTwitchClientData = callback => {
 		axios
 			.get("http://localhost:3001/api/getTwitchClientData", {
@@ -75,19 +76,7 @@ class App extends Component {
 			.then(res => {
 				this.setState({
 					user: res.data,
-				});
-			});
-	};
-
-	//logs user out of twitch and destroys session
-	twitchLogout = () => {
-		axios
-			.get("http://localhost:3001/api/twitchLogout", {
-				withCredentials: true,
-			})
-			.then(res => {
-				this.setState({
-					user: {},
+					loggedIn: true,
 				});
 			});
 	};
@@ -99,15 +88,19 @@ class App extends Component {
 				withCredentials: true,
 			})
 			.then(res => {
-				this.setState({
-					user: res.data.user,
-				});
+				if (res.data !== "no user") {
+					this.setState({
+						user: res.data.user,
+						loggedIn: true,
+					});
+				}
 			});
 	};
 
 	clearUserState = () => {
 		this.setState({
 			user: {},
+			loggedIn: false,
 		});
 	};
 
@@ -115,11 +108,10 @@ class App extends Component {
 		return (
 			<React.Fragment>
 				<Header
-					twitchLogin={this.twitchLogin}
-					twitchLogout={this.twitchLogout}
 					twitchAuthPath={this.state.twitchAuthPath}
 					user={this.state.user}
 					clearUserState={this.clearUserState}
+					loggedIn={this.state.loggedIn}
 				/>
 				<Switch>
 					<Route
@@ -142,6 +134,7 @@ class App extends Component {
 								{...props}
 								user={this.state.user}
 								getUser={this.getUser}
+								loggedIn={this.state.loggedIn}
 							/>
 						)}
 					/>

@@ -56,7 +56,7 @@ class Header extends Component {
 							</NavLink>
 						</li>
 						<li>
-							{this.props.user ? (
+							{this.props.loggedIn ? (
 								<TwitchLogout
 									clearUserState={this.props.clearUserState}
 									getLoginUrl={this.getLoginUrl}

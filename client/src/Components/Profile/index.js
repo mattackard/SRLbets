@@ -11,7 +11,7 @@ class Profile extends Component {
 		return (
 			<div>
 				<h1>User Profile</h1>
-				{Object.keys(user).length ? (
+				{this.props.loggedIn ? (
 					<p>user is logged in: {user.twitchUsername}</p>
 				) : (
 					<p>User is not logged in</p>

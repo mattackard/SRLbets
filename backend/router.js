@@ -85,7 +85,7 @@ router.get("/getLoggedInUser", (req, res, next) => {
 			err.message = "error in getLoggedInUserRoute";
 			return next(err);
 		} else {
-			return res.json({ user: data });
+			return data ? res.json({ user: data }) : res.send("no user");
 		}
 	});
 });
