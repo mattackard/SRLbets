@@ -21,6 +21,9 @@ class Header extends Component {
 				this.setState({
 					twitchUrl: res.data.twitchUrl,
 				});
+			})
+			.catch(err => {
+				throw Error(err);
 			});
 	};
 
@@ -50,16 +53,6 @@ class Header extends Component {
 						<li>
 							<NavLink to="/profile" activeClassName="activeLink">
 								My Profile
-							</NavLink>
-						</li>
-						<li>
-							<NavLink to="/makeBet" activeClassName="activeLink">
-								Make a Bet
-							</NavLink>
-						</li>
-						<li>
-							<NavLink to="/recent" activeClassName="activeLink">
-								Recently Finished Races
 							</NavLink>
 						</li>
 						<li>

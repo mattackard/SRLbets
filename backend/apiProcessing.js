@@ -2,17 +2,6 @@ const axios = require("axios");
 const Race = require("./models/race");
 const User = require("./models/user");
 
-function validateApiResponse(res) {
-	//checks the response from the SRL API in case it is empty or not as expected
-	if (!res) {
-		throw Error();
-	} else if (typeof res !== "Object") {
-		throw Error(
-			"The response from the API was not an object, or it was empty"
-		);
-	}
-}
-
 function getRaceDataFromSRL(callback) {
 	//gets the current race json data from the SRL API
 	//and saves/updates it in the local database
@@ -36,6 +25,7 @@ function getRaceDataFromDB(search, limit, callback) {
 					"Error getting race data from db (getRaceDataFromDB)"
 				);
 			} else {
+				//updateRaceData().then(saveRaceData())
 				callback(data);
 			}
 		});
@@ -56,12 +46,16 @@ function updateRaceData(races) {
 				betUser: 0,
 			});
 		}
-		console.log("check");
 		Race.findOne({ raceID: race.id }, (err, doc) => {
 			if (err) {
 				throw Error(err);
 			}
 			if (doc) {
+				//checks if race status has changed
+				if (doc.status !== race.statetext) {
+					handleRaceStatusChange(race.id, doc.status, race.statetext);
+				}
+
 				//checks if entrant is already in the db and uses previous bet amount if so, otherwise set at 0
 				for (let entrant of entrantObj.keys()) {
 					let obj = doc.entrants.get(entrant);
@@ -81,7 +75,14 @@ function updateRaceData(races) {
 				doc.simpleTime = simplifyDate(convertRaceStartTime(race.time));
 				//why are old entrants not removed when setting equal to new generated map?
 				doc.entrants = entrantObj;
-				doc.save(err => {
+				if (entrantObj.size !== doc.entrants.size) {
+					console.log(
+						`entrant is being added or should be deleted: new # ${
+							entrantObj.size
+						} | old # ${doc.entrants.size}`
+					);
+				}
+				doc.save((err, saved) => {
 					if (err) {
 						err.message("error on race update save");
 						throw Error(err);
@@ -103,6 +104,30 @@ function updateRaceData(races) {
 			}
 		});
 	});
+	console.log("races retrieved from SRL");
+}
+
+function handleRaceStatusChange(raceId, oldStatus, newStatus) {
+	console.log(`Race ${raceId} is changing from ${oldStatus} to ${newStatus}`);
+	if (newStatus === "Complete") {
+		Race.findOne({ raceID: raceId }, (err, doc) => {
+			if (err) {
+				err.message = "Error in finding race on status change";
+				throw Error(err);
+			} else if (!doc) {
+				throw Error(
+					"Could not find the race in the database with the provided race id"
+				);
+			} else {
+				doc.entrants.forEach(entrant => {
+					if (entrant.place === 1) {
+						console.log(`${entrant.name} finished first!`);
+					}
+					console.log(entrant.status === "Finished");
+				});
+			}
+		});
+	}
 }
 
 function convertRaceStartTime(sec) {
@@ -273,7 +298,6 @@ function makeBet(username, raceID, entrant, amount) {
 	});
 }
 
-module.exports.validateApiResponse = validateApiResponse;
 module.exports.getRaceDataFromSRL = getRaceDataFromSRL;
 module.exports.getRaceDataFromDB = getRaceDataFromDB;
 module.exports.updateRaceData = updateRaceData;
