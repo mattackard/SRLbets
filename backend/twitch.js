@@ -37,7 +37,7 @@ const getUserFromTwitch = (req, code, state, callback) => {
 			)
 			.then(data => getUserData(data, req))
 			.then(getUserFollowsFromAPI)
-			// .then(getUsersFromId)
+			.then(getUsersFromId)
 			.then(saveUser)
 			.then(callback)
 			.catch(err => {
@@ -109,13 +109,53 @@ const getUserFollowsFromAPI = (
 				}
 				//runs the callback to send the complete unpaginated data
 				else if (follows.length === response.data.total) {
-					userData.followList = follows;
+					userData.following = follows;
 					resolve(userData);
 				} else {
 					reject(
 						"Something went wrong with getting user follows ... the generated list is longer than twitch's recorded follows for user"
 					);
 				}
+			})
+			.catch(err => {
+				reject(err);
+			});
+	});
+};
+
+//gets the user data from the user IDs provided in the getUserFollowsFromAPI function
+const getUsersFromId = userData => {
+	return new Promise((resolve, reject) => {
+		//generates a query string to attach to the get request url
+		let idString = "";
+		let count = 0;
+		for (count; count < 100; count++) {
+			idString += `id=${userData.following[count]}&`;
+			count++;
+		}
+		//the request query is limited to 100 IDs, still need to allow for all user follows to be retrieved
+		if (count === 100) {
+			console.log(
+				"100 user retrieved, there are probably more past the request limit"
+			);
+		}
+		axios
+			.get(`https://api.twitch.tv/helix/users?${idString}`, {
+				headers: { "Client-ID": `${twitchClientId}` },
+			})
+			.then(data => {
+				//user data is then placed into a map for easier searching functionality
+				let followMap = new Map();
+				data.data.data.forEach(user => {
+					followMap.set(user.login, {
+						id: user.id,
+						twitchUsername: user.login,
+						profile_image_url: user.profile_image_url,
+					});
+				});
+				//the map is added to the user object and returned
+				userData.following = followMap;
+				resolve(userData);
 			})
 			.catch(err => {
 				reject(err);
@@ -132,11 +172,13 @@ const saveUser = userData => {
 				reject(err);
 			}
 			if (!doc) {
+				//no user found in DB, create new one
 				User.create(
 					{
+						id: userData.id,
 						twitchUsername: userData.login,
-						avatar: userData.profile_image_url,
-						following: userData.followList,
+						profileImg: userData.profile_image_url,
+						following: userData.following,
 					},
 					(err, saved) => {
 						if (err) {
@@ -148,62 +190,25 @@ const saveUser = userData => {
 					}
 				);
 			} else {
-				console.log("user already exists, updated data is being sent");
+				//user found in DB, just need to update follows and profile img
 				User.updateOne(
 					{
-						avatar: userData.profile_image_url,
-						following: userData.followList,
+						profileImg: userData.profile_image_url,
+						following: userData.following,
 					},
 					(err, saved) => {
 						if (err) {
 							reject(err);
 						} else {
+							console.log(
+								"user already exists, data was updated"
+							);
 							resolve(saved);
 						}
 					}
 				);
 			}
 		});
-	});
-};
-
-const handleTwitchError = (req, res) => {
-	switch (res.status) {
-		//unauthorized
-		case 401:
-			handleUnauthorized(req);
-		//ok
-		case 200:
-			return res;
-		//bad request
-		case 400:
-			throw Error(res);
-		//forbidden
-		case 403:
-			throw Error(res);
-	}
-	throw Error(res);
-};
-
-const handleUnauthorized = req => {
-	console.log("called unauthorized");
-	User.find({ twitchUsername: req.session.username }, (err, user) => {
-		if (err) {
-			throw Error(err);
-		}
-		let res = tokenRefresh(req, user.oAuth.refresh_token);
-		if (res.status === 200) {
-			user.oAuth.access_token = res.access_token;
-			user.oAuth.refresh_token = res.refresh_token;
-			user.save((err, saved) => {
-				if (err) throw Error(err);
-				console.log("tokens refreshed and saved in db");
-				return saved;
-			});
-		}
-		if (res.status === 400) {
-			//redirect to twitch auth page
-		}
 	});
 };
 

@@ -1,12 +1,12 @@
 const mongoose = require("mongoose");
 
 const UserSchema = new mongoose.Schema({
+	id: { type: String, required: true, trim: true },
 	twitchUsername: { type: String, required: true, trim: true },
 	srlUserName: { type: String, trim: true },
 	points: { type: Number, default: 100, required: true },
-	avatar: String,
-	following: [],
-	//oAuth: {},
+	profileImg: String,
+	following: { type: Map, of: Object },
 	betHistory: [
 		{
 			raceId: { type: String, required: true },
@@ -19,7 +19,6 @@ const UserSchema = new mongoose.Schema({
 			},
 		},
 	],
-	//just race ids
 	raceHistory: [],
 });
 
