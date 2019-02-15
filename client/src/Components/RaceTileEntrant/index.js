@@ -79,7 +79,8 @@ class RaceTileEntrant extends Component {
 					</button>
 				</ul>
 				{this.state.entrantDetails ? (
-					raceStatus === "Entry Open" ? (
+					raceStatus === "Entry Open" ||
+					raceStatus === "Entry Closed" ? (
 						<InlineBet entrant={entrant} raceID={raceID} />
 					) : (
 						<p>

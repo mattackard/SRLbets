@@ -249,7 +249,10 @@ function makeBet(username, raceID, entrant, amount) {
 	User.findOne({ twitchUsername: username }, (err, user) => {
 		if (user.points >= amount) {
 			Race.findOne(
-				{ raceID: raceID, status: "Entry Open" },
+				{
+					raceID: raceID,
+					status: { $in: ["Entry Open", "Entry Closed"] },
+				},
 				(err, race) => {
 					if (err) {
 						throw Error(

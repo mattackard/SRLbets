@@ -13,7 +13,7 @@ const RaceTile = props => {
 			<h1>{race.gameTitle}</h1>
 			<p className="race-goal">{race.goal || "No Goal Set"}</p>
 			<p>{race.status}</p>
-			{race.status !== "Entry Open" ? (
+			{race.status !== "Entry Open" && race.status !== "Entry Closed" ? (
 				<p>Started {race.simpleTime}</p>
 			) : null}
 			<p>
