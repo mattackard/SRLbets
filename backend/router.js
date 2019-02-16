@@ -22,32 +22,20 @@ Client.findOne({ clientName: "Twitch" }).exec((err, data) => {
 });
 
 //GET race data and send to client
-router.get("/getRaces", (req, res) => {
-	let open, ongoing, finished;
-	getRaceDataFromDB(
+router.get("/getRaces", async (req, res) => {
+	let open = await getRaceDataFromDB(
 		{ status: { $in: ["Entry Open", "Entry Closed"] } },
-		null,
-		data => {
-			open = data;
-			getRaceDataFromDB({ status: "In Progress" }, null, data => {
-				ongoing = data;
-				getRaceDataFromDB(
-					{ status: { $in: ["Complete", "Race Over"] } },
-					10,
-					data => {
-						finished = data;
-						return res.json({
-							races: {
-								open: open,
-								ongoing: ongoing,
-								finished: finished,
-							},
-						});
-					}
-				);
-			});
-		}
+		null
 	);
+	let ongoing = await getRaceDataFromDB({ status: "In Progress" }, null);
+	let finished = await getRaceDataFromDB({ status: "Complete" }, 10);
+	return res.json({
+		races: {
+			open: open,
+			ongoing: ongoing,
+			finished: finished,
+		},
+	});
 });
 
 //GET Twitch authorization url

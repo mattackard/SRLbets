@@ -2,39 +2,39 @@ const axios = require("axios");
 const Race = require("./models/race");
 const User = require("./models/user");
 
-function getRaceDataFromSRL(callback) {
+function getRaceDataFromSRL() {
 	//gets the current race json data from the SRL API
 	//and saves/updates it in the local database
 	axios
 		.get("http://api.speedrunslive.com/races", { withCredentails: true })
 		.then(response => {
-			callback(response.data.races);
+			updateRaceData(response.data.races);
 		})
-		.catch(error => {
-			console.error(error);
+		.catch(err => {
+			throw Error(err);
 		});
 }
 
-function getRaceDataFromDB(search, limit, callback) {
-	Race.find(search)
-		.sort({ timeStarted: -1 })
-		.limit(limit)
-		.exec((err, data) => {
-			if (err) {
-				throw Error(
-					"Error getting race data from db (getRaceDataFromDB)"
-				);
-			} else {
-				//updateRaceData().then(saveRaceData())
-				callback(data);
-			}
-		});
+function getRaceDataFromDB(search, limit) {
+	return new Promise((resolve, reject) => {
+		Race.find(search)
+			.sort({ timeStarted: -1 })
+			.limit(limit)
+			.exec((err, data) => {
+				if (err) {
+					err.message =
+						"Error getting race data from db (getRaceDataFromDB)";
+					reject(err);
+				} else {
+					resolve(data);
+				}
+			});
+	});
 }
 
-function updateRaceData(races) {
-	races.forEach(race => {
-		//build the object of entrants
-		let entrantObj = new Map();
+function createEntrantObj(entrantObj, race) {
+	//fills in data for the race entrant schema
+	return new Promise((resolve, reject) => {
 		for (let i in race.entrants) {
 			//fills in data for the race entrant schema
 			entrantObj.set(race.entrants[i].displayname, {
@@ -46,7 +46,36 @@ function updateRaceData(races) {
 				betUser: 0,
 			});
 		}
-		Race.findOne({ raceID: race.id }, (err, doc) => {
+		if (Object.keys(race.entrants).length === entrantObj.size) {
+			resolve(entrantObj);
+		} else {
+			reject("entrant obj did not fully populate");
+		}
+	});
+}
+
+function restoreUserBets(entrantObj, doc) {
+	//checks if entrant is already in the db and uses previous bet amount if so, otherwise set at 0
+	for (let entrant of entrantObj.keys()) {
+		const oldEntrant = doc.entrants.get(entrant);
+		if (oldEntrant) {
+			entrantObj.set(entrant, {
+				...entrantObj.get(entrant),
+				betUser: oldEntrant.betUser,
+			});
+		}
+	}
+	return entrantObj;
+}
+
+function updateRaceData(races) {
+	races.forEach(async race => {
+		//build the object of entrants
+		let entrantObj = new Map();
+		entrantObj = await createEntrantObj(entrantObj, race);
+
+		//get the race from the database if it already exists
+		Race.findOne({ raceID: race.id }, async (err, doc) => {
 			if (err) {
 				throw Error(err);
 			}
@@ -55,17 +84,6 @@ function updateRaceData(races) {
 				if (doc.status !== race.statetext) {
 					handleRaceStatusChange(race.id, doc.status, race.statetext);
 				}
-
-				//checks if entrant is already in the db and uses previous bet amount if so, otherwise set at 0
-				for (let entrant of entrantObj.keys()) {
-					let obj = doc.entrants.get(entrant);
-					if (obj) {
-						entrantObj.set(entrant, {
-							...obj,
-							betUser: doc.entrants.get(entrant).betUser,
-						});
-					}
-				}
 				doc.raceID = race.id;
 				doc.gameID = race.game.id;
 				doc.gameTitle = race.game.name;
@@ -73,23 +91,15 @@ function updateRaceData(races) {
 				doc.status = race.statetext;
 				doc.timeStarted = convertRaceStartTime(race.time);
 				doc.simpleTime = simplifyDate(convertRaceStartTime(race.time));
-				//why are old entrants not removed when setting equal to new generated map?
-				doc.entrants = entrantObj;
-				if (entrantObj.size !== doc.entrants.size) {
-					console.log(
-						`entrant is being added or should be deleted: new # ${
-							entrantObj.size
-						} | old # ${doc.entrants.size}`
-					);
-				}
-				doc.save((err, saved) => {
+				doc.entrants = await restoreUserBets(entrantObj, doc);
+				doc.save(err => {
 					if (err) {
 						err.message("error on race update save");
 						throw Error(err);
 					}
 				});
 			} else {
-				//create a race document for saving in db
+				//create a new race document if it can't already be found in the database
 				let raceDoc = new Race({
 					raceID: race.id,
 					gameID: race.game.id,
@@ -123,7 +133,10 @@ function handleRaceStatusChange(raceId, oldStatus, newStatus) {
 					if (entrant.place === 1) {
 						console.log(`${entrant.name} finished first!`);
 					}
-					console.log(entrant.status === "Finished");
+					console.log(
+						entrant.status === "Finished" ||
+							entrant.status === "Forfeit"
+					);
 				});
 			}
 		});
