@@ -9,6 +9,7 @@ function getRaceDataFromSRL() {
 		.get("http://api.speedrunslive.com/races", { withCredentails: true })
 		.then(response => {
 			updateRaceData(response.data.races);
+			recordRaceEntrants(response.data.races);
 		})
 		.catch(err => {
 			throw Error(err);
@@ -81,9 +82,7 @@ function updateRaceData(races) {
 			}
 			if (doc) {
 				//checks if race status has changed
-				if (doc.status !== race.statetext) {
-					handleRaceStatusChange(race.id, doc.status, race.statetext);
-				}
+				const oldStatus = doc.status;
 				doc.raceID = race.id;
 				doc.gameID = race.game.id;
 				doc.gameTitle = race.game.name;
@@ -92,10 +91,17 @@ function updateRaceData(races) {
 				doc.timeStarted = convertRaceStartTime(race.time);
 				doc.simpleTime = simplifyDate(convertRaceStartTime(race.time));
 				doc.entrants = await restoreUserBets(entrantObj, doc);
-				doc.save(err => {
+				doc.save((err, saved) => {
 					if (err) {
-						err.message("error on race update save");
+						err.message = "Error when updating existing race";
 						throw Error(err);
+					}
+					if (saved.status !== oldStatus) {
+						handleRaceStatusChange(
+							race.id,
+							saved.status,
+							oldStatus
+						);
 					}
 				});
 			} else {
@@ -117,7 +123,100 @@ function updateRaceData(races) {
 	console.log("races retrieved from SRL");
 }
 
-function handleRaceStatusChange(raceId, oldStatus, newStatus) {
+function recordRaceEntrants(races) {
+	console.log("recording race entrants");
+	races.forEach(race => {
+		for (let entrant in race.entrants) {
+			User.findOne(
+				{
+					$or: [
+						{ srlName: race.entrants[entrant].displayname },
+						{ twitchUsername: race.entrants[entrant].twitch },
+					],
+				},
+				async (err, doc) => {
+					if (err) {
+						throw Error(err);
+					}
+					if (doc) {
+						doc.game = race.game.name;
+						doc.goal = race.goal;
+						doc.status = race.statetext;
+						doc.raceHistory = await updateUserRaceHistory(
+							doc.raceHistory,
+							race
+						);
+						//if the race entrant has a finish position, record place and time
+						if (race.place < 1000) {
+							doc.place = race.entrants[entrant].place;
+							doc.time = convertRunTime(
+								race.entrants[entrant].time
+							);
+						}
+						doc.save(err => {
+							if (err) {
+								// err.message =
+								// 	"Eror when updating user from race entrants";
+								throw Error(err);
+							}
+						});
+					} else {
+						User.create(
+							{
+								srlName: race.entrants[entrant].displayname,
+								twitchUsername: race.entrants[entrant].twitch,
+								raceHistory: [
+									{
+										raceId: race.id,
+										game: race.game.name,
+										goal: race.goal,
+										status: race.statetext,
+									},
+								],
+							},
+							(err, saved) => {
+								if (err) {
+									err.message =
+										"Error in creating new user from race entrant";
+									throw Error(err);
+								}
+							}
+						);
+					}
+				}
+			);
+		}
+	});
+}
+
+function updateUserRaceHistory(raceHistory, race) {
+	return new Promise((resolve, reject) => {
+		let count = 0;
+		raceHistory.forEach(recordedRace => {
+			//if the race is already in history, update it
+			if (recordedRace.raceId === race.id) {
+				recordedRace.goal = race.goal;
+				recordedRace.status = race.statetext;
+			}
+			//otherwise, add the race to history
+			else {
+				raceHistory.push({
+					raceId: race.id,
+					game: race.game.name,
+					goal: race.goal,
+					status: race.statetext,
+				});
+			}
+			count++;
+		});
+		//makes sure all races in history have been iterated before resolving
+		if (count === raceHistory.length) {
+			resolve(raceHistory);
+		}
+	});
+}
+
+function handleRaceStatusChange(raceId, newStatus, oldStatus) {
 	console.log(`Race ${raceId} is changing from ${oldStatus} to ${newStatus}`);
 	if (newStatus === "Complete") {
 		Race.findOne({ raceID: raceId }, (err, doc) => {
@@ -133,10 +232,6 @@ function handleRaceStatusChange(raceId, oldStatus, newStatus) {
 					if (entrant.place === 1) {
 						console.log(`${entrant.name} finished first!`);
 					}
-					console.log(
-						entrant.status === "Finished" ||
-							entrant.status === "Forfeit"
-					);
 				});
 			}
 		});
