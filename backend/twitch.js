@@ -148,9 +148,9 @@ const getUsersFromId = userData => {
 				let followMap = new Map();
 				data.data.data.forEach(user => {
 					followMap.set(user.login, {
-						id: user.id,
+						twitchID: user.id,
 						twitchUsername: user.login,
-						profile_image_url: user.profile_image_url,
+						twitchProfileImg: user.profile_image_url,
 					});
 				});
 				//the map is added to the user object and returned
@@ -175,9 +175,9 @@ const saveUser = userData => {
 				//no user found in DB, create new one
 				User.create(
 					{
-						id: userData.id,
+						twitchID: userData.id,
 						twitchUsername: userData.login,
-						profileImg: userData.profile_image_url,
+						twitchProfileImg: userData.profile_image_url,
 						following: userData.following,
 					},
 					(err, saved) => {
