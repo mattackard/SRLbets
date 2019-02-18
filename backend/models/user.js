@@ -26,7 +26,7 @@ const UserSchema = new mongoose.Schema({
 	twitchID: { type: String, trim: true },
 	twitchUsername: { type: String, trim: true },
 	twitchProfileImg: String,
-	following: { type: Map, of: Object },
+	following: { type: Map, of: Object, default: new Map() },
 	betHistory: [BetHistory],
 	raceHistory: [RaceHistory],
 });

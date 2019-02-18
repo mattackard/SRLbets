@@ -33,18 +33,18 @@ function getRaceDataFromDB(search, limit) {
 	});
 }
 
-function createEntrantObj(entrantObj, race) {
-	//fills in data for the race entrant schema
+function createEntrantObj(race) {
+	let entrantObj = new Map();
 	return new Promise((resolve, reject) => {
 		for (let i in race.entrants) {
-			//fills in data for the race entrant schema
+			//adds each entrant from the API response to the map
 			entrantObj.set(race.entrants[i].displayname, {
 				name: race.entrants[i].displayname,
 				status: race.entrants[i].statetext,
 				place: race.entrants[i].place,
 				time: convertRunTime(race.entrants[i].time),
 				twitch: race.entrants[i].twitch,
-				betUser: 0,
+				betTotal: 0,
 			});
 		}
 		if (Object.keys(race.entrants).length === entrantObj.size) {
@@ -62,7 +62,7 @@ function restoreUserBets(entrantObj, doc) {
 		if (oldEntrant) {
 			entrantObj.set(entrant, {
 				...entrantObj.get(entrant),
-				betUser: oldEntrant.betUser,
+				betTotal: oldEntrant.betTotal,
 			});
 		}
 	}
@@ -71,10 +71,6 @@ function restoreUserBets(entrantObj, doc) {
 
 function updateRaceData(races) {
 	races.forEach(async race => {
-		//build the object of entrants
-		let entrantObj = new Map();
-		entrantObj = await createEntrantObj(entrantObj, race);
-
 		//get the race from the database if it already exists
 		Race.findOne({ raceID: race.id }, async (err, doc) => {
 			if (err) {
@@ -90,20 +86,29 @@ function updateRaceData(races) {
 				doc.status = race.statetext;
 				doc.timeStarted = convertRaceStartTime(race.time);
 				doc.simpleTime = simplifyDate(convertRaceStartTime(race.time));
-				doc.entrants = await restoreUserBets(entrantObj, doc);
-				doc.save((err, saved) => {
-					if (err) {
-						err.message = "Error when updating existing race";
-						throw Error(err);
-					}
-					if (saved.status !== oldStatus) {
-						handleRaceStatusChange(
-							race.id,
-							saved.status,
-							oldStatus
-						);
-					}
-				});
+
+				//build the object of entrants
+				createEntrantObj(race)
+					.then(entrantObj => restoreUserBets(entrantObj, doc))
+					.then(entrantObj => {
+						doc.entrants = entrantObj;
+						doc.save((err, saved) => {
+							if (err) {
+								err.message =
+									"Error when updating existing race";
+								throw Error(err);
+							}
+							if (saved.status !== oldStatus) {
+								handleRaceStatusChange(
+									race,
+									saved.status,
+									oldStatus
+								);
+							} else if (saved.status === "In Progress") {
+								checkForFirstPlace(saved);
+							}
+						});
+					});
 			} else {
 				//create a new race document if it can't already be found in the database
 				let raceDoc = new Race({
@@ -114,7 +119,7 @@ function updateRaceData(races) {
 					status: race.statetext,
 					timeStarted: convertRaceStartTime(race.time),
 					simpleTime: simplifyDate(convertRaceStartTime(race.time)),
-					entrants: entrantObj,
+					entrants: await createEntrantObj(race),
 				});
 				Race.create(raceDoc);
 			}
@@ -123,6 +128,7 @@ function updateRaceData(races) {
 	console.log("races retrieved from SRL");
 }
 
+//takes SRL API formatted race and adds or updates all the race entrants into the user db
 function recordRaceEntrants(races) {
 	console.log("recording race entrants");
 	races.forEach(race => {
@@ -142,10 +148,17 @@ function recordRaceEntrants(races) {
 						doc.game = race.game.name;
 						doc.goal = race.goal;
 						doc.status = race.statetext;
-						doc.raceHistory = await updateUserRaceHistory(
-							doc.raceHistory,
-							race
-						);
+						if (
+							doc.status !== "Entry Open" &&
+							doc.status !== "Entry Closed"
+						) {
+							doc.raceHistory = await updateUserRaceHistory(
+								doc.raceHistory,
+								race,
+								entrant
+							);
+						}
+
 						//if the race entrant has a finish position, record place and time
 						if (race.place < 1000) {
 							doc.place = race.entrants[entrant].place;
@@ -155,8 +168,8 @@ function recordRaceEntrants(races) {
 						}
 						doc.save(err => {
 							if (err) {
-								// err.message =
-								// 	"Eror when updating user from race entrants";
+								err.message =
+									"Eror when updating user from race entrants";
 								throw Error(err);
 							}
 						});
@@ -189,14 +202,15 @@ function recordRaceEntrants(races) {
 	});
 }
 
-function updateUserRaceHistory(raceHistory, race) {
+function updateUserRaceHistory(raceHistory, race, entrant) {
 	return new Promise((resolve, reject) => {
 		let count = 0;
 		raceHistory.forEach(recordedRace => {
 			//if the race is already in history, update it
 			if (recordedRace.raceId === race.id) {
-				recordedRace.goal = race.goal;
 				recordedRace.status = race.statetext;
+				recordedRace.place = entrant.place;
+				recordedRace.time = entrant.time;
 			}
 			//otherwise, add the race to history
 			else {
@@ -205,6 +219,8 @@ function updateUserRaceHistory(raceHistory, race) {
 					game: race.game.name,
 					goal: race.goal,
 					status: race.statetext,
+					place: entrant.place,
+					time: entrant.time,
 				});
 			}
 			count++;
@@ -216,10 +232,12 @@ function updateUserRaceHistory(raceHistory, race) {
 	});
 }
 
-function handleRaceStatusChange(raceId, newStatus, oldStatus) {
-	console.log(`Race ${raceId} is changing from ${oldStatus} to ${newStatus}`);
+function handleRaceStatusChange(currentRace, newStatus, oldStatus) {
+	console.log(
+		`Race ${currentRace.id} is changing from ${oldStatus} to ${newStatus}`
+	);
 	if (newStatus === "Complete") {
-		Race.findOne({ raceID: raceId }, (err, doc) => {
+		Race.findOne({ raceID: currentRace.id }, (err, doc) => {
 			if (err) {
 				err.message = "Error in finding race on status change";
 				throw Error(err);
@@ -230,7 +248,9 @@ function handleRaceStatusChange(raceId, newStatus, oldStatus) {
 			} else {
 				doc.entrants.forEach(entrant => {
 					if (entrant.place === 1) {
+						//give back points x2 for each bet on this entrant
 						console.log(`${entrant.name} finished first!`);
+						betPayout(entrant);
 					}
 				});
 			}
@@ -238,21 +258,49 @@ function handleRaceStatusChange(raceId, newStatus, oldStatus) {
 	}
 }
 
+//finds any first place finishes and pays out the bets made on that entrant
+function checkForFirstPlace(race) {
+	race.entrants.forEach(entrant => {
+		if (entrant.place === 1) {
+			//checks if any bets were made for this entrant
+			if (entrant.bets.size > 0) {
+				console.log(`${entrant.name} finished first!`);
+				console.log(entrant.bets);
+			} else {
+				console.log(
+					`${entrant.name} finished first, but no bets were made =(`
+				);
+			}
+		}
+	});
+}
+
+function betPayout(entrant) {
+	console.log(entrant.bets);
+}
+
+//converts seconds back into a Date
 function convertRaceStartTime(sec) {
-	//converts seconds back into a Date
 	let ms = sec * 1000;
 	let date = new Date();
 	date.setTime(ms);
 	return date;
 }
 
+//converts date to a string without timezone information
 function simplifyDate(date) {
 	let pretty = date;
-	pretty = pretty.toString().split(" "); //["Sun", "Feb", "05", "2322", "12:08:10", "GMT-0800", "(Pacific", "Standard", "Time)"]
+	pretty = pretty.toString().split(" ");
+	//["Sun", "Feb", "05", "2322", "12:08:10", "GMT-0800", "(Pacific", "Standard", "Time)"]
+
 	pretty[1] = numberedMonth(pretty[1]);
-	pretty[3] = pretty[3].substring(2); //assumes 21st century
+
+	//assumes 21st century
+	pretty[3] = pretty[3].substring(2);
 	pretty[4] = twelveHour(pretty[4]);
-	pretty.pop(); //removes time zone information
+
+	//removes time zone information
+	pretty.pop();
 	pretty.pop();
 	return `${pretty[0]} ${pretty[1]}/${pretty[2]}/${pretty[3]} ${pretty[4]}`;
 }
@@ -261,7 +309,11 @@ function simplifyDate(date) {
 function twelveHour(time) {
 	let amPm = "am";
 	let pretty = time.split(":");
-	pretty.pop(); //remove seconds from time
+
+	//remove seconds from time
+	pretty.pop();
+
+	//checks for am vs pm and sets hour 24 to 12
 	pretty.forEach(x => {
 		return parseInt(x);
 	});
@@ -333,29 +385,14 @@ function convertRunTime(apiTime) {
 	}
 }
 
-//searches for the race entrant and returns the current
-function getBetUser(race, entrantName) {
-	Race.findOne({ raceID: race.id }, (err, doc) => {
-		//bet total on user if present
-		if (err) {
-			throw Error(err);
-		} else if (doc) {
-			let bet = 0;
-			doc.entrants.forEach(entrant => {
-				if (entrant.name === entrantName) {
-					bet = entrant.betUser;
-				}
-			});
-			return bet;
-		} else {
-			return 0;
-		}
-	});
-}
-
+//records user bets in race document and user document
 function makeBet(username, raceID, entrant, amount) {
+	//parses amount as string to amount as number
+	amount = parseInt(amount);
 	User.findOne({ twitchUsername: username }, (err, user) => {
+		//checks that user has enough points for the bet they made
 		if (user.points >= amount) {
+			//finds the requested race making sure betting is still open
 			Race.findOne(
 				{
 					raceID: raceID,
@@ -368,15 +405,49 @@ function makeBet(username, raceID, entrant, amount) {
 						);
 					}
 					if (!race) {
-						return `Could not find any races that ${entrant} is entered in. They could be in a race that has already started, or they might not have their twitch username linked to SRL.`;
+						return `Could not find any races that ${entrant} is entered in. They could be in a race that has already started.`;
 					} else {
 						//finds the entrant that was bet on within the race document
 						let previousEntrant = race.entrants.get(entrant);
-						race.entrants.set(entrant, {
-							...previousEntrant,
-							betUser: previousEntrant.betUser + parseInt(amount),
+						//build race history as array of key value pairs
+						let betHistory = [];
+						let newAmount = amount;
+						Object.keys(previousEntrant.bets).forEach(key => {
+							//if the key is already present, increase amount to reflect total combined bet amount
+							if (key === username) {
+								newAmount +=
+									previousEntrant.bets[key].betAmount;
+							}
+							//otherwise create new betHistory entry
+							else {
+								betHistory.push([
+									key,
+									previousEntrant.bets[key],
+								]);
+							}
 						});
-						race.betTotal += parseInt(amount);
+						//adds the new bet to betHistory
+						betHistory.push([
+							username,
+							{
+								twitchUsername: username,
+								betAmount: newAmount,
+								isPaid: false,
+							},
+						]);
+						console.log(betHistory);
+						race.entrants.set(entrant, {
+							name: previousEntrant.name,
+							status: previousEntrant.status,
+							place: previousEntrant.place,
+							time: previousEntrant.time,
+							twitch: previousEntrant.twitch,
+							betTotal: previousEntrant.betTotal + amount,
+							bets: new Map(betHistory),
+						});
+						console.log(race.entrants.get(entrant));
+
+						race.betTotal += amount;
 						user.betHistory.push({
 							raceId: race.raceID,
 							entrant: entrant,
@@ -397,6 +468,7 @@ function makeBet(username, raceID, entrant, amount) {
 									"Race changes from bet could not be saved";
 								throw Error(err);
 							}
+							getRaceDataFromDB();
 						});
 					}
 				}

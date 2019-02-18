@@ -1,12 +1,19 @@
 const mongoose = require("mongoose");
 
+const BetSchema = new mongoose.Schema({
+	twitchUsername: { type: String, required: true, trim: true },
+	betAmount: { type: Number, required: true },
+	isPaid: { type: Boolean, required: true, default: false },
+});
+
 const EntrantSchema = new mongoose.Schema({
 	name: { type: String, required: true, trim: true },
 	status: { type: String, required: true },
 	place: { type: Number, required: true },
 	time: String,
 	twitch: String,
-	betUser: { type: Number, required: true, default: 0 },
+	betTotal: { type: Number, required: true, default: 0 },
+	bets: { type: Object, of: BetSchema, default: {} },
 });
 
 const RaceSchema = new mongoose.Schema({
@@ -18,7 +25,7 @@ const RaceSchema = new mongoose.Schema({
 	timeStarted: { type: Date, required: true },
 	simpleTime: String,
 	betTotal: { type: Number, required: true, default: 0 },
-	entrants: { type: Map, of: EntrantSchema },
+	entrants: { type: Map, of: EntrantSchema, default: new Map() },
 });
 
 module.exports = mongoose.model("race", RaceSchema);
