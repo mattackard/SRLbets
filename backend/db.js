@@ -141,5 +141,108 @@ function buildUserBetHistory(betHistory, race, entrant, amount) {
 	return betHistory;
 }
 
+//finds any first place finishes and pays out the bets made on that entrant
+function checkForFirstPlace(race) {
+	race.entrants.forEach(entrant => {
+		let newRaceBets = [];
+		if (entrant.place === 1) {
+			//checks if any bets were made for this entrant
+			if (entrant.bets.size > 0) {
+				console.log(`${entrant.name} finished first!`);
+				betPayout(entrant, race, newRaceBets);
+			} else {
+				console.log(
+					`${entrant.name} finished first, but no bets were made =(`
+				);
+			}
+		} else {
+			if (entrant.bets.size > 0) {
+				closeBet(entrant, race, newRaceBets);
+			}
+		}
+		Race.findOne({ raceID: race.raceID }, (err, doc) => {
+			doc.entrants.set(entrant.name, {
+				//value.validate issue
+				...entrant,
+				bets: new Map(newRaceBets),
+			});
+			doc.save(err => {
+				if (err) {
+					throw Error(err);
+				}
+			});
+		});
+	});
+}
+
+//pays winning bets back 2:1 and sets them as paid
+function betPayout(entrant, race, newRaceBets) {
+	console.log(entrant.bets);
+	entrant.bets.forEach(bet => {
+		//checks if the bet has already been paid
+		if (!bet.isPaid) {
+			let betReward = bet.betAmount * 2;
+			User.findOne({ twitchUsername: bet.twitchUsername }, (err, doc) => {
+				if (err) {
+					err.message = "Could not find user in bet payout";
+					throw Error(err);
+				}
+				doc.points += betReward;
+				doc.betHistory.forEach(userBet => {
+					if (userBet.raceId === race.raceID) {
+						userBet.result = `+${betReward}`;
+					}
+				});
+				doc.save((err, saved) => {
+					if (err) {
+						err.message = "";
+					}
+					//adds to the modified bet map to send back to race db
+					newRaceBets.push([
+						bet.twitchUsername,
+						{
+							...bet,
+							isPaid: true,
+						},
+					]);
+				});
+			});
+		}
+	});
+}
+
+//records the lost bet and result in the db
+function closeBet(entrant, race, newRaceBets) {
+	let newRaceBets = [];
+	entrant.bets.forEach(bet => {
+		User.findOne({ twitchUsername: bet.twitchUsername }, (err, doc) => {
+			if (err) {
+				err.message = "Could not find user in bet payout";
+				throw Error(err);
+			}
+			doc.betHistory.forEach(userBet => {
+				if (userBet.raceId === race.raceID) {
+					userBet.result = `-${betReward}`;
+				}
+			});
+			doc.save(err => {
+				if (err) {
+					err.message = "";
+				}
+				//adds to the modified bet map to send back to race db
+				newRaceBets.push([
+					bet.twitchUsername,
+					{
+						...bet,
+						isPaid: true,
+					},
+				]);
+			});
+		});
+	});
+	return newRaceBets;
+}
+
 module.exports.getRaceDataFromDB = getRaceDataFromDB;
+module.exports.checkForFirstPlace = checkForFirstPlace;
 module.exports.makeBet = makeBet;

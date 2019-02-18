@@ -1,6 +1,7 @@
 const axios = require("axios");
 const Race = require("./models/race");
 const User = require("./models/user");
+const checkForFirstPlace = require("./db").checkForFirstPlace;
 
 function getRaceDataFromSRL() {
 	//gets the current race json data from the SRL API
@@ -239,50 +240,6 @@ function handleRaceStatusChange(currentRace, newStatus, oldStatus) {
 			}
 		});
 	}
-}
-
-//finds any first place finishes and pays out the bets made on that entrant
-function checkForFirstPlace(race) {
-	race.entrants.forEach(entrant => {
-		if (entrant.place === 1) {
-			//checks if any bets were made for this entrant
-			if (entrant.bets.size > 0) {
-				console.log(`${entrant.name} finished first!`);
-				betPayout(entrant, race.raceID);
-			} else {
-				console.log(
-					`${entrant.name} finished first, but no bets were made =(`
-				);
-			}
-		}
-	});
-}
-
-function betPayout(entrant, raceID) {
-	console.log(entrant.bets);
-	entrant.bets.forEach(bet => {
-		//checks if the bet has already been paid
-		if (!bet.isPaid) {
-			let betReward = bet.betAmount * 2;
-			User.findOne({ twitchUsername: bet.twitchUsername }, (err, doc) => {
-				if (err) {
-					err.message = "Could not find user in bet payout";
-					throw Error(err);
-				}
-				doc.points += betReward;
-				doc.betHistory.forEach(userBet => {
-					if (userBet.raceId === raceID) {
-						userBet.result = `+${betReward}`;
-					}
-				});
-				doc.save((err, saved) => {
-					if (err) {
-						err.message = "";
-					}
-				});
-			});
-		}
-	});
 }
 
 //converts seconds back into a Date
