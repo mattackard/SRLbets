@@ -29,6 +29,7 @@ const RaceTile = props => {
 						entrant={race.entrants[entrant]}
 						raceStatus={race.status}
 						raceID={race.raceID}
+						getDataFromDb={props.getDataFromDb}
 					/>
 				))}
 			</div>

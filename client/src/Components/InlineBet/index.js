@@ -32,6 +32,8 @@ class InlineBet extends Component {
 						this.setState({
 							formError: res.data,
 						});
+					} else {
+						this.props.getDataFromDb();
 					}
 				});
 			this.setState({

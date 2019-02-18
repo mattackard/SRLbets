@@ -29,13 +29,13 @@ class RaceTileEntrant extends Component {
 	};
 
 	render() {
-		let { entrant, raceStatus, raceID } = this.props;
+		let { entrant, raceStatus, raceID, getDataFromDb } = this.props;
 
 		return (
 			<div id="entrant-tile">
 				<ul className="race-entrant">
 					<li>{entrant.name}</li>
-					<li>{entrant.betUser}</li>
+					<li>{entrant.betTotal}</li>
 
 					{entrant.status === "Finished" ? (
 						<React.Fragment>
@@ -81,7 +81,11 @@ class RaceTileEntrant extends Component {
 				{this.state.entrantDetails ? (
 					raceStatus === "Entry Open" ||
 					raceStatus === "Entry Closed" ? (
-						<InlineBet entrant={entrant} raceID={raceID} />
+						<InlineBet
+							entrant={entrant}
+							raceID={raceID}
+							getDataFromDb={getDataFromDb}
+						/>
 					) : (
 						<p>
 							Betting is closed because the race has already

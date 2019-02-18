@@ -26,15 +26,27 @@ class Home extends Component {
 			<div>
 				<h1>Currently Open Races</h1>
 				{this.props.races.open.map(data => (
-					<RaceTile key={data._id} race={data} />
+					<RaceTile
+						key={data._id}
+						race={data}
+						getDataFromDb={this.props.getDataFromDb}
+					/>
 				))}
 				<h1>Ongoing Races</h1>
 				{this.props.races.ongoing.map(data => (
-					<RaceTile key={data._id} race={data} />
+					<RaceTile
+						key={data._id}
+						race={data}
+						getDataFromDb={this.props.getDataFromDb}
+					/>
 				))}
 				<h1>Recently Finished Races</h1>
 				{this.props.races.finished.map(data => (
-					<RaceTile key={data._id} race={data} />
+					<RaceTile
+						key={data._id}
+						race={data}
+						getDataFromDb={this.props.getDataFromDb}
+					/>
 				))}
 			</div>
 		);
