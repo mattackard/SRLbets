@@ -16,23 +16,6 @@ function getRaceDataFromSRL() {
 		});
 }
 
-function getRaceDataFromDB(search, limit) {
-	return new Promise((resolve, reject) => {
-		Race.find(search)
-			.sort({ timeStarted: -1 })
-			.limit(limit)
-			.exec((err, data) => {
-				if (err) {
-					err.message =
-						"Error getting race data from db (getRaceDataFromDB)";
-					reject(err);
-				} else {
-					resolve(data);
-				}
-			});
-	});
-}
-
 function createEntrantObj(race) {
 	let entrantObj = new Map();
 	return new Promise((resolve, reject) => {
@@ -63,6 +46,7 @@ function restoreUserBets(entrantObj, doc) {
 			entrantObj.set(entrant, {
 				...entrantObj.get(entrant),
 				betTotal: oldEntrant.betTotal,
+				bets: oldEntrant.bets,
 			});
 		}
 	}
@@ -250,7 +234,6 @@ function handleRaceStatusChange(currentRace, newStatus, oldStatus) {
 					if (entrant.place === 1) {
 						//give back points x2 for each bet on this entrant
 						console.log(`${entrant.name} finished first!`);
-						betPayout(entrant);
 					}
 				});
 			}
@@ -265,7 +248,7 @@ function checkForFirstPlace(race) {
 			//checks if any bets were made for this entrant
 			if (entrant.bets.size > 0) {
 				console.log(`${entrant.name} finished first!`);
-				console.log(entrant.bets);
+				betPayout(entrant, race.raceID);
 			} else {
 				console.log(
 					`${entrant.name} finished first, but no bets were made =(`
@@ -275,8 +258,31 @@ function checkForFirstPlace(race) {
 	});
 }
 
-function betPayout(entrant) {
+function betPayout(entrant, raceID) {
 	console.log(entrant.bets);
+	entrant.bets.forEach(bet => {
+		//checks if the bet has already been paid
+		if (!bet.isPaid) {
+			let betReward = bet.betAmount * 2;
+			User.findOne({ twitchUsername: bet.twitchUsername }, (err, doc) => {
+				if (err) {
+					err.message = "Could not find user in bet payout";
+					throw Error(err);
+				}
+				doc.points += betReward;
+				doc.betHistory.forEach(userBet => {
+					if (userBet.raceId === raceID) {
+						userBet.result = `+${betReward}`;
+					}
+				});
+				doc.save((err, saved) => {
+					if (err) {
+						err.message = "";
+					}
+				});
+			});
+		}
+	});
 }
 
 //converts seconds back into a Date
@@ -385,130 +391,6 @@ function convertRunTime(apiTime) {
 	}
 }
 
-//build race history as array of key value pairs to convert into Map
-function buildRaceBetHistory(previousEntrant, username, amount) {
-	let betHistory = [];
-	Object.keys(previousEntrant.bets).forEach(key => {
-		//if the key is already present, increase amount to reflect total combined bet amount
-		if (key === username) {
-			amount += previousEntrant.bets[key].betAmount;
-		}
-		//otherwise create new betHistory entry
-		else {
-			betHistory.push([key, previousEntrant.bets[key]]);
-		}
-	});
-	//adds the new bet to betHistory
-	betHistory.push([
-		username,
-		{
-			twitchUsername: username,
-			betAmount: amount,
-			isPaid: false,
-		},
-	]);
-	return betHistory;
-}
-
-//build user's bet history checking for bet amount increases
-function buildUserBetHistory(betHistory, race, entrant, amount) {
-	let increaseBet = false;
-	//checks if user already made a bet on this race entrant
-	betHistory.forEach(bet => {
-		if (bet.raceId === race.raceID && bet.entrant === entrant) {
-			increaseBet = true;
-			bet.amountBet += amount;
-		}
-	});
-	//if the bet doesn't already exists, add a new bet object to history array
-	if (!increaseBet) {
-		betHistory.push({
-			raceId: race.raceID,
-			entrant: entrant,
-			amountBet: amount,
-		});
-	}
-	return betHistory;
-}
-
-//records user bets in race document and user document
-function makeBet(username, raceID, entrant, amount) {
-	//parses amount as string to amount as number
-	amount = parseInt(amount);
-	User.findOne({ twitchUsername: username }, (err, user) => {
-		//checks that user has enough points for the bet they made
-		if (user.points >= amount) {
-			//finds the requested race making sure betting is still open
-			Race.findOne(
-				{
-					raceID: raceID,
-					status: { $in: ["Entry Open", "Entry Closed"] },
-				},
-				(err, race) => {
-					if (err) {
-						throw Error(
-							"There was a problem getting the race requested for the bet"
-						);
-					}
-					if (race) {
-						//finds the entrant that was bet on within the race document
-						let previousEntrant = race.entrants.get(entrant);
-						race.entrants.set(entrant, {
-							name: previousEntrant.name,
-							status: previousEntrant.status,
-							place: previousEntrant.place,
-							time: previousEntrant.time,
-							twitch: previousEntrant.twitch,
-							betTotal: previousEntrant.betTotal + amount,
-							bets: new Map(
-								buildRaceBetHistory(
-									previousEntrant,
-									username,
-									amount
-								)
-							),
-						});
-						console.log(race.entrants.get(entrant));
-
-						race.betTotal += amount;
-						user.betHistory = buildUserBetHistory(
-							user.betHistory,
-							race,
-							entrant,
-							amount
-						);
-						user.points -= amount;
-
-						user.save(err => {
-							if (err) {
-								err.message =
-									"User changes from bet could not be saved";
-								throw Error(err);
-							}
-						});
-						race.save(err => {
-							if (err) {
-								err.message =
-									"Race changes from bet could not be saved";
-								throw Error(err);
-							}
-							//gets the data immediately for client side once bet is saved
-							getRaceDataFromDB();
-						});
-					} else {
-						return `Could not find any races that ${entrant} is entered in. They could be in a race that has already started.`;
-					}
-				}
-			);
-		} else {
-			return `@${username} can't bet ${amount}. You only have ${
-				user.points
-			} points!`;
-		}
-	});
-}
-
 module.exports.getRaceDataFromSRL = getRaceDataFromSRL;
-module.exports.getRaceDataFromDB = getRaceDataFromDB;
+
 module.exports.updateRaceData = updateRaceData;
-module.exports.makeBet = makeBet;
