@@ -8,7 +8,7 @@ const BetSchema = new mongoose.Schema({
 
 const EntrantSchema = new mongoose.Schema({
 	name: { type: String, required: true, trim: true },
-	status: { type: String, required: true },
+	status: { type: String, required: true }, //Entered, Ready, In Progress, Finished, Forfiet
 	place: { type: Number, required: true },
 	time: String,
 	twitch: String,

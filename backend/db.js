@@ -143,104 +143,126 @@ function buildUserBetHistory(betHistory, race, entrant, amount) {
 
 //finds any first place finishes and pays out the bets made on that entrant
 function checkForFirstPlace(race) {
-	race.entrants.forEach(entrant => {
+	race.entrants.forEach(async entrant => {
 		let newRaceBets = [];
 		if (entrant.place === 1) {
 			//checks if any bets were made for this entrant
 			if (entrant.bets.size > 0) {
 				console.log(`${entrant.name} finished first!`);
-				betPayout(entrant, race, newRaceBets);
+				newRaceBets.push(await betPayout(entrant, race, newRaceBets));
 			} else {
 				console.log(
 					`${entrant.name} finished first, but no bets were made =(`
 				);
 			}
 		} else {
-			if (entrant.bets.size > 0) {
-				closeBet(entrant, race, newRaceBets);
+			if (entrant.bets.size > 0 && entrant.status !== "In Progress") {
+				newRaceBets.push(await closeBet(entrant, race, newRaceBets));
 			}
 		}
-		Race.findOne({ raceID: race.raceID }, (err, doc) => {
-			doc.entrants.set(entrant.name, {
-				//value.validate issue
-				...entrant,
-				bets: new Map(newRaceBets),
+		if (newRaceBets.length > 0) {
+			console.log(newRaceBets);
+			Race.findOne({ raceID: race.raceID }, (err, doc) => {
+				doc.entrants.set(entrant.name, {
+					...entrant,
+					bets: new Map(newRaceBets),
+				});
+				doc.save(err => {
+					if (err) {
+						throw Error(err);
+					}
+				});
 			});
-			doc.save(err => {
-				if (err) {
-					throw Error(err);
-				}
-			});
-		});
+		}
 	});
 }
 
 //pays winning bets back 2:1 and sets them as paid
-function betPayout(entrant, race, newRaceBets) {
-	console.log(entrant.bets);
+function betPayout(entrant, race) {
+	let promises = [];
 	entrant.bets.forEach(bet => {
-		//checks if the bet has already been paid
-		if (!bet.isPaid) {
-			let betReward = bet.betAmount * 2;
-			User.findOne({ twitchUsername: bet.twitchUsername }, (err, doc) => {
-				if (err) {
-					err.message = "Could not find user in bet payout";
-					throw Error(err);
+		promises.push(
+			new Promise((resolve, reject) => {
+				//checks if the bet has already been paid
+				if (!bet.isPaid) {
+					let betReward = bet.betAmount * 2;
+					User.findOne(
+						{ twitchUsername: bet.twitchUsername },
+						(err, doc) => {
+							if (err) {
+								err.message =
+									"Could not find user in bet payout";
+								throw Error(err);
+							}
+							doc.points += betReward;
+							doc.betHistory.forEach(userBet => {
+								if (userBet.raceId === race.raceID) {
+									userBet.result = `+${betReward}`;
+								}
+							});
+							doc.save((err, saved) => {
+								if (err) {
+									err.message = "";
+								}
+								//return the edited bet as an array for map conversion
+								resolve([
+									bet.twitchUsername,
+									{
+										...bet,
+										isPaid: true,
+									},
+								]);
+							});
+						}
+					);
 				}
-				doc.points += betReward;
-				doc.betHistory.forEach(userBet => {
-					if (userBet.raceId === race.raceID) {
-						userBet.result = `+${betReward}`;
-					}
-				});
-				doc.save((err, saved) => {
-					if (err) {
-						err.message = "";
-					}
-					//adds to the modified bet map to send back to race db
-					newRaceBets.push([
-						bet.twitchUsername,
-						{
-							...bet,
-							isPaid: true,
-						},
-					]);
-				});
-			});
-		}
+			})
+		);
+	});
+	Promise.all(promises).then(newBets => {
+		return newBets;
 	});
 }
 
 //records the lost bet and result in the db
-function closeBet(entrant, race, newRaceBets) {
-	let newRaceBets = [];
+function closeBet(entrant, race) {
+	let promises = [];
 	entrant.bets.forEach(bet => {
-		User.findOne({ twitchUsername: bet.twitchUsername }, (err, doc) => {
-			if (err) {
-				err.message = "Could not find user in bet payout";
-				throw Error(err);
-			}
-			doc.betHistory.forEach(userBet => {
-				if (userBet.raceId === race.raceID) {
-					userBet.result = `-${betReward}`;
-				}
-			});
-			doc.save(err => {
-				if (err) {
-					err.message = "";
-				}
-				//adds to the modified bet map to send back to race db
-				newRaceBets.push([
-					bet.twitchUsername,
-					{
-						...bet,
-						isPaid: true,
-					},
-				]);
-			});
-		});
+		promises.push(
+			new Promise((resolve, reject) => {
+				User.findOne(
+					{ twitchUsername: bet.twitchUsername },
+					(err, doc) => {
+						if (err) {
+							err.message = "Could not find user in bet payout";
+							throw Error(err);
+						}
+						doc.betHistory.forEach(userBet => {
+							if (userBet.raceId === race.raceID) {
+								userBet.result = `-${betReward}`;
+							}
+						});
+						doc.save(err => {
+							if (err) {
+								err.message = "";
+							}
+							//return the edited bet as an array for map conversion
+							resolve([
+								bet.twitchUsername,
+								{
+									...bet,
+									isPaid: true,
+								},
+							]);
+						});
+					}
+				);
+			})
+		);
 	});
-	return newRaceBets;
+	Promise.all(promises).then(newBets => {
+		return newBets;
+	});
 }
 
 module.exports.getRaceDataFromDB = getRaceDataFromDB;
