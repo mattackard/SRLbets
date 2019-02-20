@@ -2,7 +2,7 @@
 	"name": "SRLbets",
 	"version": "1.0.0",
 	"description": "",
-	"main": "index.js",
+	"main": "./backend/server.js",
 	"scripts": {
 		"start": "concurrently \"cd backend && nodemon server.js\" \"cd client && npm start\"",
 		"test": "echo \"Error: no test specified\" && exit 1"
