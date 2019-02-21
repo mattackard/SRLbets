@@ -55,7 +55,6 @@ function makeBet(username, raceID, entrant, amount) {
 								)
 							),
 						});
-						console.log(race.entrants.get(entrant));
 
 						race.betTotal += amount;
 						user.betHistory = buildUserBetHistory(
@@ -147,25 +146,31 @@ function checkForFirstPlace(race) {
 		let newRaceBets = [];
 		if (entrant.place === 1) {
 			//checks if any bets were made for this entrant
-			if (entrant.bets.size > 0) {
+			if (Object.keys(entrant.bets).length > 0) {
 				console.log(`${entrant.name} finished first!`);
-				newRaceBets.push(await betPayout(entrant, race, newRaceBets));
+				newRaceBets.push(await betPayout(entrant, race));
 			} else {
 				console.log(
-					`${entrant.name} finished first, but no bets were made =(`
+					`${entrant.name} finished first, but no bets were made`
 				);
 			}
 		} else {
-			if (entrant.bets.size > 0 && entrant.status !== "In Progress") {
-				newRaceBets.push(await closeBet(entrant, race, newRaceBets));
+			if (
+				Object.keys(entrant.bets).length > 0 &&
+				entrant.status !== "In Progress"
+			) {
+				newRaceBets.push(await closeBet(entrant, race));
 			}
 		}
-		if (newRaceBets.length > 0) {
+		if (
+			newRaceBets.length === Object.keys(entrant.bets).length &&
+			newRaceBets.length > 0
+		) {
 			console.log(newRaceBets);
 			Race.findOne({ raceID: race.raceID }, (err, doc) => {
 				doc.entrants.set(entrant.name, {
 					...entrant,
-					bets: new Map(newRaceBets),
+					bets: new Map(newRaceBets), //value.validate error -- schema expecting object instead of map?
 				});
 				doc.save(err => {
 					if (err) {
@@ -180,14 +185,14 @@ function checkForFirstPlace(race) {
 //pays winning bets back 2:1 and sets them as paid
 function betPayout(entrant, race) {
 	let promises = [];
-	entrant.bets.forEach(bet => {
+	Object.keys(entrant.bets).forEach(key => {
 		promises.push(
 			new Promise((resolve, reject) => {
 				//checks if the bet has already been paid
-				if (!bet.isPaid) {
-					let betReward = bet.betAmount * 2;
+				if (!entrant.bets[key].isPaid) {
+					let betReward = entrant.bets[key].betAmount * 2;
 					User.findOne(
-						{ twitchUsername: bet.twitchUsername },
+						{ twitchUsername: entrant.bets[key].twitchUsername },
 						(err, doc) => {
 							if (err) {
 								err.message =
@@ -206,9 +211,9 @@ function betPayout(entrant, race) {
 								}
 								//return the edited bet as an array for map conversion
 								resolve([
-									bet.twitchUsername,
+									entrant.bets[key].twitchUsername,
 									{
-										...bet,
+										...entrant.bets[key],
 										isPaid: true,
 									},
 								]);
@@ -219,19 +224,20 @@ function betPayout(entrant, race) {
 			})
 		);
 	});
-	Promise.all(promises).then(newBets => {
-		return newBets;
+
+	return Promise.all(promises).then(newBets => {
+		return newBets[0];
 	});
 }
 
 //records the lost bet and result in the db
 function closeBet(entrant, race) {
 	let promises = [];
-	entrant.bets.forEach(bet => {
+	Object.keys(entrant.bets).forEach(key => {
 		promises.push(
 			new Promise((resolve, reject) => {
 				User.findOne(
-					{ twitchUsername: bet.twitchUsername },
+					{ twitchUsername: entrant.bets[key].twitchUsername },
 					(err, doc) => {
 						if (err) {
 							err.message = "Could not find user in bet payout";
@@ -239,7 +245,9 @@ function closeBet(entrant, race) {
 						}
 						doc.betHistory.forEach(userBet => {
 							if (userBet.raceId === race.raceID) {
-								userBet.result = `-${betReward}`;
+								userBet.result = `-${
+									entrant.bets[key].betAmount
+								}`;
 							}
 						});
 						doc.save(err => {
@@ -248,9 +256,9 @@ function closeBet(entrant, race) {
 							}
 							//return the edited bet as an array for map conversion
 							resolve([
-								bet.twitchUsername,
+								entrant.bets[key].twitchUsername,
 								{
-									...bet,
+									...entrant.bets[key],
 									isPaid: true,
 								},
 							]);
@@ -260,8 +268,8 @@ function closeBet(entrant, race) {
 			})
 		);
 	});
-	Promise.all(promises).then(newBets => {
-		return newBets;
+	return Promise.all(promises).then(newBets => {
+		return newBets[0];
 	});
 }
 
