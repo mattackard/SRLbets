@@ -140,7 +140,7 @@ function buildUserBetHistory(betHistory, race, entrant, amount) {
 	let increaseBet = false;
 	//checks if user already made a bet on this race entrant
 	betHistory.forEach(bet => {
-		if (bet.raceId === race.raceID && bet.entrant === entrant) {
+		if (bet.raceID === race.raceID && bet.entrant === entrant) {
 			increaseBet = true;
 			bet.amountBet += amount;
 		}
@@ -148,7 +148,7 @@ function buildUserBetHistory(betHistory, race, entrant, amount) {
 	//if the bet doesn't already exists, add a new bet object to history array
 	if (!increaseBet) {
 		betHistory.push({
-			raceId: race.raceID,
+			raceID: race.raceID,
 			entrant: entrant,
 			amountBet: amount,
 		});
@@ -221,7 +221,7 @@ function betPayout(entrant, race) {
 							}
 							doc.points += betReward;
 							doc.betHistory.forEach(userBet => {
-								if (userBet.raceId === race.raceID) {
+								if (userBet.raceID === race.raceID) {
 									userBet.result = `+${betReward}`;
 								}
 							});
@@ -260,7 +260,7 @@ function closeBet(entrant, race) {
 							throw Error(err);
 						}
 						doc.betHistory.forEach(userBet => {
-							if (userBet.raceId === race.raceID) {
+							if (userBet.raceID === race.raceID) {
 								userBet.result = `-${bet.betAmount}`;
 							}
 						});

@@ -165,7 +165,7 @@ function recordRaceEntrants(races) {
 								twitchUsername: race.entrants[entrant].twitch,
 								raceHistory: [
 									{
-										raceId: race.id,
+										raceID: race.id,
 										game: race.game.name,
 										goal: race.goal,
 										status: race.statetext,
@@ -192,7 +192,7 @@ function updateUserRaceHistory(raceHistory, race, entrant) {
 		let count = 0;
 		raceHistory.forEach(recordedRace => {
 			//if the race is already in history, update it
-			if (recordedRace.raceId === race.id) {
+			if (recordedRace.raceID === race.id) {
 				recordedRace.status = race.statetext;
 				recordedRace.place = entrant.place;
 				recordedRace.time = entrant.time;
@@ -200,7 +200,7 @@ function updateUserRaceHistory(raceHistory, race, entrant) {
 			//otherwise, add the race to history
 			else {
 				raceHistory.push({
-					raceId: race.id,
+					raceID: race.id,
 					game: race.game.name,
 					goal: race.goal,
 					status: race.statetext,

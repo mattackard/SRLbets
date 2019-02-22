@@ -11,13 +11,13 @@ const hash = require("./twitch").hash;
 
 //grab all the client information for OAuth interaction with the Twitch API
 //from mongoDB
-let twitchClientData, twitchClientId, twitchRedirect;
+let twitchClientData, twitchClientID, twitchRedirect;
 Client.findOne({ clientName: "Twitch" }).exec((err, data) => {
 	if (err) {
 		console.error(err);
 	}
 	twitchClientData = data;
-	twitchClientId = twitchClientData.clientId;
+	twitchClientID = twitchClientData.clientID;
 	twitchRedirect = "http://localhost:3000";
 });
 
@@ -42,7 +42,7 @@ router.get("/getRaces", async (req, res) => {
 router.get("/twitchLoginUrl", (req, res) => {
 	let authState = hash(req.session.id);
 	return res.json({
-		twitchUrl: `https://id.twitch.tv/oauth2/authorize?response_type=code&client_id=${twitchClientId}&redirect_uri=${twitchRedirect}&scope=user:read:email&state=${authState}`,
+		twitchUrl: `https://id.twitch.tv/oauth2/authorize?response_type=code&client_id=${twitchClientID}&redirect_uri=${twitchRedirect}&scope=user:read:email&state=${authState}`,
 	});
 });
 
@@ -57,7 +57,7 @@ router.get("/twitchAuth", (req, res) => {
 router.get("/twitchLogout", (req, res, next) => {
 	axios
 		.post(
-			`https://id.twitch.tv/oauth2/revoke?client_id=${twitchClientId}&token=${
+			`https://id.twitch.tv/oauth2/revoke?client_id=${twitchClientID}&token=${
 				req.session.access_token
 			}`,
 			{ withCredentials: true }
@@ -67,7 +67,7 @@ router.get("/twitchLogout", (req, res, next) => {
 			req.session.access_token = "";
 			req.session.refresh_token = "";
 			req.session.token_type = "";
-			req.session.twitchUserId = "";
+			req.session.twitchUserID = "";
 			req.session.save();
 		})
 		.catch(err => next(err));

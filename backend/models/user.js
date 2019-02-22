@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const RaceHistory = new mongoose.Schema({
-	raceId: { type: String, required: true },
+	raceID: { type: String, required: true },
 	game: { type: String, required: true },
 	goal: String,
 	status: { type: String, required: true },
@@ -10,7 +10,7 @@ const RaceHistory = new mongoose.Schema({
 });
 
 const BetHistory = new mongoose.Schema({
-	raceId: { type: String, required: true },
+	raceID: { type: String, required: true },
 	entrant: { type: String, required: true },
 	amountBet: { type: Number, required: true },
 	result: {

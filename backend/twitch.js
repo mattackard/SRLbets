@@ -5,13 +5,13 @@ const crypto = require("crypto");
 
 //grab all the client information for OAuth interaction with the Twitch API
 //from mongoDB
-let twitchClientData, twitchClientId, twitchClientSecret, twitchRedirect;
+let twitchClientData, twitchClientID, twitchClientSecret, twitchRedirect;
 Client.findOne({ clientName: "Twitch" }).exec((err, data) => {
 	if (err) {
 		console.error(err);
 	}
 	twitchClientData = data;
-	twitchClientId = twitchClientData.clientId;
+	twitchClientID = twitchClientData.clientID;
 	twitchClientSecret = twitchClientData.clientSecret;
 	twitchRedirect = "http://localhost:3000";
 });
@@ -32,12 +32,12 @@ const getUserFromTwitch = (req, code, state, callback) => {
 		//gets oAuth tokens and user data from Twitch
 		axios
 			.post(
-				`https://id.twitch.tv/oauth2/token?client_id=${twitchClientId}&client_secret=${twitchClientSecret}&code=${code}&grant_type=authorization_code&redirect_uri=${twitchRedirect}`,
+				`https://id.twitch.tv/oauth2/token?client_id=${twitchClientID}&client_secret=${twitchClientSecret}&code=${code}&grant_type=authorization_code&redirect_uri=${twitchRedirect}`,
 				{ withCredentials: true }
 			)
 			.then(data => getUserData(data, req))
 			.then(getUserFollowsFromAPI)
-			.then(getUsersFromId)
+			.then(getUsersFromID)
 			.then(saveUser)
 			.then(callback)
 			.catch(err => {
@@ -62,7 +62,7 @@ const getUserData = (tokenObj, req) => {
 				req.session.access_token = tokenObj.data.access_token;
 				req.session.refresh_token = tokenObj.data.refresh_token;
 				req.session.token_type = tokenObj.data.token_type;
-				req.session.twitchUserId = userData.data.data[0].id;
+				req.session.twitchUserID = userData.data.data[0].id;
 				req.session.save();
 				resolve(userData.data.data[0]);
 			})
@@ -81,17 +81,17 @@ const getUserFollowsFromAPI = (
 	return new Promise((resolve, reject) => {
 		//sets pagination string, get url, and updated follow list for recursive calls
 		let follows = followList;
-		let twitchId = userData.id;
+		let twitchID = userData.id;
 		let pagination = lastPagination;
 
 		//adds the pagination string and adds it to the request URL if it exists
 		let getUrl = pagination
-			? `https://api.twitch.tv/helix/users/follows?from_id=${twitchId}&after=${pagination}`
-			: `https://api.twitch.tv/helix/users/follows?from_id=${twitchId}`;
+			? `https://api.twitch.tv/helix/users/follows?from_id=${twitchID}&after=${pagination}`
+			: `https://api.twitch.tv/helix/users/follows?from_id=${twitchID}`;
 
 		axios
 			.get(getUrl, {
-				headers: { "Client-ID": `${twitchClientId}` },
+				headers: { "Client-ID": `${twitchClientID}` },
 				withCredentials: true,
 			})
 			.then(response => {
@@ -124,7 +124,7 @@ const getUserFollowsFromAPI = (
 };
 
 //gets the user data from the user IDs provided in the getUserFollowsFromAPI function
-const getUsersFromId = userData => {
+const getUsersFromID = userData => {
 	return new Promise((resolve, reject) => {
 		//generates a query string to attach to the get request url
 		let idString = "";
@@ -141,7 +141,7 @@ const getUsersFromId = userData => {
 		}
 		axios
 			.get(`https://api.twitch.tv/helix/users?${idString}`, {
-				headers: { "Client-ID": `${twitchClientId}` },
+				headers: { "Client-ID": `${twitchClientID}` },
 			})
 			.then(data => {
 				//user data is then placed into a map for easier searching functionality
@@ -220,7 +220,7 @@ const tokenRefresh = (req, refresh) => {
 		.post(
 			`https://id.twitch.tv/oauth2/token--data-urlencode?grant_type=refresh_token&refresh_token=${encodeURIComponent(
 				refresh
-			)}&client_id=${twitchClientId}&client_secret=${twitchClientSecret}&state=${state}`,
+			)}&client_id=${twitchClientID}&client_secret=${twitchClientSecret}&state=${state}`,
 			{ withCredentials: true }
 		)
 		.then((err, res) => {
