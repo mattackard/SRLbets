@@ -349,5 +349,9 @@ function convertRunTime(apiTime) {
 }
 
 module.exports.getRaceDataFromSRL = getRaceDataFromSRL;
-
 module.exports.updateRaceData = updateRaceData;
+module.exports.handleRaceStatusChange = handleRaceStatusChange;
+module.exports.updateUserRaceHistory = updateUserRaceHistory;
+module.exports.recordRaceEntrants = recordRaceEntrants;
+module.exports.restoreUserBets = restoreUserBets;
+module.exports.createEntrantObj = createEntrantObj;
