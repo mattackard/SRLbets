@@ -31,7 +31,7 @@ function makeBet(username, raceID, entrant, amount) {
 					raceID: raceID,
 					status: { $in: ["Entry Open", "Entry Closed"] },
 				},
-				(err, race) => {
+				async (err, race) => {
 					if (err) {
 						throw Error(
 							"There was a problem getting the race requested for the bet"
@@ -47,12 +47,10 @@ function makeBet(username, raceID, entrant, amount) {
 							time: previousEntrant.time,
 							twitch: previousEntrant.twitch,
 							betTotal: previousEntrant.betTotal + amount,
-							bets: new Map(
-								buildRaceBetHistory(
-									previousEntrant,
-									username,
-									amount
-								)
+							bets: await buildRaceBetHistory(
+								previousEntrant,
+								username,
+								amount
 							),
 						});
 
@@ -96,27 +94,45 @@ function makeBet(username, raceID, entrant, amount) {
 
 //build race history as array of key value pairs to convert into Map
 function buildRaceBetHistory(previousEntrant, username, amount) {
-	let betHistory = [];
-	Object.keys(previousEntrant.bets).forEach(key => {
-		//if the key is already present, increase amount to reflect total combined bet amount
-		if (key === username) {
-			amount += previousEntrant.bets[key].betAmount;
-		}
-		//otherwise create new betHistory entry
-		else {
-			betHistory.push([key, previousEntrant.bets[key]]);
-		}
-	});
-	//adds the new bet to betHistory
-	betHistory.push([
-		username,
-		{
-			twitchUsername: username,
-			betAmount: amount,
-			isPaid: false,
-		},
-	]);
-	return betHistory;
+	let promises = [];
+	if (previousEntrant.bets.size > 0) {
+		previousEntrant.bets.forEach(bet => {
+			promises.push(
+				new Promise((resolve, reject) => {
+					//if the bet username is already present, increase amount to reflect total combined bet amount
+					if (bet.twitchUsername === username) {
+						resolve([
+							username,
+							{
+								twitchUsername: bet.twitchUsername,
+								betAmount: amount + bet.betAmount,
+								isPaid: bet.isPaid,
+							},
+						]);
+					}
+					//otherwise create new betHistory entry
+					else {
+						resolve([bet.twitchUsername, bet]);
+					}
+				})
+			);
+		});
+		return Promise.all(promises).then(betHistory => {
+			//console.log(betHistory);
+			return new Map([...betHistory]);
+		});
+	} else {
+		return new Map([
+			[
+				username,
+				{
+					twitchUsername: username,
+					betAmount: amount,
+					isPaid: false,
+				},
+			],
+		]);
+	}
 }
 
 //build user's bet history checking for bet amount increases
@@ -146,7 +162,7 @@ function checkForFirstPlace(race) {
 		let newRaceBets = [];
 		if (entrant.place === 1) {
 			//checks if any bets were made for this entrant
-			if (Object.keys(entrant.bets).length > 0) {
+			if (entrant.bets.size > 0) {
 				console.log(`${entrant.name} finished first!`);
 				newRaceBets.push(await betPayout(entrant, race));
 			} else {
@@ -155,18 +171,15 @@ function checkForFirstPlace(race) {
 				);
 			}
 		} else {
-			if (
-				Object.keys(entrant.bets).length > 0 &&
-				entrant.status !== "In Progress"
-			) {
+			if (entrant.bets.size > 0 && entrant.status !== "In Progress") {
 				newRaceBets.push(await closeBet(entrant, race));
 			}
 		}
 		if (
-			newRaceBets.length === Object.keys(entrant.bets).length &&
+			newRaceBets.length === entrant.bets.size &&
 			newRaceBets.length > 0
 		) {
-			console.log(newRaceBets);
+			console.log("db.js line 182", newRaceBets);
 			Race.findOne({ raceID: race.raceID }, (err, doc) => {
 				doc.entrants.set(entrant.name, {
 					...entrant,
@@ -185,14 +198,14 @@ function checkForFirstPlace(race) {
 //pays winning bets back 2:1 and sets them as paid
 function betPayout(entrant, race) {
 	let promises = [];
-	Object.keys(entrant.bets).forEach(key => {
+	entrant.bets.forEach(bet => {
 		promises.push(
 			new Promise((resolve, reject) => {
 				//checks if the bet has already been paid
-				if (!entrant.bets[key].isPaid) {
-					let betReward = entrant.bets[key].betAmount * 2;
+				if (!bet.isPaid) {
+					let betReward = bet.betAmount * 2;
 					User.findOne(
-						{ twitchUsername: entrant.bets[key].twitchUsername },
+						{ twitchUsername: bet.twitchUsername },
 						(err, doc) => {
 							if (err) {
 								err.message =
@@ -211,9 +224,9 @@ function betPayout(entrant, race) {
 								}
 								//return the edited bet as an array for map conversion
 								resolve([
-									entrant.bets[key].twitchUsername,
+									bet.twitchUsername,
 									{
-										...entrant.bets[key],
+										...bet,
 										isPaid: true,
 									},
 								]);
@@ -233,21 +246,21 @@ function betPayout(entrant, race) {
 //records the lost bet and result in the db
 function closeBet(entrant, race) {
 	let promises = [];
-	Object.keys(entrant.bets).forEach(key => {
+	entrant.bets.forEach(bet => {
 		promises.push(
 			new Promise((resolve, reject) => {
+				console.log("db.js line 252", bet);
 				User.findOne(
-					{ twitchUsername: entrant.bets[key].twitchUsername },
+					{ twitchUsername: bet.twitchUsername },
 					(err, doc) => {
+						//console.log(doc);
 						if (err) {
 							err.message = "Could not find user in bet payout";
 							throw Error(err);
 						}
 						doc.betHistory.forEach(userBet => {
 							if (userBet.raceId === race.raceID) {
-								userBet.result = `-${
-									entrant.bets[key].betAmount
-								}`;
+								userBet.result = `-${bet.betAmount}`;
 							}
 						});
 						doc.save(err => {
@@ -256,9 +269,9 @@ function closeBet(entrant, race) {
 							}
 							//return the edited bet as an array for map conversion
 							resolve([
-								entrant.bets[key].twitchUsername,
+								bet.twitchUsername,
 								{
-									...entrant.bets[key],
+									...bet,
 									isPaid: true,
 								},
 							]);

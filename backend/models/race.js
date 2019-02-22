@@ -13,7 +13,7 @@ const EntrantSchema = new mongoose.Schema({
 	time: String,
 	twitch: String,
 	betTotal: { type: Number, required: true, default: 0 },
-	bets: { type: Object, of: BetSchema, default: {} },
+	bets: { type: Map, of: BetSchema, default: {} },
 });
 
 const RaceSchema = new mongoose.Schema({
