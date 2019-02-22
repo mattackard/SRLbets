@@ -164,7 +164,8 @@ function checkForFirstPlace(race) {
 			//checks if any bets were made for this entrant
 			if (entrant.bets.size > 0) {
 				console.log(`${entrant.name} finished first!`);
-				newRaceBets.push(await betPayout(entrant, race));
+				let newBets = await betPayout(entrant, race);
+				newRaceBets.push(...newBets);
 			} else {
 				console.log(
 					`${entrant.name} finished first, but no bets were made`
@@ -172,18 +173,24 @@ function checkForFirstPlace(race) {
 			}
 		} else {
 			if (entrant.bets.size > 0 && entrant.status !== "In Progress") {
-				newRaceBets.push(await closeBet(entrant, race));
+				let newBets = await closeBet(entrant, race);
+				newRaceBets.push(...newBets);
 			}
 		}
 		if (
 			newRaceBets.length === entrant.bets.size &&
 			newRaceBets.length > 0
 		) {
-			console.log("db.js line 182", newRaceBets);
 			Race.findOne({ raceID: race.raceID }, (err, doc) => {
+				newRaceBets = new Map(newRaceBets);
 				doc.entrants.set(entrant.name, {
-					...entrant,
-					bets: new Map(newRaceBets), //value.validate error -- schema expecting object instead of map?
+					name: entrant.name,
+					status: entrant.status,
+					place: entrant.place,
+					time: entrant.time,
+					twitch: entrant.twitch,
+					betTotal: entrant.betTotal,
+					bets: newRaceBets,
 				});
 				doc.save(err => {
 					if (err) {
@@ -223,13 +230,8 @@ function betPayout(entrant, race) {
 									err.message = "";
 								}
 								//return the edited bet as an array for map conversion
-								resolve([
-									bet.twitchUsername,
-									{
-										...bet,
-										isPaid: true,
-									},
-								]);
+								bet.isPaid = true;
+								resolve([bet.twitchUsername, bet]);
 							});
 						}
 					);
@@ -239,7 +241,7 @@ function betPayout(entrant, race) {
 	});
 
 	return Promise.all(promises).then(newBets => {
-		return newBets[0];
+		return newBets;
 	});
 }
 
@@ -249,7 +251,6 @@ function closeBet(entrant, race) {
 	entrant.bets.forEach(bet => {
 		promises.push(
 			new Promise((resolve, reject) => {
-				console.log("db.js line 252", bet);
 				User.findOne(
 					{ twitchUsername: bet.twitchUsername },
 					(err, doc) => {
@@ -268,13 +269,8 @@ function closeBet(entrant, race) {
 								err.message = "";
 							}
 							//return the edited bet as an array for map conversion
-							resolve([
-								bet.twitchUsername,
-								{
-									...bet,
-									isPaid: true,
-								},
-							]);
+							bet.isPaid = true;
+							resolve([bet.twitchUsername, bet]);
 						});
 					}
 				);
@@ -282,7 +278,7 @@ function closeBet(entrant, race) {
 		);
 	});
 	return Promise.all(promises).then(newBets => {
-		return newBets[0];
+		return newBets;
 	});
 }
 
