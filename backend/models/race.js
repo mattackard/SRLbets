@@ -26,6 +26,7 @@ const RaceSchema = new mongoose.Schema({
 	simpleTime: String,
 	betTotal: { type: Number, required: true, default: 0 },
 	entrants: { type: Map, of: EntrantSchema, default: new Map() },
+	allBetsPaid: { type: Boolean, required: true, default: false },
 });
 
 module.exports = mongoose.model("race", RaceSchema);

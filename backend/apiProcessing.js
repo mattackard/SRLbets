@@ -1,7 +1,7 @@
 const axios = require("axios");
 const Race = require("./models/race");
 const User = require("./models/user");
-const checkForFirstPlace = require("./db").checkForFirstPlace;
+const resolveBets = require("./db").resolveBets;
 
 function getRaceDataFromSRL() {
 	//gets the current race json data from the SRL API
@@ -89,8 +89,11 @@ function updateRaceData(races) {
 									saved.status,
 									oldStatus
 								);
-							} else if (saved.status === "In Progress") {
-								checkForFirstPlace(saved);
+							} else if (
+								saved.status === "In Progress" &&
+								!saved.allBetsPaid
+							) {
+								resolveBets(saved);
 							}
 						});
 					});
@@ -221,7 +224,7 @@ function handleRaceStatusChange(currentRace, newStatus, oldStatus) {
 	console.log(
 		`Race ${currentRace.id} is changing from ${oldStatus} to ${newStatus}`
 	);
-	if (newStatus === "Complete") {
+	if (newStatus === "Complete" || newStatus === "Race Over") {
 		Race.findOne({ raceID: currentRace.id }, (err, doc) => {
 			if (err) {
 				err.message = "Error in finding race on status change";
@@ -230,13 +233,8 @@ function handleRaceStatusChange(currentRace, newStatus, oldStatus) {
 				throw Error(
 					"Could not find the race in the database with the provided race id"
 				);
-			} else {
-				doc.entrants.forEach(entrant => {
-					if (entrant.place === 1) {
-						//give back points x2 for each bet on this entrant
-						console.log(`${entrant.name} finished first!`);
-					}
-				});
+			} else if (!doc.allBetsPaid) {
+				resolveBets(doc);
 			}
 		});
 	}

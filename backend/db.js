@@ -118,7 +118,6 @@ function buildRaceBetHistory(previousEntrant, username, amount) {
 			);
 		});
 		return Promise.all(promises).then(betHistory => {
-			//console.log(betHistory);
 			return new Map([...betHistory]);
 		});
 	} else {
@@ -156,16 +155,20 @@ function buildUserBetHistory(betHistory, race, entrant, amount) {
 	return betHistory;
 }
 
-//finds any first place finishes and pays out the bets made on that entrant
+//checks if any race entrant has finished 1st
 function checkForFirstPlace(race) {
 	let containsFirstPlace = false;
-	//checks if any race entrant has finished 1st
 	race.entrants.forEach(entrant => {
 		if (entrant.place === 1) {
 			containsFirstPlace = true;
 		}
 	});
-	if (containsFirstPlace) {
+	return containsFirstPlace;
+}
+
+//pays out and closes bets once the first race entrant has finished
+function resolveBets(race) {
+	if (checkForFirstPlace(race)) {
 		race.entrants.forEach(async entrant => {
 			if (entrant.bets.size > 0) {
 				let newRaceBets = [];
@@ -192,6 +195,7 @@ function checkForFirstPlace(race) {
 							betTotal: entrant.betTotal,
 							bets: newRaceBets,
 						});
+						doc.allBetsPaid = true;
 						doc.save(err => {
 							if (err) {
 								throw Error(err);
@@ -223,7 +227,14 @@ function betPayout(entrant, race) {
 							}
 							doc.points += betReward;
 							doc.betHistory.forEach(userBet => {
-								if (userBet.raceID === race.raceID) {
+								if (
+									userBet.raceID === race.raceID &&
+									userBet.entrant === entrant.name
+								) {
+									console.log(
+										"userBet being paid: ",
+										userBet
+									);
 									userBet.result = `+${betReward}`;
 								}
 							});
@@ -242,7 +253,6 @@ function betPayout(entrant, race) {
 		);
 	});
 	return Promise.all(promises).then(newBets => {
-		console.log("payout  ", newBets);
 		return newBets;
 	});
 }
@@ -251,40 +261,48 @@ function betPayout(entrant, race) {
 function closeBet(entrant, race) {
 	let promises = [];
 	entrant.bets.forEach(bet => {
-		promises.push(
-			new Promise((resolve, reject) => {
-				User.findOne(
-					{ twitchUsername: bet.twitchUsername },
-					(err, doc) => {
-						//console.log(doc);
-						if (err) {
-							err.message = "Could not find user in bet payout";
-							throw Error(err);
-						}
-						doc.betHistory.forEach(userBet => {
-							if (userBet.raceID === race.raceID) {
-								userBet.result = `-${bet.betAmount}`;
-							}
-						});
-						doc.save(err => {
+		if (!bet.isPaid) {
+			promises.push(
+				new Promise((resolve, reject) => {
+					User.findOne(
+						{ twitchUsername: bet.twitchUsername },
+						(err, doc) => {
 							if (err) {
+								err.message =
+									"Could not find user in bet payout";
 								throw Error(err);
 							}
-							//return the edited bet as an array for map conversion
-							bet.isPaid = true;
-							resolve([bet.twitchUsername, bet]);
-						});
-					}
-				);
-			})
-		);
+							doc.betHistory.forEach(userBet => {
+								if (
+									userBet.raceID === race.raceID &&
+									userBet.entrant === entrant.name
+								) {
+									console.log(
+										"userBet being closed: ",
+										userBet
+									);
+									userBet.result = `-${bet.betAmount}`;
+								}
+							});
+							doc.save(err => {
+								if (err) {
+									throw Error(err);
+								}
+								//return the edited bet as an array for map conversion
+								bet.isPaid = true;
+								resolve([bet.twitchUsername, bet]);
+							});
+						}
+					);
+				})
+			);
+		}
 	});
 	return Promise.all(promises).then(newBets => {
-		console.log("closeBet  ", newBets);
 		return newBets;
 	});
 }
 
 module.exports.getRaceDataFromDB = getRaceDataFromDB;
-module.exports.checkForFirstPlace = checkForFirstPlace;
+module.exports.resolveBets = resolveBets;
 module.exports.makeBet = makeBet;
