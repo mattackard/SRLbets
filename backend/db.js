@@ -158,48 +158,50 @@ function buildUserBetHistory(betHistory, race, entrant, amount) {
 
 //finds any first place finishes and pays out the bets made on that entrant
 function checkForFirstPlace(race) {
-	race.entrants.forEach(async entrant => {
-		let newRaceBets = [];
+	let containsFirstPlace = false;
+	//checks if any race entrant has finished 1st
+	race.entrants.forEach(entrant => {
 		if (entrant.place === 1) {
-			//checks if any bets were made for this entrant
-			if (entrant.bets.size > 0) {
-				console.log(`${entrant.name} finished first!`);
-				let newBets = await betPayout(entrant, race);
-				newRaceBets.push(...newBets);
-			} else {
-				console.log(
-					`${entrant.name} finished first, but no bets were made`
-				);
-			}
-		} else {
-			if (entrant.bets.size > 0 && entrant.status !== "In Progress") {
-				let newBets = await closeBet(entrant, race);
-				newRaceBets.push(...newBets);
-			}
-		}
-		if (
-			newRaceBets.length === entrant.bets.size &&
-			newRaceBets.length > 0
-		) {
-			Race.findOne({ raceID: race.raceID }, (err, doc) => {
-				newRaceBets = new Map(newRaceBets);
-				doc.entrants.set(entrant.name, {
-					name: entrant.name,
-					status: entrant.status,
-					place: entrant.place,
-					time: entrant.time,
-					twitch: entrant.twitch,
-					betTotal: entrant.betTotal,
-					bets: newRaceBets,
-				});
-				doc.save(err => {
-					if (err) {
-						throw Error(err);
-					}
-				});
-			});
+			containsFirstPlace = true;
 		}
 	});
+	if (containsFirstPlace) {
+		race.entrants.forEach(async entrant => {
+			if (entrant.bets.size > 0) {
+				let newRaceBets = [];
+				if (entrant.place === 1) {
+					console.log(`${entrant.name} finished first!`);
+					let newBets = await betPayout(entrant, race);
+					newRaceBets.push(...newBets);
+				} else {
+					let newBets = await closeBet(entrant, race);
+					newRaceBets.push(...newBets);
+				}
+				if (
+					newRaceBets.length === entrant.bets.size &&
+					newRaceBets.length > 0
+				) {
+					Race.findOne({ raceID: race.raceID }, (err, doc) => {
+						newRaceBets = new Map(newRaceBets);
+						doc.entrants.set(entrant.name, {
+							name: entrant.name,
+							status: entrant.status,
+							place: entrant.place,
+							time: entrant.time,
+							twitch: entrant.twitch,
+							betTotal: entrant.betTotal,
+							bets: newRaceBets,
+						});
+						doc.save(err => {
+							if (err) {
+								throw Error(err);
+							}
+						});
+					});
+				}
+			}
+		});
+	}
 }
 
 //pays winning bets back 2:1 and sets them as paid
@@ -227,7 +229,7 @@ function betPayout(entrant, race) {
 							});
 							doc.save((err, saved) => {
 								if (err) {
-									err.message = "";
+									throw Error(err);
 								}
 								//return the edited bet as an array for map conversion
 								bet.isPaid = true;
@@ -239,8 +241,8 @@ function betPayout(entrant, race) {
 			})
 		);
 	});
-
 	return Promise.all(promises).then(newBets => {
+		console.log("payout  ", newBets);
 		return newBets;
 	});
 }
@@ -266,7 +268,7 @@ function closeBet(entrant, race) {
 						});
 						doc.save(err => {
 							if (err) {
-								err.message = "";
+								throw Error(err);
 							}
 							//return the edited bet as an array for map conversion
 							bet.isPaid = true;
@@ -278,6 +280,7 @@ function closeBet(entrant, race) {
 		);
 	});
 	return Promise.all(promises).then(newBets => {
+		console.log("closeBet  ", newBets);
 		return newBets;
 	});
 }
