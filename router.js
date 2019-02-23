@@ -1,25 +1,16 @@
 const express = require("express");
 const router = express.Router();
-
 const User = require("./models/user");
-const Client = require("./models/client");
 const axios = require("axios");
 const getRaceDataFromDB = require("./js/db").getRaceDataFromDB;
 const makeBet = require("./js/db").makeBet;
 const getUserFromTwitch = require("./twitch").getUserFromTwitch;
 const hash = require("./twitch").hash;
+require("dotenv").config();
 
-//grab all the client information for OAuth interaction with the Twitch API
-//from mongoDB
-let twitchClientData, twitchClientID, twitchRedirect;
-Client.findOne({ clientName: "Twitch" }).exec((err, data) => {
-	if (err) {
-		console.error(err);
-	}
-	twitchClientData = data;
-	twitchClientID = twitchClientData.clientID;
-	twitchRedirect = "http://localhost:3000";
-});
+//sets twitch client info from env variables
+let twitchClientID = process.env.TWITCH_CLINET_ID;
+let twitchRedirect = process.env.TWITCH_REDIRECT;
 
 //GET race data and send to client
 router.get("/getRaces", async (req, res) => {

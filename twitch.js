@@ -1,20 +1,12 @@
 const User = require("./models/user");
-const Client = require("./models/client");
 const axios = require("axios");
 const crypto = require("crypto");
+require("dotenv").config();
 
-//grab all the client information for OAuth interaction with the Twitch API
-//from mongoDB
-let twitchClientData, twitchClientID, twitchClientSecret, twitchRedirect;
-Client.findOne({ clientName: "Twitch" }).exec((err, data) => {
-	if (err) {
-		console.error(err);
-	}
-	twitchClientData = data;
-	twitchClientID = twitchClientData.clientID;
-	twitchClientSecret = twitchClientData.clientSecret;
-	twitchRedirect = "http://localhost:3000";
-});
+//sets twitch client info from env variables
+let twitchClientID = process.env.TWITCH_CLINET_ID;
+let twitchRedirect = process.env.REDIRECT;
+let twitchClientSecret = process.env.TWITCH_CLIENT_SECRET;
 
 //utility function to create a hash from a string
 const hash = x =>
