@@ -231,10 +231,6 @@ function betPayout(entrant, race) {
 									userBet.raceID === race.raceID &&
 									userBet.entrant === entrant.name
 								) {
-									console.log(
-										"userBet being paid: ",
-										userBet
-									);
 									userBet.result = `+${betReward}`;
 								}
 							});
@@ -277,10 +273,6 @@ function closeBet(entrant, race) {
 									userBet.raceID === race.raceID &&
 									userBet.entrant === entrant.name
 								) {
-									console.log(
-										"userBet being closed: ",
-										userBet
-									);
 									userBet.result = `-${bet.betAmount}`;
 								}
 							});
