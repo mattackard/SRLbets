@@ -10,11 +10,10 @@ class Profile extends Component {
 	render() {
 		const { user, loggedIn } = this.props;
 		return (
-			<div id="profileContainer">
+			<div id="profile-container">
 				{loggedIn ? (
 					<React.Fragment>
-						<h1>User Profile</h1>
-						<ul className="row">
+						<ul className="user-display">
 							<img
 								src={user.twitchProfileImg}
 								alt={`${user.twitchUsername}'s avatar`}
@@ -24,7 +23,12 @@ class Profile extends Component {
 						</ul>
 						<h3>Points: {user.points}</h3>
 						<h2>Bet History</h2>
-						<ul id="betHistory" className="column">
+						<ul id="bet-history" className="column">
+							<li className="list-header">
+								<p className="entrant-name">Race Entrant</p>
+								<p className="entrant-bet">Points Bet</p>
+								<p className="entrant-result">Result</p>
+							</li>
 							{user.betHistory.length ? (
 								user.betHistory.map((bet, index) => (
 									<UserBet key={index} bet={bet} />

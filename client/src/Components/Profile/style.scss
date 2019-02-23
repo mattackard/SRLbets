@@ -1,30 +1,60 @@
-header {
-	padding: 0 5%;
-	display: flex;
-	flex-direction: row;
-	background-color: gray;
+@import "../../variables.scss";
+#profile-container {
+    padding: 0 5%;
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    h3 {
+        text-align: center;
+    }
 }
 
-header img {
-	width: 60px;
+.user-display {
+    padding: 1rem 0 0;
+    text-align: center;
+    img {
+        width: 100px;
+        height: 100px;
+        margin: auto;
+    }
+    h2 {
+        font-size: 2rem;
+        margin: 0;
+        padding-left: 1rem;
+    }
 }
 
-nav {
-	display: flex;
-	flex-direction: row;
-	justify-content: flex-start;
-	background-color: rgba(100, 100, 100, 0.98);
-	list-style: none;
-	padding: 0;
-	margin: 0;
+#bet-history {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    margin: 0;
+    li {
+        display: flex;
+        flex-direction: row;
+        border: 2px solid $color-bg;
+        background-color: $color-content-bg;
+        padding: 0.5rem;
+    }
 }
 
-nav li {
-	margin: auto;
-	text-align: center;
+.list-header {
+    p {
+        text-decoration: underline;
+        margin: 0.2rem;
+    }
 }
 
-nav li a {
-	text-decoration: none;
-	color: white;
+.entrant-name {
+    width: 50%;
+    font-weight: bold;
+}
+
+.entrant-bet {
+    width: 25%;
+}
+
+.entrant-result {
+    width: 25%;
 }

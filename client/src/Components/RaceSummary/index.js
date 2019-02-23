@@ -5,7 +5,11 @@ const RaceSummary = props => {
 	const { race } = props;
 	return (
 		<li>
-			{race.game}, {race.goal}, {race.status}, {race.place}, {race.time}
+			<p>{race.game}</p>
+			<p>{race.goal}</p>
+			<p>{race.status}</p>
+			<p>{race.place}</p>
+			<p>{race.time}</p>
 		</li>
 	);
 };

@@ -18,11 +18,18 @@
         top: 100%;
         right: 3rem;
         font-size: 1rem;
+        justify-content: flex-start;
+        background-color: rgba(100, 100, 100, 0.98);
+        list-style: none;
+        padding: 0;
+        margin: 0;
         li {
             width: 100%;
             padding: 1rem;
             border: 2px solid $color-bg;
             background-color: $color-content-bg;
+            margin: auto;
+            text-align: center;
         }
     }
     i {
