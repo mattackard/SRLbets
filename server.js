@@ -8,21 +8,16 @@ const ircConnect = require("./js/irc").ircConnect;
 const path = require("path");
 const getRaceDataFromSRL = require("./js/apiProcessing").getRaceDataFromSRL;
 const updateRaceData = require("./js/apiProcessing").updateRaceData;
+require("dotenv").config();
 
 //60,000 ms = 1 minute
 const dbUpdateInterval = 60 * 1000;
-
-//import mongodb configuration data
-const config = require("./js/config");
 
 const API_PORT = process.env.PORT || 3001;
 const app = express();
 
 //logs a bunch of stuff
 //app.use(logger("dev"));
-
-// this is our MongoDB database
-const dbRoute = config.database.url;
 
 //enable cors for development
 const cors = require("cors");
@@ -34,14 +29,14 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 // connects our back end code with the database
-mongoose.connect(dbRoute, { useNewUrlParser: true });
+mongoose.connect(process.env.DB_HOST, { useNewUrlParser: true });
 
 let db = mongoose.connection;
 
 //setup session storage
 app.use(
 	session({
-		secret: config.sessionSecret,
+		secret: process.env.SESS_SECRET,
 		resave: false,
 		saveUninitialized: true,
 		store: new MongoStore({ mongooseConnection: db }),
