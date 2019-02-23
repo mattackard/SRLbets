@@ -2,20 +2,20 @@ const mongoose = require("mongoose");
 const express = require("express");
 const bodyParser = require("body-parser");
 const logger = require("morgan");
-
 const session = require("express-session");
 const MongoStore = require("connect-mongo")(session);
-const ircConnect = require("./irc").ircConnect;
-const getRaceDataFromSRL = require("./apiProcessing").getRaceDataFromSRL;
-const updateRaceData = require("./apiProcessing").updateRaceData;
+const ircConnect = require("./js/irc").ircConnect;
+const path = require("path");
+const getRaceDataFromSRL = require("./js/apiProcessing").getRaceDataFromSRL;
+const updateRaceData = require("./js/apiProcessing").updateRaceData;
 
 //60,000 ms = 1 minute
 const dbUpdateInterval = 60 * 1000;
 
 //import mongodb configuration data
-const config = require("./config");
+const config = require("./js/config");
 
-const API_PORT = 3001;
+const API_PORT = process.env.PORT || 3001;
 const app = express();
 
 //logs a bunch of stuff
@@ -41,12 +41,15 @@ let db = mongoose.connection;
 //setup session storage
 app.use(
 	session({
-		secret: "bigSecrets",
+		secret: config.sessionSecret,
 		resave: false,
 		saveUninitialized: true,
 		store: new MongoStore({ mongooseConnection: db }),
 	})
 );
+
+//directs express to the react build files for deployment
+app.use(express.static(path.join(__dirname, "client", "build")));
 
 db.once("open", () => console.log("connected to the database"));
 
@@ -76,6 +79,11 @@ app.use((req, res, next) => {
 //handle all other errors, must be last app.use call
 app.use((err, req, res, next) => {
 	res.status(err.status || 500).send("error");
+});
+
+//makes express serve react build files
+app.get("*", (req, res) => {
+	res.sendFile(path.join(__dirname, "client", "build", "index.html"));
 });
 
 // launch our backend into a port

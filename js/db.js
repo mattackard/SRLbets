@@ -1,5 +1,5 @@
-const Race = require("./models/race");
-const User = require("./models/user");
+const Race = require("../models/race");
+const User = require("../models/user");
 
 function getRaceDataFromDB(search, limit) {
 	return new Promise((resolve, reject) => {

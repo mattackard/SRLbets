@@ -4,8 +4,8 @@ const router = express.Router();
 const User = require("./models/user");
 const Client = require("./models/client");
 const axios = require("axios");
-const getRaceDataFromDB = require("./db").getRaceDataFromDB;
-const makeBet = require("./db").makeBet;
+const getRaceDataFromDB = require("./js/db").getRaceDataFromDB;
+const makeBet = require("./js/db").makeBet;
 const getUserFromTwitch = require("./twitch").getUserFromTwitch;
 const hash = require("./twitch").hash;
 

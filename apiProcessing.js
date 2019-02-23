@@ -1,7 +1,7 @@
 const axios = require("axios");
 const Race = require("./models/race");
 const User = require("./models/user");
-const resolveBets = require("./db").resolveBets;
+const resolveBets = require("./js/db").resolveBets;
 
 function getRaceDataFromSRL() {
 	//gets the current race json data from the SRL API
