@@ -1,24 +1,41 @@
 {
-	"name": "SRLbets",
+	"name": "srlbets",
 	"version": "1.0.0",
 	"description": "",
-	"main": "./backend/server.js",
+	"main": "server.js",
 	"scripts": {
-		"start": "concurrently \"cd backend && nodemon server.js\" \"cd client && npm start\"",
-		"test": "echo \"Error: no test specified\" && exit 1"
+		"start": "node server.js",
+		"start-dev": "concurrently \"nodemon server.js\" \"cd client && npm start\"",
+		"test": "mocha",
+		"test-watch": "mocha -w ./test ./ -R min",
+		"heroku-postbuild": "cd client && npm install --only=dev && npm install && npm run build"
 	},
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/mattackard/SRLbets.git"
 	},
-	"keywords": [],
-	"author": "",
+	"author": "Matt Ackard",
 	"license": "ISC",
 	"bugs": {
 		"url": "https://github.com/mattackard/SRLbets/issues"
 	},
-	"homepage": "https://github.com/mattackard/SRLbets#readme",
 	"dependencies": {
-		"concurrently": "^4.1.0"
+		"axios": "^0.18.0",
+		"body-parser": "^1.18.3",
+		"concurrently": "^4.1.0",
+		"connect-mongo": "^2.0.3",
+		"connect-mongostore": "^0.1.4",
+		"cors": "^2.8.5",
+		"express": "^4.16.4",
+		"express-session": "^1.15.6",
+		"mongoose": "^5.4.10",
+		"morgan": "^1.9.1"
+	},
+	"devDependencies": {
+		"chai": "^4.1.2",
+		"mocha": "^5.2.0"
+	},
+	"engines": {
+		"node": "8.12.0"
 	}
 }
