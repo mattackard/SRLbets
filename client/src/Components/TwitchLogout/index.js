@@ -5,7 +5,7 @@ import "./style.scss";
 class TwitchLogout extends Component {
 	logOut = () => {
 		axios
-			.get("http://localhost:3001/api/twitchLogout", {
+			.get("api/twitchLogout", {
 				withCredentials: true,
 			})
 			.then(res => {
