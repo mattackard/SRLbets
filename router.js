@@ -9,7 +9,7 @@ const hash = require("./twitch").hash;
 require("dotenv").config();
 
 //sets twitch client info from env variables
-let twitchClientID = process.env.TWITCH_CLINET_ID;
+let twitchClientID = process.env.TWITCH_CLIENT_ID;
 let twitchRedirect = process.env.TWITCH_REDIRECT;
 
 //GET race data and send to client
