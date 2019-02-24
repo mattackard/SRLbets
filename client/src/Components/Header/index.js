@@ -14,7 +14,7 @@ class Header extends Component {
 
 	getLoginUrl = () => {
 		axios
-			.get("http://localhost:3001/api/twitchLoginUrl", {
+			.get("/api/twitchLoginUrl", {
 				withCredentials: true,
 			})
 			.then(res => {

@@ -17,7 +17,7 @@ class InlineBet extends Component {
 		} else {
 			axios
 				.post(
-					"http://localhost:3001/api/makeBet",
+					"/api/makeBet",
 					{
 						entrant: this.props.entrant.name,
 						raceID: this.props.raceID,

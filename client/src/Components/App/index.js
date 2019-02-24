@@ -44,7 +44,7 @@ class App extends Component {
 	//gets open,ongoing,finished races from db
 	getDataFromDb = () => {
 		axios
-			.get("http://localhost:3001/api/getRaces", {
+			.get("/api/getRaces", {
 				withCredentials: true,
 			})
 			.then(res => {
@@ -57,7 +57,7 @@ class App extends Component {
 	//get twitch client data necessary for an oAuth login redirect
 	getTwitchClientData = callback => {
 		axios
-			.get("http://localhost:3001/api/getTwitchClientData", {
+			.get("/api/getTwitchClientData", {
 				withCredentials: true,
 			})
 			.then(res => console.log(res.data));
@@ -66,7 +66,7 @@ class App extends Component {
 	//logs user into twitch after authorize redirect
 	twitchLogin = (queryCode, state) => {
 		axios
-			.get("http://localhost:3001/api/twitchAuth", {
+			.get("/api/twitchAuth", {
 				params: {
 					code: queryCode,
 					state: state,
@@ -84,7 +84,7 @@ class App extends Component {
 	//gets the logged in user by checking the session storage
 	getUser = () => {
 		axios
-			.get("http://localhost:3001/api/getLoggedInUser", {
+			.get("/api/getLoggedInUser", {
 				withCredentials: true,
 			})
 			.then(res => {
