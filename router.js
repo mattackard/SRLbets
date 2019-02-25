@@ -4,8 +4,8 @@ const User = require("./models/user");
 const axios = require("axios");
 const getRaceDataFromDB = require("./js/db").getRaceDataFromDB;
 const makeBet = require("./js/db").makeBet;
-const getUserFromTwitch = require("./twitch").getUserFromTwitch;
-const hash = require("./twitch").hash;
+const getUserFromTwitch = require("./js/twitch").getUserFromTwitch;
+const hash = require("./js/twitch").hash;
 require("dotenv").config();
 
 //sets twitch client info from env variables

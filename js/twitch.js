@@ -1,11 +1,11 @@
-const User = require("./models/user");
+const User = require("../models/user");
 const axios = require("axios");
 const crypto = require("crypto");
 require("dotenv").config();
 
 //sets twitch client info from env variables
-let twitchClientID = process.env.TWITCH_CLINET_ID;
-let twitchRedirect = process.env.REDIRECT;
+let twitchClientID = process.env.TWITCH_CLIENT_ID;
+let twitchRedirect = process.env.TWITCH_REDIRECT;
 let twitchClientSecret = process.env.TWITCH_CLIENT_SECRET;
 
 //utility function to create a hash from a string
