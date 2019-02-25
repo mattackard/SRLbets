@@ -19,3 +19,14 @@
 .race-goal {
     padding-bottom: 1rem;
 }
+
+@media (min-width: 1000px) {
+    .race {
+        width: 40vh;
+        overflow: hidden;
+        margin: 0.5rem;
+        padding: 2rem;
+        border-radius: 0.5rem;
+        display: inline-block;
+    }
+}

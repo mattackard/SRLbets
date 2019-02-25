@@ -23,31 +23,37 @@ class Home extends Component {
 	}
 	render() {
 		return (
-			<div>
+			<div id="main-content">
 				<h1>Currently Open Races</h1>
-				{this.props.races.open.map(data => (
-					<RaceTile
-						key={data._id}
-						race={data}
-						getDataFromDb={this.props.getDataFromDb}
-					/>
-				))}
+				<div className="race-list">
+					{this.props.races.open.map(data => (
+						<RaceTile
+							key={data._id}
+							race={data}
+							getDataFromDb={this.props.getDataFromDb}
+						/>
+					))}
+				</div>
 				<h1>Ongoing Races</h1>
-				{this.props.races.ongoing.map(data => (
-					<RaceTile
-						key={data._id}
-						race={data}
-						getDataFromDb={this.props.getDataFromDb}
-					/>
-				))}
+				<div className="race-list">
+					{this.props.races.ongoing.map(data => (
+						<RaceTile
+							key={data._id}
+							race={data}
+							getDataFromDb={this.props.getDataFromDb}
+						/>
+					))}
+				</div>
 				<h1>Recently Finished Races</h1>
-				{this.props.races.finished.map(data => (
-					<RaceTile
-						key={data._id}
-						race={data}
-						getDataFromDb={this.props.getDataFromDb}
-					/>
-				))}
+				<div className="race-list">
+					{this.props.races.finished.map(data => (
+						<RaceTile
+							key={data._id}
+							race={data}
+							getDataFromDb={this.props.getDataFromDb}
+						/>
+					))}
+				</div>
 			</div>
 		);
 	}

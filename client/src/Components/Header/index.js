@@ -12,6 +12,14 @@ class Header extends Component {
 		showNav: false,
 	};
 
+	componentWillMount() {
+		if (window.innerWidth >= 1000) {
+			this.setState({
+				showNav: true,
+			});
+		}
+	}
+
 	getLoginUrl = () => {
 		axios
 			.get("/api/twitchLoginUrl", {

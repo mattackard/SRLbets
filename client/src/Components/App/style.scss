@@ -1,13 +1,17 @@
 @import "../../variables.scss";
 body {
-    box-sizing: border-box;
-    width: 100%;
-    margin: 0;
-    background-color: $color-bg;
-    color: $color-text;
-    font-family: $text-font;
+	box-sizing: border-box;
+	width: 100%;
+	margin: 0;
+	background-color: $color-bg;
+	color: $color-text;
+	font-family: $text-font;
 }
 
 a:hover {
-    opacity: 0.5;
+	opacity: 0.5;
+}
+
+button:hover {
+	opacity: 0.5;
 }
