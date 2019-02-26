@@ -32,7 +32,18 @@ function createEntrantObj(race) {
 			});
 		}
 		if (Object.keys(race.entrants).length === entrantObj.size) {
-			resolve(entrantObj);
+			let sortedMap = new Map(
+				[...entrantObj].sort(([k, v], [k2, v2]) => {
+					if (v.status === "Forfeit") {
+						return -1;
+					} else if (v.place < 1000) {
+						return v.place > v2.place;
+					} else {
+						return v.betTotal > v2.betTotal;
+					}
+				})
+			);
+			resolve(sortedMap);
 		} else {
 			reject("entrant obj did not fully populate");
 		}
