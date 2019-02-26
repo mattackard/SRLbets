@@ -54,15 +54,6 @@ class App extends Component {
 			});
 	};
 
-	//get twitch client data necessary for an oAuth login redirect
-	getTwitchClientData = callback => {
-		axios
-			.get("/api/getTwitchClientData", {
-				withCredentials: true,
-			})
-			.then(res => console.log(res.data));
-	};
-
 	//logs user into twitch after authorize redirect
 	twitchLogin = (queryCode, state) => {
 		axios
