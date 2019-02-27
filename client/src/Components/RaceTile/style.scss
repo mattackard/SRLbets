@@ -16,8 +16,24 @@
     }
 }
 
+.showEntrantsButton {
+    background-color: $color-content-bg;
+    border: none;
+    color: white;
+    padding: 0.5rem;
+    :hover {
+        opacity: 0.5;
+    }
+}
+
 .race-goal {
     padding-bottom: 1rem;
+}
+
+.multitwitch-link {
+    color: white;
+    display: inline-block;
+    margin: 1rem;
 }
 
 @media (min-width: 1000px) {

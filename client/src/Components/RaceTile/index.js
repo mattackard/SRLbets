@@ -56,18 +56,23 @@ class RaceTile extends Component {
 						}
 					})}
 					{entrantKeys.length > 5 ? (
-						<button onClick={this.toggleAllEntrants}>
-							{this.state.showAllEntrants ? "...less" : "...more"}
+						<button
+							onClick={this.toggleAllEntrants}
+							className="showEntrantsButton">
+							{this.state.showAllEntrants
+								? "...show less ▲"
+								: "...show more ▼"}
 						</button>
 					) : null}
 				</div>
 				{multiTwitch !== "http://multitwitch.tv" &&
 				entrantKeys.length > 1 ? (
 					<a
+						className="multitwitch-link"
 						href={multiTwitch}
 						target="_blank"
 						rel="noopener noreferrer">
-						MultiTwtich Link
+						Watch with MultiTwtitch
 					</a>
 				) : null}
 			</div>

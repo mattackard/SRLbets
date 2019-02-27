@@ -37,12 +37,19 @@ function createEntrantObj(race) {
 					if (v.status === "Forfeit") {
 						return -1;
 					} else if (v.place < 1000) {
-						return v.place > v2.place;
+						return v2.place - v.place;
 					} else {
-						return v.betTotal > v2.betTotal;
+						return v.betTotal - v2.betTotal;
 					}
 				})
 			);
+			if (sortedMap.has("JOPEBUSTER") || sortedMap.has("fc")) {
+				console.log(
+					"jopebuster or fc are in the entrant object -- race status is " +
+						race.statetext
+				);
+			}
+
 			resolve(sortedMap);
 		} else {
 			reject("entrant obj did not fully populate");
