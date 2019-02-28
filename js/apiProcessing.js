@@ -32,25 +32,13 @@ function createEntrantObj(race) {
 			});
 		}
 		if (Object.keys(race.entrants).length === entrantObj.size) {
-			let sortedMap = new Map(
-				[...entrantObj].sort(([k, v], [k2, v2]) => {
-					if (v.status === "Forfeit") {
-						return -1;
-					} else if (v.place < 1000) {
-						return v2.place - v.place;
-					} else {
-						return v.betTotal - v2.betTotal;
-					}
-				})
-			);
-			if (sortedMap.has("JOPEBUSTER") || sortedMap.has("fc")) {
+			if (entrantObj.has("JOPEBUSTER") || entrantObj.has("fc")) {
 				console.log(
 					"jopebuster or fc are in the entrant object -- race status is " +
 						race.statetext
 				);
 			}
-
-			resolve(sortedMap);
+			resolve(entrantObj);
 		} else {
 			reject("entrant obj did not fully populate");
 		}
@@ -70,6 +58,21 @@ function restoreUserBets(entrantObj, doc) {
 		}
 	}
 	return entrantObj;
+}
+
+function sortEntrants(entrantMap) {
+	let sortedMap = new Map(
+		[...entrantMap].sort(([k, v], [k2, v2]) => {
+			if (v.status === "Forfeit") {
+				return -1;
+			} else if (v.place < 1000) {
+				return v2.place - v.place;
+			} else {
+				return v.betTotal - v2.betTotal;
+			}
+		})
+	);
+	return sortedMap;
 }
 
 function updateRaceData(races) {
@@ -93,6 +96,7 @@ function updateRaceData(races) {
 				//build the object of entrants
 				createEntrantObj(race)
 					.then(entrantObj => restoreUserBets(entrantObj, doc))
+					.then(entrantObj => sortEntrants(entrantObj))
 					.then(entrantObj => {
 						doc.entrants = entrantObj;
 						doc.save((err, saved) => {
