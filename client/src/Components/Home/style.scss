@@ -1,18 +1,18 @@
 @import "../../variables.scss";
 h1 {
-    text-align: center;
-    text-decoration: underline;
+	text-align: center;
+	text-decoration: underline;
 }
 
 @media (min-width: 1000px) {
-    #main-content {
-        width: 80%;
-        margin: auto;
-    }
-    .race-list {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: flex-start;
-    }
+	#main-content {
+		width: 80%;
+		margin: auto;
+	}
+	.race-list {
+		display: flex;
+		flex-direction: row;
+		flex-wrap: wrap;
+		justify-content: center;
+	}
 }

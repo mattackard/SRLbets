@@ -5,6 +5,7 @@ import "./style.scss";
 
 //component imports
 import RaceTile from "../RaceTile";
+import Loading from "../Loading";
 
 class Home extends Component {
 	state = {
@@ -26,6 +27,7 @@ class Home extends Component {
 			<div id="main-content">
 				<h1>Currently Open Races</h1>
 				<div className="race-list">
+					{this.props.races.open.length ? null : <Loading />}
 					{this.props.races.open.map(data => (
 						<RaceTile
 							key={data._id}
@@ -36,6 +38,7 @@ class Home extends Component {
 				</div>
 				<h1>Ongoing Races</h1>
 				<div className="race-list">
+					{this.props.races.ongoing.length ? null : <Loading />}
 					{this.props.races.ongoing.map(data => (
 						<RaceTile
 							key={data._id}
@@ -45,7 +48,9 @@ class Home extends Component {
 					))}
 				</div>
 				<h1>Recently Finished Races</h1>
+
 				<div className="race-list">
+					{this.props.races.finished.length ? null : <Loading />}
 					{this.props.races.finished.map(data => (
 						<RaceTile
 							key={data._id}
