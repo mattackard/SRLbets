@@ -63,13 +63,10 @@ function restoreUserBets(entrantObj, doc) {
 function sortEntrants(entrantMap) {
 	let sortedMap = new Map(
 		[...entrantMap].sort(([k, v], [k2, v2]) => {
-			if (v.status === "Forfeit") {
-				return -1;
-			} else if (v.place < 1000) {
-				return v2.place - v.place;
-			} else {
-				return v.betTotal - v2.betTotal;
+			if (v.place === v2.place) {
+				return v2.betTotal - v.betTotal;
 			}
+			return v.place - v2.place;
 		})
 	);
 	return sortedMap;
@@ -375,3 +372,4 @@ module.exports.updateUserRaceHistory = updateUserRaceHistory;
 module.exports.recordRaceEntrants = recordRaceEntrants;
 module.exports.restoreUserBets = restoreUserBets;
 module.exports.createEntrantObj = createEntrantObj;
+module.exports.sortEntrants = sortEntrants;

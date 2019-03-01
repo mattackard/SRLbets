@@ -1,5 +1,5 @@
 const expect = require("chai").expect;
-const parseMessage = require("../irc.js").parseMessage;
+const parseMessage = require("../js/irc.js").parseMessage;
 
 describe("IRC TESTS", () => {
 	describe("parseMessage", () => {
