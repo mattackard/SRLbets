@@ -95,26 +95,28 @@ function updateRaceData(races) {
 					.then(entrantObj => restoreUserBets(entrantObj, doc))
 					.then(entrantObj => sortEntrants(entrantObj))
 					.then(entrantObj => {
-						doc.entrants = entrantObj;
-						doc.save((err, saved) => {
-							if (err) {
-								err.message =
-									"Error when updating existing race";
-								throw Error(err);
-							}
-							if (saved.status !== oldStatus) {
-								handleRaceStatusChange(
-									race,
-									saved.status,
-									oldStatus
-								);
-							} else if (
-								saved.status === "In Progress" &&
-								!saved.allBetsPaid
-							) {
-								resolveBets(saved);
-							}
-						});
+						if (entrantObj.size === race.numentrants) {
+							doc.entrants = entrantObj;
+							doc.save((err, saved) => {
+								if (err) {
+									err.message =
+										"Error when updating existing race";
+									throw Error(err);
+								}
+								if (saved.status !== oldStatus) {
+									handleRaceStatusChange(
+										race,
+										saved.status,
+										oldStatus
+									);
+								} else if (
+									saved.status === "In Progress" &&
+									!saved.allBetsPaid
+								) {
+									resolveBets(saved);
+								}
+							});
+						}
 					});
 			} else {
 				//create a new race document if it can't already be found in the database
