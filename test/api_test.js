@@ -332,20 +332,24 @@ describe("API RESPONSE TESTING", () => {
 				],
 			]);
 		});
+		it("should return a promise", () => {
+			expect(apiProcessing.sortEntrants(testMap)).to.be.a("promise");
+		});
 		it("should return a map", () => {
-			expect(apiProcessing.sortEntrants(testMap)).to.be.a("map");
-			expect(apiProcessing.sortEntrants(testMap).get("Marco")).to.not
-				.throw;
+			apiProcessing.sortEntrants(testMap).then(data => {
+				expect(data).to.be.a("map");
+				expect(data.get("Marco")).to.not.throw;
+			});
 		});
 		it("the returned map should be the same size as the input map", () => {
-			expect(apiProcessing.sortEntrants(testMap).size).to.equal(
-				expectedMap.size
-			);
+			apiProcessing.sortEntrants(testMap).then(data => {
+				expect(data.size).to.equal(expectedMap.size);
+			});
 		});
 		it("the returned map should be sorted by finish position", () => {
-			expect([...apiProcessing.sortEntrants(testMap)]).to.deep.equal([
-				...expectedMap,
-			]);
+			apiProcessing.sortEntrants(testMap).then(data => {
+				expect([...data]).to.deep.equal([...expectedMap]);
+			});
 		});
 	});
 });

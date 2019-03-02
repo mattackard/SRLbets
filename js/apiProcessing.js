@@ -47,29 +47,43 @@ function createEntrantObj(race) {
 
 function restoreUserBets(entrantObj, doc) {
 	//checks if entrant is already in the db and uses previous bet amount if so, otherwise set at 0
+	let promises = [];
 	for (let entrant of entrantObj.keys()) {
-		const oldEntrant = doc.entrants.get(entrant);
-		if (oldEntrant) {
-			entrantObj.set(entrant, {
-				...entrantObj.get(entrant),
-				betTotal: oldEntrant.betTotal,
-				bets: oldEntrant.bets,
-			});
-		}
+		promises.push(
+			new Promise(resolve => {
+				const oldEntrant = doc.entrants.get(entrant);
+				if (oldEntrant) {
+					resolve([
+						entrant,
+						{
+							...entrantObj.get(entrant),
+							betTotal: oldEntrant.betTotal,
+							bets: oldEntrant.bets,
+						},
+					]);
+				} else {
+					reject("oldEntrant could not be found");
+				}
+			})
+		);
 	}
-	return entrantObj;
+	return Promise.all(promises).then(newEntrantObj => {
+		return new Map([...newEntrantObj]);
+	});
 }
 
 function sortEntrants(entrantMap) {
-	let sortedMap = new Map(
-		[...entrantMap].sort(([k, v], [k2, v2]) => {
+	return new Promise((resolve, reject) => {
+		let sortedMap = [...entrantMap];
+		sortedMap.sort(([k, v], [k2, v2]) => {
 			if (v.place === v2.place) {
 				return v2.betTotal - v.betTotal;
 			}
 			return v.place - v2.place;
-		})
-	);
-	return sortedMap;
+		});
+		console.log(new Map(sortedMap));
+		resolve(new Map(sortedMap));
+	});
 }
 
 function updateRaceData(races) {
@@ -93,10 +107,10 @@ function updateRaceData(races) {
 				//build the object of entrants
 				createEntrantObj(race)
 					.then(entrantObj => restoreUserBets(entrantObj, doc))
-					.then(entrantObj => sortEntrants(entrantObj))
-					.then(entrantObj => {
-						if (entrantObj.size === race.numentrants) {
-							doc.entrants = entrantObj;
+					.then(objWithBets => sortEntrants(objWithBets))
+					.then(sortedEntrants => {
+						if (sortedEntrants.size === race.numentrants) {
+							doc.entrants = sortedEntrants;
 							doc.save((err, saved) => {
 								if (err) {
 									err.message =
@@ -116,6 +130,10 @@ function updateRaceData(races) {
 									resolveBets(saved);
 								}
 							});
+						} else {
+							throw Error(
+								"the new entrant object does not match the api response"
+							);
 						}
 					});
 			} else {
