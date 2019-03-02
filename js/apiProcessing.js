@@ -45,8 +45,8 @@ function createEntrantObj(race) {
 	});
 }
 
+//checks if entrant is already in the db and uses previous bet amount if so, otherwise set at 0
 function restoreUserBets(entrantObj, doc) {
-	//checks if entrant is already in the db and uses previous bet amount if so, otherwise set at 0
 	let promises = [];
 	for (let entrant of entrantObj.keys()) {
 		promises.push(
@@ -62,7 +62,12 @@ function restoreUserBets(entrantObj, doc) {
 						},
 					]);
 				} else {
-					reject("oldEntrant could not be found");
+					resolve([
+						entrant,
+						{
+							...entrantObj.get(entrant),
+						},
+					]);
 				}
 			})
 		);
@@ -72,8 +77,12 @@ function restoreUserBets(entrantObj, doc) {
 	});
 }
 
+//sorts the entrants by finish position first, and betTotal the finish
+//positions are equal
 function sortEntrants(entrantMap) {
 	return new Promise((resolve, reject) => {
+		//maps can't be sorted directly so you need to convert
+		//the map into an array for sorting
 		let sortedMap = [...entrantMap];
 		sortedMap.sort(([k, v], [k2, v2]) => {
 			if (v.place === v2.place) {
@@ -81,7 +90,6 @@ function sortEntrants(entrantMap) {
 			}
 			return v.place - v2.place;
 		});
-		console.log(new Map(sortedMap));
 		resolve(new Map(sortedMap));
 	});
 }
@@ -229,6 +237,8 @@ function recordRaceEntrants(races) {
 	});
 }
 
+//updates a user's race history or adds a new entry to the
+//history if the race isn't already present
 function updateUserRaceHistory(raceHistory, race, entrant) {
 	return new Promise((resolve, reject) => {
 		let count = 0;
@@ -259,6 +269,7 @@ function updateUserRaceHistory(raceHistory, race, entrant) {
 	});
 }
 
+//runs any time a race's status has changed from the last api call
 function handleRaceStatusChange(currentRace, newStatus, oldStatus) {
 	console.log(
 		`Race ${currentRace.id} is changing from ${oldStatus} to ${newStatus}`
