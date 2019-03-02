@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { NavLink } from "react-router-dom";
 import "./style.scss";
 
 //component imports
@@ -34,7 +35,11 @@ class RaceTileEntrant extends Component {
 		return (
 			<div id="entrant-tile">
 				<ul className="race-entrant">
-					<li>{entrant.name}</li>
+					<li>
+						<NavLink to={`/user/${entrant.name}`}>
+							{entrant.name}
+						</NavLink>
+					</li>
 					<li>{entrant.betTotal}</li>
 
 					{entrant.status === "Finished" ? (

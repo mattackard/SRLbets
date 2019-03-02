@@ -8,6 +8,7 @@ import Header from "../Header";
 import Footer from "../Footer";
 import Home from "../Home";
 import Profile from "../Profile";
+import UserPage from "../UserPage";
 
 class App extends Component {
 	// initialize our state
@@ -129,6 +130,7 @@ class App extends Component {
 							/>
 						)}
 					/>
+					<Route path="/user/:username" component={UserPage} />
 				</Switch>
 				<Footer />
 			</React.Fragment>
