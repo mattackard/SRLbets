@@ -1,16 +1,15 @@
 import React from "react";
 import "./style.scss";
 
-const RaceSummary = props => {
-	const { race } = props;
+const RaceSummary = ({ race }) => {
 	return (
-		<li>
-			<p>{race.game}</p>
-			<p>{race.goal}</p>
-			<p>{race.status}</p>
-			<p>{race.place}</p>
-			<p>{race.time}</p>
-		</li>
+		<ul>
+			<li>{race.game}</li>
+			<li>{race.goal}</li>
+			<li>{race.status}</li>
+			<li>{race.place}</li>
+			<li>{race.time}</li>
+		</ul>
 	);
 };
 

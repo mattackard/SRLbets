@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const User = require("./models/user");
+const Race = require("./models/race");
 const axios = require("axios");
 const getRaceDataFromDB = require("./js/db").getRaceDataFromDB;
 const makeBet = require("./js/db").makeBet;
@@ -73,6 +74,30 @@ router.get("/getLoggedInUser", (req, res, next) => {
 			return next(err);
 		} else {
 			return data ? res.json({ user: data }) : res.send("no user");
+		}
+	});
+});
+
+//GET any user's information
+router.get("/getUser", (req, res, next) => {
+	User.findOne({ srlName: req.query.username }).exec((err, data) => {
+		if (err) {
+			err.message = "error in getUser route";
+			return next(err);
+		} else {
+			return data ? res.json({ user: data }) : res.send("no user");
+		}
+	});
+});
+
+//GET a game's race sumary
+router.get("/getGameSummary", (req, res, next) => {
+	Race.find({ gameTitle: req.query.gameTitle }, (err, data) => {
+		if (err) {
+			err.message = "error in getGameSummary route";
+			return next(err);
+		} else {
+			return data ? res.json({ game: data }) : res.send("no game found");
 		}
 	});
 });

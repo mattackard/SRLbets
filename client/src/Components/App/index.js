@@ -9,6 +9,7 @@ import Footer from "../Footer";
 import Home from "../Home";
 import Profile from "../Profile";
 import UserPage from "../UserPage";
+import GamePage from "../GamePage";
 
 class App extends Component {
 	// initialize our state
@@ -131,6 +132,7 @@ class App extends Component {
 						)}
 					/>
 					<Route path="/user/:username" component={UserPage} />
+					<Route path="/game/:gameTitle" component={GamePage} />
 				</Switch>
 				<Footer />
 			</React.Fragment>

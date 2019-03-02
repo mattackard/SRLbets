@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { NavLink } from "react-router-dom";
 import "./style.scss";
 
 import RaceTileEntrant from "../RaceTileEntrant";
@@ -22,7 +23,9 @@ class RaceTile extends Component {
 		let entrantKeys = Object.keys(race.entrants);
 		return (
 			<div className="race">
-				<h1>{race.gameTitle}</h1>
+				<NavLink to={`/game/${race.gameTitle}`}>
+					<h1>{race.gameTitle}</h1>
+				</NavLink>
 				<p className="race-goal">{race.goal || "No Goal Set"}</p>
 				<p>{race.status}</p>
 				{race.status !== "Entry Open" &&
