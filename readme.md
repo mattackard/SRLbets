@@ -28,9 +28,10 @@ This app relys on environment variables not contained in this repository to link
 ## Running the tests
 
 Tests are built using Mocha/Chai, run them with npm using
-,,,
-npm test
-,,,
+
+```
+npm install
+```
 
 ## Built With
 
