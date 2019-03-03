@@ -5,7 +5,7 @@ to allow for tracking extra race statistics and further integration with your tw
 
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 
 ### Installing
 
@@ -23,14 +23,14 @@ Install the dependencies for the the front-end
 cd client && npm install
 ```
 
-This app relys on environment variables not contained in this repository to link your app to the twitch API and establish a connection to a mongodb database. For further information on aquiring your own twitch client information, see the [Twitch Developer Homepage](https://dev.twitch.tv/) and set up a new application. For further information on how to get your own test database set up with mLab, follow the [mLab Quick Start Guide](https://docs.mlab.com/).
+This app relys on environment variables not contained in this repository to link your app to the twitch API and establish a connection to a mongodb database. For further information on aquiring your own twitch client information, see the [Twitch Developer Homepage](https://dev.twitch.tv/) to set up a new application. For further information on how to set up your own test database with mLab, follow the [mLab Quick Start Guide](https://docs.mlab.com/).
 
 ## Running the tests
 
 Tests are built using Mocha/Chai, run them with npm using
-...
+,,,
 npm test
-...
+,,,
 
 ## Built With
 
