@@ -25,6 +25,16 @@ cd client && npm install
 
 This app relys on environment variables not contained in this repository to link your app to the twitch API and establish a connection to a mongodb database. For further information on aquiring your own twitch client information, see the [Twitch Developer Homepage](https://dev.twitch.tv/) to set up a new application. For further information on how to set up your own test database with mLab, follow the [mLab Quick Start Guide](https://docs.mlab.com/).
 
+## Running the app
+
+To start the app in your local environment
+
+,,,
+npm run start-dev
+,,,
+
+The defualt npm start command is comfigured for use in a heroku deployment and will only start up the server
+
 ## Running the tests
 
 Tests are built using Mocha/Chai, run them with npm using
