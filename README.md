@@ -33,7 +33,7 @@ To start the app in your local environment
 npm run start-dev
 ```
 
-The defualt npm start command is comfigured for use in a heroku deployment and will only start up the server
+The defualt npm start command is configured for use in a heroku deployment and will only start up the server
 
 ## Running the tests
 
