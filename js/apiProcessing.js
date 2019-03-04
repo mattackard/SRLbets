@@ -32,12 +32,6 @@ function createEntrantObj(race) {
 			});
 		}
 		if (Object.keys(race.entrants).length === entrantObj.size) {
-			if (entrantObj.has("JOPEBUSTER") || entrantObj.has("fc")) {
-				console.log(
-					"jopebuster or fc are in the entrant object -- race status is " +
-						race.statetext
-				);
-			}
 			resolve(entrantObj);
 		} else {
 			reject("entrant obj did not fully populate");
@@ -119,6 +113,8 @@ function updateRaceData(races) {
 					.then(sortedEntrants => {
 						if (sortedEntrants.size === race.numentrants) {
 							doc.entrants = sortedEntrants;
+							//markModified tells mongo that the contents were modified in an indexed variable
+							doc.markModified("entrants");
 							doc.save((err, saved) => {
 								if (err) {
 									err.message =
@@ -160,12 +156,10 @@ function updateRaceData(races) {
 			}
 		});
 	});
-	console.log("races retrieved from SRL");
 }
 
 //takes SRL API formatted race and adds or updates all the race entrants into the user db
 function recordRaceEntrants(races) {
-	console.log("recording race entrants");
 	races.forEach(race => {
 		for (let entrant in race.entrants) {
 			User.findOne(
