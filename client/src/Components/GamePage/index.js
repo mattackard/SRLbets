@@ -29,7 +29,7 @@ class GamePage extends Component {
 	render() {
 		return (
 			<div>
-				<p>Game page for {this.state.gameTitle}</p>
+				<h1>{this.state.gameTitle} Race Page</h1>
 				{this.state.races.length < 1 ||
 				this.state.game === "no game found" ? (
 					<Loading />

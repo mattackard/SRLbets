@@ -32,17 +32,16 @@ class UserPage extends Component {
 	render() {
 		return (
 			<div>
-				<p>User page for {this.state.username}</p>
 				{Object.keys(this.state.user) < 1 ||
 				this.state.user === "no user" ? (
 					<Loading />
 				) : (
-					<ul>
-						<li>
+					<React.Fragment>
+						<h1>
 							{this.state.user.srlName ||
 								this.state.user.twitchUserName}
-						</li>
-						<li>{this.state.user.points}</li>
+						</h1>
+						<h2>Bet Balance: {this.state.user.points}</h2>
 						{this.state.user.twitchUserName ? (
 							<li>
 								{this.state.twitchUsername}
@@ -65,9 +64,11 @@ class UserPage extends Component {
 								</a>
 							</li>
 						) : null}
-						<BetHistory user={this.state.user} />
-						<RaceHistory user={this.state.user} />
-					</ul>
+						<div className="flex-columns">
+							<BetHistory user={this.state.user} />
+							<RaceHistory user={this.state.user} />
+						</div>
+					</React.Fragment>
 				)}
 			</div>
 		);

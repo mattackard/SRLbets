@@ -1,1 +1,17 @@
 @import "../../variables.scss";
+h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.flex-columns {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+
+.content-column {
+    display: flex;
+    flex-direction: column;
+    min-width: 30%;
+}

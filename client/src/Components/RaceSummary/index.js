@@ -3,13 +3,14 @@ import "./style.scss";
 
 const RaceSummary = ({ race }) => {
 	return (
-		<ul>
-			<li>{race.game}</li>
-			<li>{race.goal}</li>
-			<li>{race.status}</li>
-			<li>{race.place}</li>
-			<li>{race.time}</li>
-		</ul>
+		<div>
+			<h1>{race.game}</h1>
+			<h2>{race.goal}</h2>
+			<p>Race Date</p>
+			<p>Status : {race.status}</p>
+			<p>Finish position: {race.place}</p>
+			<p>Finish time: {race.time}</p>
+		</div>
 	);
 };
 

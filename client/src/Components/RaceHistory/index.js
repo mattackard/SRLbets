@@ -5,7 +5,7 @@ import RaceSummary from "../RaceSummary";
 
 const RaceHistory = props => {
 	return (
-		<React.Fragment>
+		<div className="content-column">
 			<h2>Race History</h2>
 			<ul id="raceHistory" className="column">
 				{props.user.raceHistory.length ? (
@@ -16,7 +16,7 @@ const RaceHistory = props => {
 					<p>User has not entered any races</p>
 				)}
 			</ul>
-		</React.Fragment>
+		</div>
 	);
 };
 

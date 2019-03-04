@@ -5,7 +5,7 @@ import UserBet from "../UserBet";
 
 const BetHistory = props => {
 	return (
-		<React.Fragment>
+		<div className="content-column">
 			<h2>Bet History</h2>
 			<ul id="bet-history" className="column">
 				<li className="list-header">
@@ -21,7 +21,7 @@ const BetHistory = props => {
 					<p>User has not made any bets</p>
 				)}
 			</ul>
-		</React.Fragment>
+		</div>
 	);
 };
 
