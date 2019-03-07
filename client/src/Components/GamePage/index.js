@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import "./style.scss";
 import axios from "axios";
-import RaceSummary from "../RaceSummary";
+import RaceTile from "../RaceTile";
 import Loading from "../Loading";
 
 class GamePage extends Component {
@@ -37,7 +37,11 @@ class GamePage extends Component {
 					//show race history for game
 					<div>
 						{this.state.races.map(race => (
-							<RaceSummary key={race.raceID} race={race} />
+							<RaceTile
+								key={race.raceID}
+								race={race}
+								getDataFromDb={this.props.getDataFromDb}
+							/>
 						))}
 					</div>
 				)}

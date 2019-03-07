@@ -131,8 +131,19 @@ class App extends Component {
 							/>
 						)}
 					/>
-					<Route path="/user/:username" component={UserPage} />
-					<Route path="/game/:gameTitle" component={GamePage} />
+					<Route
+						path="/user/:username"
+						render={props => <UserPage {...props} />}
+					/>
+					<Route
+						path="/game/:gameTitle"
+						render={props => (
+							<GamePage
+								{...props}
+								getDataFromDb={this.getDataFromDb}
+							/>
+						)}
+					/>
 				</Switch>
 				<Footer />
 			</React.Fragment>

@@ -9,9 +9,9 @@ const RaceHistory = props => {
 			<h2>Race History</h2>
 			<ul id="raceHistory" className="column">
 				{props.user.raceHistory.length ? (
-					props.user.raceHistory.map((race, index) => (
-						<RaceSummary key={index} race={race} />
-					))
+					props.user.raceHistory.map((race, index) => {
+						return <RaceSummary key={index} race={race} />;
+					})
 				) : (
 					<p>User has not entered any races</p>
 				)}
