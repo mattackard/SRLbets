@@ -195,6 +195,7 @@ function recordRaceEntrants(races) {
 								race.entrants[entrant].time
 							);
 						}
+						doc.markModified("raceHistory");
 						doc.save(err => {
 							if (err) {
 								err.message =
