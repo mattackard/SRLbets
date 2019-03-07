@@ -186,6 +186,7 @@ function recordRaceEntrants(races) {
 								race,
 								entrant
 							);
+							doc.markModified("raceHistory");
 						}
 
 						//if the race entrant has a finish position, record place and time
@@ -195,7 +196,6 @@ function recordRaceEntrants(races) {
 								race.entrants[entrant].time
 							);
 						}
-						doc.markModified("raceHistory");
 						doc.save(err => {
 							if (err) {
 								err.message =
