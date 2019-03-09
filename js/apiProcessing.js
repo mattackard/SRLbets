@@ -236,31 +236,31 @@ function recordRaceEntrants(races) {
 //history if the race isn't already present
 function updateUserRaceHistory(raceHistory, race, entrant) {
 	return new Promise((resolve, reject) => {
-		let count = 0;
+		let updated = false;
 		raceHistory.forEach(recordedRace => {
 			//if the race is already in history, update it
 			if (recordedRace.raceID === race.id) {
 				recordedRace.status = race.statetext;
-				recordedRace.place = entrant.place;
-				recordedRace.time = entrant.time;
+				recordedRace.place = race[entrant].place;
+				recordedRace.time = race[entrant].time;
+				updated = true;
 			}
-			//otherwise, add the race to history
-			else {
-				raceHistory.push({
-					raceID: race.id,
-					game: race.game.name,
-					goal: race.goal,
-					status: race.statetext,
-					place: entrant.place,
-					time: entrant.time,
-				});
-			}
-			count++;
 		});
-		//makes sure all races in history have been iterated before resolving
-		if (count === raceHistory.length) {
-			resolve(raceHistory);
+		//if the race isn't in the current user's raceHistory, add a new race object to the raceHistory
+		if (!updated) {
+			raceHistory.push({
+				raceID: race.id,
+				game: race.game.name,
+				goal: race.goal,
+				status: race.statetext,
+				place: race[entrant].place,
+				time: race[entrant].time,
+			});
+		} else {
+			reject("Race History entry could not be found or created");
 		}
+		//resolve raceHistory with changes
+		resolve(raceHistory);
 	});
 }
 
