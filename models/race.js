@@ -8,10 +8,11 @@ const BetSchema = new mongoose.Schema({
 
 const EntrantSchema = new mongoose.Schema({
 	name: { type: String, required: true, trim: true },
-	status: { type: String, required: true }, //Entered, Ready, In Progress, Finished, Forfiet
+	status: { type: String, required: true }, //Entered, Ready, In Progress, Finished, Forfeit
 	place: { type: Number, required: true },
 	time: String,
 	twitch: String,
+	payRatio: { type: Number, required: true, default: 2 }, //needs implemented
 	betTotal: { type: Number, required: true, default: 0 },
 	bets: { type: Map, of: BetSchema, default: {} },
 });
@@ -26,6 +27,12 @@ const RaceSchema = new mongoose.Schema({
 	simpleTime: String,
 	betTotal: { type: Number, required: true, default: 0 },
 	entrants: { type: Map, of: EntrantSchema, default: new Map() },
+	winner: {
+		//needs implemented
+		srlName: { type: String, required: true },
+		twitchUsername: String,
+		betTotal: { type: Number, required: true, default: 0 },
+	},
 	allBetsPaid: { type: Boolean, required: true, default: false },
 });
 

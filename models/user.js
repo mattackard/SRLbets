@@ -7,6 +7,7 @@ const RaceHistory = new mongoose.Schema({
 	status: { type: String, required: true },
 	place: Number,
 	time: Number,
+	bestTime: { type: Boolean, required: true, default: false }, //needs implemented
 });
 
 const BetHistory = new mongoose.Schema({
@@ -20,6 +21,20 @@ const BetHistory = new mongoose.Schema({
 	},
 });
 
+const GameHistory = new mongoose.Schema({
+	//needs implemented
+	gameID: { type: String, required: true },
+	gameTitle: { type: String, required: true },
+	categories: {
+		goal: { type: String, required: true },
+		avgTime: { type: Number, required: true },
+		bestTime: { type: Number, required: true },
+		winRatio: { type: Number, required: true },
+		numWins: { type: Number, required: true },
+		numEntries: { type: Number, required: true },
+	},
+});
+
 const UserSchema = new mongoose.Schema({
 	srlName: { type: String, trim: true },
 	points: { type: Number, default: 100, required: true },
@@ -28,7 +43,11 @@ const UserSchema = new mongoose.Schema({
 	twitchProfileImg: String,
 	following: { type: Map, of: Object, default: new Map() },
 	betHistory: [BetHistory],
+	betRatio: { type: Number, default: 0, required: true }, //needs implemented
+	betTotal: { type: Number, default: 0, required: true }, //needs implemented
 	raceHistory: [RaceHistory],
+	raceRatio: { type: Number, default: 0, required: true }, //needs implemented
+	gameHistory: [GameHistory], //needs implemented
 });
 
 module.exports = mongoose.model("user", UserSchema);
