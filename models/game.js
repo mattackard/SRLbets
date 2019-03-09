@@ -11,14 +11,11 @@ const RaceHistory = new mongoose.Schema({
 	betTotal: { type: Number, required: true, default: 0 },
 });
 
-const GameSchema = new mongoose.Schema({
+const GameCategory = new mongoose.Schema({
 	//needs implemented
-	gameID: { type: Number, required: true },
-	gameTitle: { type: String, required: true, trim: true },
-	raceHistory: [RaceHistory],
-	status: { type: String, required: true },
-	betTotal: { type: Number, required: true, default: 0 },
-	avgTime: Number,
+	goal: { type: String, required: true },
+	avgTime: { type: Number, required: true },
+	winRatio: { type: Number, required: true },
 	mostWins: {
 		srlName: String,
 		twitcUsername: String,
@@ -34,6 +31,15 @@ const GameSchema = new mongoose.Schema({
 		twitcUsername: String,
 		time: Number,
 	},
+});
+
+const GameSchema = new mongoose.Schema({
+	//needs implemented
+	gameID: { type: Number, required: true },
+	gameTitle: { type: String, required: true, trim: true },
+	raceHistory: [RaceHistory],
+	betTotal: { type: Number, required: true, default: 0 },
+	categories: { type: Map, of: GameCategory, default: new Map() }, //goal as map key
 });
 
 module.exports = mongoose.model("game", GameSchema);
