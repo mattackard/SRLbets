@@ -29,11 +29,11 @@ const RaceSchema = new mongoose.Schema({
 	entrants: { type: Map, of: EntrantSchema, default: new Map() },
 	winner: {
 		//needs implemented
-		srlName: { type: String, required: true },
+		srlName: String,
 		twitchUsername: String,
-		betTotal: { type: Number, required: true, default: 0 },
+		betTotal: { type: Number, default: 0 },
 	},
-	allBetsPaid: { type: Boolean, required: true, default: false },
+	allBetsPaid: { type: Boolean, default: false },
 });
 
 module.exports = mongoose.model("race", RaceSchema);
