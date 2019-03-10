@@ -12,8 +12,8 @@ const RaceHistory = new mongoose.Schema({
 
 const BetHistory = new mongoose.Schema({
 	raceID: { type: String, required: true },
-	game: { type: String, required: true }, //needs implemented
-	goal: String, //needs implemented
+	game: { type: String, required: true },
+	goal: String,
 	entrant: { type: String, required: true },
 	amountBet: { type: Number, required: true },
 	result: {
@@ -52,7 +52,7 @@ const UserSchema = new mongoose.Schema({
 	betTotal: { type: Number, default: 0, required: true }, //needs implemented
 	raceHistory: [RaceHistory],
 	raceRatio: { type: Number, default: 0, required: true }, //needs implemented
-	gameHistory: [GameHistory], //needs implemented
+	gameHistory: { type: Map, of: GameHistory, default: new Map() }, //needs implemented
 });
 
 module.exports = mongoose.model("user", UserSchema);

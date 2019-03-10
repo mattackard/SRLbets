@@ -148,6 +148,8 @@ function buildUserBetHistory(betHistory, race, entrant, amount) {
 	if (!increaseBet) {
 		betHistory.push({
 			raceID: race.raceID,
+			game: race.gameTitle,
+			goal: race.goal,
 			entrant: entrant,
 			amountBet: amount,
 		});
