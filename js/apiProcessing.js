@@ -177,18 +177,6 @@ function recordRaceEntrants(races) {
 						doc.game = race.game.name;
 						doc.goal = race.goal;
 						doc.status = race.statetext;
-						if (
-							doc.status !== "Entry Open" &&
-							doc.status !== "Entry Closed"
-						) {
-							doc.raceHistory = await updateUserRaceHistory(
-								doc.raceHistory,
-								race,
-								entrant
-							);
-							doc.markModified("raceHistory");
-						}
-
 						//if the race entrant has a finish position, record place and time
 						if (race.place < 1000) {
 							doc.place = race.entrants[entrant].place;
@@ -196,10 +184,18 @@ function recordRaceEntrants(races) {
 								race.entrants[entrant].time
 							);
 						}
+						if (doc.status === "In Progress") {
+							updateUserRaceHistory(
+								doc.raceHistory,
+								race,
+								entrant
+							).then(newHistory => {
+								doc.raceHistory = newHistory;
+								doc.markModified("raceHistory");
+							});
+						}
 						doc.save(err => {
 							if (err) {
-								err.message =
-									"Eror when updating user from race entrants";
 								throw Error(err);
 							}
 						});
@@ -217,7 +213,7 @@ function recordRaceEntrants(races) {
 									},
 								],
 							},
-							(err, saved) => {
+							err => {
 								if (err) {
 									err.message =
 										"Error in creating new user from race entrant";
@@ -241,8 +237,8 @@ function updateUserRaceHistory(raceHistory, race, entrant) {
 			//if the race is already in history, update it
 			if (recordedRace.raceID === race.id) {
 				recordedRace.status = race.statetext;
-				recordedRace.place = race[entrant].place;
-				recordedRace.time = race[entrant].time;
+				recordedRace.place = race.entrants[entrant].place;
+				recordedRace.time = race.entrants[entrant].time;
 				updated = true;
 			}
 		});
@@ -253,11 +249,9 @@ function updateUserRaceHistory(raceHistory, race, entrant) {
 				game: race.game.name,
 				goal: race.goal,
 				status: race.statetext,
-				place: race[entrant].place,
-				time: race[entrant].time,
+				place: race.entrants[entrant].place,
+				time: race.entrants[entrant].time,
 			});
-		} else {
-			reject("Race History entry could not be found or created");
 		}
 		//resolve raceHistory with changes
 		resolve(raceHistory);
