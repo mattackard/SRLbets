@@ -23,13 +23,6 @@ const BetHistory = new mongoose.Schema({
 	},
 });
 
-const GameHistory = new mongoose.Schema({
-	//needs implemented
-	gameID: { type: String, required: true },
-	gameTitle: { type: String, required: true },
-	categories: [GameCategory],
-});
-
 const GameCategory = new mongoose.Schema({
 	//needs implemented
 	goal: { type: String, required: true },
@@ -38,6 +31,13 @@ const GameCategory = new mongoose.Schema({
 	winRatio: { type: Number, required: true },
 	numWins: { type: Number, required: true },
 	numEntries: { type: Number, required: true },
+});
+
+const GameHistory = new mongoose.Schema({
+	//needs implemented
+	gameID: { type: String, required: true },
+	gameTitle: { type: String, required: true },
+	categories: [GameCategory],
 });
 
 const UserSchema = new mongoose.Schema({
