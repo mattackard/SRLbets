@@ -2,6 +2,7 @@ const axios = require("axios");
 const Race = require("../models/race");
 const User = require("../models/user");
 const resolveBets = require("./db").resolveBets;
+const handleCancelledRaces = require("./db").handleCancelledRaces;
 
 function getRaceDataFromSRL() {
 	//gets the current race json data from the SRL API
@@ -11,6 +12,7 @@ function getRaceDataFromSRL() {
 		.then(response => {
 			updateRaceData(response.data.races);
 			recordRaceEntrants(response.data.races);
+			handleCancelledRaces(response.data.races);
 		})
 		.catch(err => {
 			throw Error(err);
