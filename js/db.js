@@ -297,6 +297,97 @@ function closeBet(entrant, race) {
 	});
 }
 
+//refunds all user bets for an array of race IDs
+function refundBets(IDArray) {
+	if (typeof IDArray !== "object") {
+		console.log(typeof IDArray);
+		IDArray = [IDArray];
+	}
+	return new Promise(resolve => {
+		let eachID = [];
+		IDArray.forEach(id => {
+			eachID.push(
+				new Promise(resolve => {
+					Race.findOne({ raceID: id }, (err, race) => {
+						if (err) {
+							throw Error(err);
+						}
+						let eachRace = [];
+						race.entrants.forEach(entrant => {
+							eachRace.push(
+								new Promise(resolve => {
+									let eachBet = [];
+									entrant.bets.forEach(bet => {
+										eachBet.push(
+											new Promise((resolve, reject) => {
+												User.findOne(
+													{
+														twitchUsername:
+															bet.twitchUsername,
+													},
+													(err, doc) => {
+														if (err) {
+															err.message =
+																"Could not find user in bet payout";
+															throw Error(err);
+														}
+														doc.betHistory.forEach(
+															userBet => {
+																if (
+																	userBet.raceID ===
+																		race.raceID &&
+																	userBet.entrant ===
+																		entrant.name
+																) {
+																	userBet.result = `race cancelled`;
+																	doc.points +=
+																		userBet.amount;
+																}
+															}
+														);
+														doc.save(err => {
+															if (err) {
+																throw Error(
+																	err
+																);
+															}
+															//return the edited bet as an array for map conversion
+															bet.isPaid = true;
+															resolve([
+																bet.twitchUsername,
+																bet,
+															]);
+														});
+													}
+												);
+											})
+										);
+									});
+									resolve(
+										Promise.all(eachBet).then(newBets => {
+											return newBets;
+										})
+									);
+								})
+							);
+						});
+						resolve(
+							Promise.all(eachRace).then(data => {
+								return data;
+							})
+						);
+					});
+				})
+			);
+		});
+		resolve(
+			Promise.all(eachID).then(data => {
+				return data;
+			})
+		);
+	});
+}
+
 //removes races that were cancelled after being saved to the database
 //also triggers function to return bets made on cancelled races
 function handleCancelledRaces(srlRaces) {
@@ -322,10 +413,15 @@ function handleCancelledRaces(srlRaces) {
 					}
 				});
 				console.log(raceIDsToRemove);
-				Race.deleteMany({ raceID: { $in: raceIDsToRemove } }, err => {
-					if (err) {
-						throw Error(err);
-					}
+				refundBets(raceIDsToRemove).then(() => {
+					Race.deleteMany(
+						{ raceID: { $in: raceIDsToRemove } },
+						err => {
+							if (err) {
+								throw Error(err);
+							}
+						}
+					);
 				});
 			} else {
 				console.log("no races to remove");
