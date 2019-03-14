@@ -188,6 +188,14 @@ function resolveBets(race) {
 				) {
 					Race.findOne({ raceID: race.raceID }, (err, doc) => {
 						newRaceBets = new Map(newRaceBets);
+						if (entrant.place === 1) {
+							doc.winner = {
+								srlName: entrant.name,
+								twitchUsername: entrant.twitch || null,
+								betTotal: entrant.betTotal,
+							};
+							doc.markModified("winner");
+						}
 						doc.entrants.set(entrant.name, {
 							name: entrant.name,
 							status: entrant.status,
