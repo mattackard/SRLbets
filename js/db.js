@@ -226,7 +226,7 @@ function betPayout(entrant, race) {
 			new Promise((resolve, reject) => {
 				//checks if the bet has already been paid
 				if (!bet.isPaid) {
-					let betReward = bet.betAmount * 2;
+					let betReward = bet.betAmount * entrant.payRatio;
 					User.findOne(
 						{ twitchUsername: bet.twitchUsername },
 						(err, doc) => {

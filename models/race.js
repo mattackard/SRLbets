@@ -12,7 +12,7 @@ const EntrantSchema = new mongoose.Schema({
 	place: { type: Number, required: true },
 	time: String,
 	twitch: String,
-	payRatio: { type: Number, required: true, default: 2 }, //needs implemented
+	payRatio: { type: Number, required: true, default: 2 },
 	betTotal: { type: Number, required: true, default: 0 },
 	bets: { type: Map, of: BetSchema, default: {} },
 });

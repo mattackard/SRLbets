@@ -19,6 +19,12 @@ function getRaceDataFromSRL() {
 		});
 }
 
+function getPayRatio(raceEntrant) {
+	//get entrants raceHistory and check how many races of the same
+	//game the entrant has won or placed near top
+	return 2;
+}
+
 function createEntrantObj(race) {
 	let entrantObj = new Map();
 	return new Promise((resolve, reject) => {
@@ -31,6 +37,7 @@ function createEntrantObj(race) {
 				time: convertRunTime(race.entrants[i].time),
 				twitch: race.entrants[i].twitch,
 				betTotal: 0,
+				payRatio: getPayRatio(race.entrants[i]),
 			});
 		}
 		if (Object.keys(race.entrants).length === entrantObj.size) {
