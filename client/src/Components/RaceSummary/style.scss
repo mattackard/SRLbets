@@ -1,4 +1,7 @@
-@import '../../variables.scss';
-div {
+@import "../../variables.scss";
+.race-summary {
     text-align: center;
+    a {
+        color: white;
+    }
 }
