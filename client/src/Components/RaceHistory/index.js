@@ -7,7 +7,7 @@ const RaceHistory = props => {
 	return (
 		<div className="content-column">
 			<h2>Race History</h2>
-			<ul id="raceHistory" className="column">
+			<ul id="race-history" className="column">
 				{props.user.raceHistory.length ? (
 					props.user.raceHistory.map((race, index) => {
 						return <RaceSummary key={index} race={race} />;

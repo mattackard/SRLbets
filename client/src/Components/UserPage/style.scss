@@ -4,9 +4,9 @@ h2 {
     margin-bottom: 2rem;
 }
 
-.flex-columns {
+.user-content {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     justify-content: space-evenly;
 }
 
@@ -14,4 +14,10 @@ h2 {
     display: flex;
     flex-direction: column;
     min-width: 30%;
+}
+
+@media (min-width: 1000px) {
+    .user-content {
+        flex-direction: row;
+    }
 }

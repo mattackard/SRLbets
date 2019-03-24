@@ -64,7 +64,7 @@ class UserPage extends Component {
 								</a>
 							</li>
 						) : null}
-						<div className="flex-columns">
+						<div className="user-content">
 							<BetHistory user={this.state.user} />
 							<RaceHistory user={this.state.user} />
 						</div>
