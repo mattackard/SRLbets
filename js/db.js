@@ -353,6 +353,9 @@ function refundBets(IDArray) {
 																}
 															}
 														);
+														doc.markModified(
+															"betHistory"
+														);
 														doc.save(err => {
 															if (err) {
 																throw Error(
