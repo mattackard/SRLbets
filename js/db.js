@@ -401,41 +401,44 @@ function refundBets(IDArray) {
 function handleCancelledRaces(srlRaces) {
 	let raceIDsToRemove = [];
 	let srlIDs = [];
-	Race.find({ status: "Entry Open" }, (err, dbRaces) => {
-		if (err) {
-			throw Error(err);
-		} else {
-			//remove races that have already begun, those cannot be cancelled
-			srlRaces = srlRaces.filter(
-				srlRace => srlRace.statetext === "Entry Open"
-			);
-			//dont bother iterating if no races need to be removed
-			if (dbRaces.length !== srlRaces.length) {
-				//look for races in database that aren't in srlAPI response
-				srlRaces.forEach(srlRace => {
-					srlIDs.push(srlRace.id);
-				});
-				dbRaces.forEach(dbRace => {
-					if (!srlIDs.includes(dbRace.raceID)) {
-						raceIDsToRemove.push(dbRace.raceID);
-					}
-				});
-				console.log(raceIDsToRemove);
-				refundBets(raceIDsToRemove).then(() => {
-					Race.deleteMany(
-						{ raceID: { $in: raceIDsToRemove } },
-						err => {
-							if (err) {
-								throw Error(err);
-							}
-						}
-					);
-				});
+	Race.find(
+		{ status: { $in: ["Entry Open", "In Progress"] } },
+		(err, dbRaces) => {
+			if (err) {
+				throw Error(err);
 			} else {
-				console.log("no races to remove");
+				//remove races that have already begun, those cannot be cancelled
+				srlRaces = srlRaces.filter(
+					srlRace =>
+						srlRace.statetext === "Entry Open" ||
+						srlRace.statetext === "In Progress"
+				);
+				//dont bother iterating if no races need to be removed
+				if (dbRaces.length !== srlRaces.length) {
+					//look for races in database that aren't in srlAPI response
+					srlRaces.forEach(srlRace => {
+						srlIDs.push(srlRace.id);
+					});
+					dbRaces.forEach(dbRace => {
+						if (!srlIDs.includes(dbRace.raceID)) {
+							raceIDsToRemove.push(dbRace.raceID);
+						}
+					});
+					console.log(raceIDsToRemove);
+					refundBets(raceIDsToRemove).then(() => {
+						Race.deleteMany(
+							{ raceID: { $in: raceIDsToRemove } },
+							err => {
+								if (err) {
+									throw Error(err);
+								}
+							}
+						);
+					});
+				}
 			}
 		}
-	});
+	);
 }
 
 module.exports.getRaceDataFromDB = getRaceDataFromDB;
