@@ -305,6 +305,39 @@ function closeBet(entrant, race) {
 	});
 }
 
+function refundBetsForEntrant(entrant) {
+	entrant.bets.forEach(bet => {
+		User.findOne(
+			{
+				twitchUsername: bet.twitchUsername,
+			},
+			(err, doc) => {
+				if (err) {
+					err.message = "Could not find user in bet payout";
+					throw Error(err);
+				}
+				doc.betHistory.forEach(userBet => {
+					//find the race in the user's bet history and refund the points
+					if (
+						userBet.raceID === race.raceID &&
+						userBet.entrant === entrant.name
+					) {
+						userBet.result = `entrant left race`;
+						doc.points += userBet.amount;
+					}
+				});
+				doc.markModified("betHistory");
+				doc.save(err => {
+					if (err) {
+						throw Error(err);
+					}
+					bet.isPaid = true;
+				});
+			}
+		);
+	});
+}
+
 //refunds all user bets for an array of race IDs
 function refundBets(IDArray) {
 	if (typeof IDArray !== "object") {
@@ -448,3 +481,4 @@ module.exports.getRaceDataFromDB = getRaceDataFromDB;
 module.exports.resolveBets = resolveBets;
 module.exports.makeBet = makeBet;
 module.exports.handleCancelledRaces = handleCancelledRaces;
+module.exports.refundBetsForEntrant = refundBetsForEntrant;
