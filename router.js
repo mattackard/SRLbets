@@ -68,7 +68,11 @@ router.get("/twitchLogout", (req, res, next) => {
 
 //GET currently logged in user's information
 router.get("/getLoggedInUser", (req, res, next) => {
-	User.findOne({ twitchUsername: req.session.username }).exec((err, data) => {
+	console.log(req.session.username);
+	User.findOne({
+		twitchUsername: req.session.username,
+		twitchID: req.session.twitchUserID,
+	}).exec((err, data) => {
 		if (err) {
 			err.message = "error in getLoggedInUserRoute";
 			return next(err);

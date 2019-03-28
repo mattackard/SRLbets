@@ -5,7 +5,7 @@ import "./style.scss";
 const UserBet = props => {
 	const { bet } = props;
 	return (
-		<li class="user-bet">
+		<li className="user-bet">
 			<p className="entrant-name">
 				<NavLink to={`/user/${bet.entrant}`}>{bet.entrant}</NavLink>
 			</p>

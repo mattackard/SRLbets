@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import "./style.scss";
 import RaceHistory from "../RaceHistory";
 import BetHistory from "../BetHistory";
+import Loading from "../Loading";
 
 class Profile extends Component {
 	componentWillMount() {
@@ -22,8 +23,16 @@ class Profile extends Component {
 							<h2>{user.twitchUsername}</h2>
 						</ul>
 						<h3>Points: {user.points}</h3>
-						<BetHistory user={user} />
-						<RaceHistory user={user} />
+						{user.betHistory ? (
+							<BetHistory user={user} />
+						) : (
+							<Loading />
+						)}
+						{user.raceHistory ? (
+							<RaceHistory user={user} />
+						) : (
+							<Loading />
+						)}
 					</React.Fragment>
 				) : (
 					<h2>You must be logged in to view your profile</h2>
