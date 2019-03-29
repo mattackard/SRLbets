@@ -57,13 +57,15 @@ function handleEntrantChange(race, newEntrantObj) {
 		if (err) {
 			throw Error(err);
 		}
-		oldEntrants = doc.entrants;
-		oldEntrants.forEach(entrant => {
-			if (!newEntrantObj.has(entrant.name)) {
-				console.log("found entrant that has left race");
-				refundBetsForEntrant(entrant);
-			}
-		});
+		if (doc) {
+			oldEntrants = doc.entrants;
+			oldEntrants.forEach(entrant => {
+				if (!newEntrantObj.has(entrant.name)) {
+					console.log("found entrant that has left race");
+					refundBetsForEntrant(entrant);
+				}
+			});
+		}
 	});
 }
 
