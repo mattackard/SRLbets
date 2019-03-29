@@ -3,6 +3,7 @@ const Race = require("../models/race");
 const User = require("../models/user");
 const resolveBets = require("./db").resolveBets;
 const handleCancelledRaces = require("./db").handleCancelledRaces;
+const refundBetsForEntrant = require("./db").refundBetsForEntrant;
 
 function getRaceDataFromSRL() {
 	//gets the current race json data from the SRL API
