@@ -42,9 +42,7 @@ function createEntrantObj(race) {
 			});
 		}
 		if (Object.keys(race.entrants).length === entrantObj.size) {
-			if (race.status !== "Complete" && race.status !== "Race Over") {
-				handleEntrantChange(race, entrantObj);
-			}
+			handleEntrantChange(race, entrantObj);
 			resolve(entrantObj);
 		} else {
 			reject("entrant obj did not fully populate");
@@ -63,7 +61,7 @@ function handleEntrantChange(race, newEntrantObj) {
 			oldEntrants.forEach(entrant => {
 				if (!newEntrantObj.has(entrant.name)) {
 					console.log("found entrant that has left race");
-					refundBetsForEntrant(entrant);
+					refundBetsForEntrant(entrant, race.id);
 				}
 			});
 		}

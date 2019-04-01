@@ -305,7 +305,7 @@ function closeBet(entrant, race) {
 	});
 }
 
-function refundBetsForEntrant(entrant) {
+function refundBetsForEntrant(entrant, raceID) {
 	entrant.bets.forEach(bet => {
 		User.findOne(
 			{
@@ -316,23 +316,25 @@ function refundBetsForEntrant(entrant) {
 					err.message = "Could not find user in bet payout";
 					throw Error(err);
 				}
-				doc.betHistory.forEach(userBet => {
-					//find the race in the user's bet history and refund the points
-					if (
-						userBet.raceID === race.raceID &&
-						userBet.entrant === entrant.name
-					) {
-						userBet.result = `entrant left race`;
-						doc.points += userBet.amount;
-					}
-				});
-				doc.markModified("betHistory");
-				doc.save(err => {
-					if (err) {
-						throw Error(err);
-					}
-					bet.isPaid = true;
-				});
+				if (doc) {
+					doc.betHistory.forEach(userBet => {
+						//find the race in the user's bet history and refund the points
+						if (
+							userBet.raceID === raceID &&
+							userBet.entrant === entrant.name
+						) {
+							userBet.result = `entrant left race`;
+							doc.points += userBet.amount;
+						}
+					});
+					doc.markModified("betHistory");
+					doc.save(err => {
+						if (err) {
+							throw Error(err);
+						}
+						bet.isPaid = true;
+					});
+				}
 			}
 		);
 	});
@@ -438,19 +440,19 @@ function handleCancelledRaces(srlRaces) {
 	let raceIDsToRemove = [];
 	let srlIDs = [];
 	Race.find(
-		{ status: { $in: ["Entry Open", "In Progress"] } },
+		{ status: { $in: ["Entry Open", "Entry Closed"] } },
 		(err, dbRaces) => {
 			if (err) {
 				throw Error(err);
 			} else {
 				//remove races that have already begun, those cannot be cancelled
-				srlRaces = srlRaces.filter(
+				let filteredRaces = srlRaces.filter(
 					srlRace =>
 						srlRace.statetext === "Entry Open" ||
-						srlRace.statetext === "In Progress"
+						srlRace.statetext === "Entry Closed"
 				);
 				//dont bother iterating if no races need to be removed
-				if (dbRaces.length !== srlRaces.length) {
+				if (dbRaces.length !== filteredRaces.length) {
 					//look for races in database that aren't in srlAPI response
 					srlRaces.forEach(srlRace => {
 						srlIDs.push(srlRace.id);
