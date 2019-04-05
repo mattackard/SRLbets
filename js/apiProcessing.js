@@ -1,6 +1,7 @@
 const axios = require("axios");
 const Race = require("../models/race");
 const User = require("../models/user");
+const Game = require("../models/game");
 const resolveBets = require("./db").resolveBets;
 const handleCancelledRaces = require("./db").handleCancelledRaces;
 const refundBetsForEntrant = require("./db").refundBetsForEntrant;
@@ -105,7 +106,7 @@ function restoreUserBets(entrantObj, doc) {
 function sortEntrants(entrantMap) {
 	return new Promise((resolve, reject) => {
 		//maps can't be sorted directly so you need to convert
-		//the map into an array for sorting
+		//the map into an array of arrays for sorting
 		let sortedMap = [...entrantMap];
 		sortedMap.sort(([k, v], [k2, v2]) => {
 			if (v.place === v2.place) {
@@ -119,7 +120,6 @@ function sortEntrants(entrantMap) {
 
 function updateRaceData(races) {
 	races.forEach(async race => {
-		//get the race from the database if it already exists
 		Race.findOne({ raceID: race.id }, async (err, doc) => {
 			if (err) {
 				throw Error(err);
@@ -184,6 +184,61 @@ function updateRaceData(races) {
 				Race.create(raceDoc);
 			}
 		});
+		Game.findOne({ gameID: race.game.id }, async (err, doc) => {
+			if (err) {
+				throw Error(err);
+			}
+			if (doc) {
+				//check if race is recorded in game history
+				if (!doc.raceHistory.includes(race.id)) {
+					doc.raceHistory.push(race.id);
+				}
+				//checks if category already exists and updates it
+				let newCat = {};
+				if (doc.categories.has(race.goal)) {
+					let previous = doc.categories.get(race.goal);
+					newCat = {
+						goal: previous.goal,
+						avgTime: previous.avgTime,
+						//make each key below calculate result from previous value
+						mostWins: {},
+						mostEntries: {},
+						bestTime: {},
+					};
+				} else {
+					//create a new category object
+					newCat = {
+						goal: race.goal,
+						avgTime: 0,
+						mostWins: {},
+						mostEntries: {},
+						bestTime: {},
+					};
+				}
+				doc.categories.set(race.goal, newCat);
+				doc.markModified("categories");
+			} else {
+				//create a new game if it can't already be found in the database
+				let gameDoc = new Game({
+					gameID: race.game.id,
+					gameTitle: race.game.name,
+					raceHistory: [race.id],
+					categories: new Map([
+						[
+							race.goal,
+							{
+								goal: race.goal,
+								avgTime: 0,
+								mostWins: {},
+								mostEntries: {},
+								bestTime: {},
+							},
+						],
+					]),
+				});
+				Game.create(gameDoc);
+			}
+		});
 	});
 }
 
@@ -203,17 +258,11 @@ function recordRaceEntrants(races) {
 						throw Error(err);
 					}
 					if (doc) {
-						doc.game = race.game.name;
-						doc.goal = race.goal;
-						doc.status = race.statetext;
-						//if the race entrant has a finish position, record place and time
-						if (race.place < 1000) {
-							doc.place = race.entrants[entrant].place;
-							doc.time = convertRunTime(
-								race.entrants[entrant].time
-							);
-						}
-						if (doc.status === "In Progress") {
+						//update user race and game history
+						if (
+							doc.status !== "Entry Open" &&
+							doc.status !== "Entry Closed"
+						) {
 							updateUserRaceHistory(
 								doc.raceHistory,
 								race,
@@ -222,7 +271,17 @@ function recordRaceEntrants(races) {
 								doc.raceHistory = newHistory;
 								doc.markModified("raceHistory");
 							});
+							updateUserGameHistory(
+								doc.gameHistory,
+								race,
+								entrant
+							).then(newHistory => {
+								doc.gameHistory = newHistory;
+								doc.markModified("gameHistory");
+							});
 						}
+						//update user game history
+
 						doc.save(err => {
 							if (err) {
 								throw Error(err);
@@ -241,6 +300,28 @@ function recordRaceEntrants(races) {
 										status: race.statetext,
 									},
 								],
+								gameHistory: new Map([
+									[
+										race.game.name,
+										{
+											gameID: race.game.id,
+											gameTitle: race.game.name,
+											categories: new Map([
+												[
+													race.goal,
+													{
+														goal: race.goal,
+														avgTime: 0,
+														bestTime: 0,
+														winRatio: 0,
+														numWins: 0,
+														numEntries: 1,
+													},
+												],
+											]),
+										},
+									],
+								]),
 							},
 							err => {
 								if (err) {
@@ -265,9 +346,13 @@ function updateUserRaceHistory(raceHistory, race, entrant) {
 		raceHistory.forEach(recordedRace => {
 			//if the race is already in history, update it
 			if (recordedRace.raceID === race.id) {
-				recordedRace.status = race.statetext;
-				recordedRace.place = race.entrants[entrant].place;
-				recordedRace.time = race.entrants[entrant].time;
+				recordedRace.status = entrant.statetext;
+				recordedRace.place = entrant.place;
+				recordedRace.time = entrant.time;
+				recordedRace.bestTime =
+					recordedRace.bestTime > race.time
+						? race.time
+						: recordedRace.bestTime;
 				updated = true;
 			}
 		});
@@ -277,13 +362,58 @@ function updateUserRaceHistory(raceHistory, race, entrant) {
 				raceID: race.id,
 				game: race.game.name,
 				goal: race.goal,
-				status: race.statetext,
-				place: race.entrants[entrant].place,
-				time: race.entrants[entrant].time,
+				status: entrant.statetext,
+				place: entrant.place,
+				time: entrant.time,
+				bestTime: entrant.time,
 			});
 		}
 		//resolve raceHistory with changes
 		resolve(raceHistory);
+	});
+}
+
+//updates a user's race history or adds a new entry to the
+//history if the race isn't already present
+function updateUserGameHistory(gameHistory, race, entrant) {
+	return new Promise((resolve, reject) => {
+		//checks if game is already in history
+		if (gameHistory.has(race.game)) {
+			let gameObj = gameHistory.get(race.game);
+			//check if category already exists
+			if (gameObj.categories.has(race.goal)) {
+				//update the category if new info is present
+			} else {
+				gameObj.categories.set(race.goal, {
+					goal: race.goal,
+					avgTime: 0,
+					bestTime: 0,
+					winRatio: 0,
+					numWins: 0,
+					numEntries: 1,
+				});
+			}
+		} else {
+			gameHistory.set(race.game, {
+				gameID: race.game.id,
+				gameTitle: race.game.name,
+				categories: new Map([
+					[
+						race.goal,
+						{
+							goal: race.goal,
+							avgTime: 0,
+							bestTime: 0,
+							winRatio: 0,
+							numWins: 0,
+							numEntries: 1,
+						},
+					],
+				]),
+			});
+		}
+		//resolve raceHistory with changes
+		resolve(gameHistory);
 	});
 }
 

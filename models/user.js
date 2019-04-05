@@ -37,7 +37,7 @@ const GameHistory = new mongoose.Schema({
 	//needs implemented
 	gameID: { type: String, required: true },
 	gameTitle: { type: String, required: true },
-	categories: [GameCategory],
+	categories: { type: Map, of: GameCategory, default: new Map() }, //goal as map key
 });
 
 const UserSchema = new mongoose.Schema({
