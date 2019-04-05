@@ -96,14 +96,19 @@ router.get("/getUser", (req, res, next) => {
 
 //GET a game's race sumary
 router.get("/getGameSummary", (req, res, next) => {
-	Race.find({ gameTitle: req.query.gameTitle }, (err, data) => {
-		if (err) {
-			err.message = "error in getGameSummary route";
-			return next(err);
-		} else {
-			return data ? res.json({ game: data }) : res.send("no game found");
-		}
-	});
+	Race.find({ gameTitle: req.query.gameTitle })
+		.sort({ timeStarted: -1 })
+		.limit(10)
+		.exec((err, data) => {
+			if (err) {
+				err.message = "error in getGameSummary route";
+				return next(err);
+			} else {
+				return data
+					? res.json({ game: data })
+					: res.send("no races found");
+			}
+		});
 });
 
 //GET recently finished races with a race return limit
