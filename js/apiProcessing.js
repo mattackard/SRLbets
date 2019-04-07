@@ -189,49 +189,74 @@ function updateRaceData(races) {
 				throw Error(err);
 			}
 			if (doc) {
+				let editedGoal = race.goal.replace(/[.]/g, "_");
 				//check if race is recorded in game history
 				if (!doc.raceHistory.includes(race.id)) {
 					doc.raceHistory.push(race.id);
 				}
 				//checks if category already exists and updates it
-				let newCat = {};
-				if (doc.categories.has(race.goal)) {
-					let previous = doc.categories.get(race.goal);
-					newCat = {
-						goal: previous.goal,
-						avgTime: previous.avgTime,
-						//make each key below calculate result from previous value
-						mostWins: {},
-						mostEntries: {},
-						bestTime: {},
-					};
+				let newCat = {
+					goal: "",
+					avgTime: 0,
+					mostWins: {
+						srlName: "",
+						twitchUsername: "",
+						numWins: 0,
+					},
+					mostEntries: {
+						srlName: "",
+						twitchUsername: "",
+						numEntries: 0,
+					},
+					bestTime: {
+						srlName: "",
+						twitchUsername: "",
+						time: 0,
+					},
+				};
+				if (doc.categories.has(editedGoal)) {
+					let previous = doc.categories.get(editedGoal);
+					newCat.goal = previous.goal;
+					newCat.avgTime = previous.avgTime;
 				} else {
 					//create a new category object
-					newCat = {
-						goal: race.goal,
-						avgTime: 0,
-						mostWins: {},
-						mostEntries: {},
-						bestTime: {},
-					};
+					newCat.goal = editedGoal;
 				}
-				doc.categories.set(race.goal, newCat);
+				doc.categories.set(editedGoal, newCat);
 				doc.markModified("categories");
+				doc.save(err => {
+					if (err) {
+						throw Error(err);
+					}
+				});
 			} else {
 				//create a new game if it can't already be found in the database
+				let editedGoal = race.goal.replace(/[.]/g, "_");
 				let gameDoc = new Game({
 					gameID: race.game.id,
 					gameTitle: race.game.name,
 					raceHistory: [race.id],
 					categories: new Map([
 						[
-							race.goal,
+							editedGoal,
 							{
 								goal: race.goal,
 								avgTime: 0,
-								mostWins: {},
-								mostEntries: {},
-								bestTime: {},
+								mostWins: {
+									srlName: "",
+									twitchUsername: "",
+									numWins: 0,
+								},
+								mostEntries: {
+									srlName: "",
+									twitchUsername: "",
+									numEntries: 0,
+								},
+								bestTime: {
+									srlName: "",
+									twitchUsername: "",
+									time: 0,
+								},
 							},
 						],
 					]),
@@ -266,7 +291,7 @@ function recordRaceEntrants(races) {
 							updateUserRaceHistory(
 								doc.raceHistory,
 								race,
-								entrant
+								race.entrants[entrant]
 							).then(newHistory => {
 								doc.raceHistory = newHistory;
 								doc.markModified("raceHistory");
@@ -274,19 +299,17 @@ function recordRaceEntrants(races) {
 							updateUserGameHistory(
 								doc.gameHistory,
 								race,
-								entrant
+								race.entrants[entrant]
 							).then(newHistory => {
 								doc.gameHistory = newHistory;
 								doc.markModified("gameHistory");
 							});
+							doc.save(err => {
+								if (err) {
+									throw Error(err);
+								}
+							});
 						}
-						//update user game history
-
-						doc.save(err => {
-							if (err) {
-								throw Error(err);
-							}
-						});
 					} else {
 						User.create(
 							{
@@ -302,13 +325,16 @@ function recordRaceEntrants(races) {
 								],
 								gameHistory: new Map([
 									[
-										race.game.name,
+										race.game.name.replace(/[.]/g, "_"),
 										{
 											gameID: race.game.id,
 											gameTitle: race.game.name,
 											categories: new Map([
 												[
-													race.goal,
+													race.goal.replace(
+														/[.]/g,
+														"_"
+													),
 													{
 														goal: race.goal,
 														avgTime: 0,
@@ -379,12 +405,13 @@ function updateUserGameHistory(gameHistory, race, entrant) {
 	return new Promise((resolve, reject) => {
 		//checks if game is already in history
 		if (gameHistory.has(race.game)) {
-			let gameObj = gameHistory.get(race.game);
+			let gameObj = gameHistory.get(race.game.name);
+			let goalEdited = race.goal.replace(/[.]/g, "_");
 			//check if category already exists
-			if (gameObj.categories.has(race.goal)) {
+			if (gameObj.categories.has(goalEdited)) {
 				//update the category if new info is present
 			} else {
-				gameObj.categories.set(race.goal, {
+				gameObj.categories.set(goalEdited, {
 					goal: race.goal,
 					avgTime: 0,
 					bestTime: 0,
@@ -394,12 +421,13 @@ function updateUserGameHistory(gameHistory, race, entrant) {
 				});
 			}
 		} else {
-			gameHistory.set(race.game, {
+			let goalEdited = race.goal.replace(/[.]/g, "_");
+			gameHistory.set(race.game.name.replace(/[.]/g, "_"), {
 				gameID: race.game.id,
 				gameTitle: race.game.name,
 				categories: new Map([
 					[
-						race.goal,
+						goalEdited,
 						{
 							goal: race.goal,
 							avgTime: 0,
