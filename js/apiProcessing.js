@@ -375,10 +375,7 @@ function updateUserRaceHistory(raceHistory, race, entrant) {
 				recordedRace.status = entrant.statetext;
 				recordedRace.place = entrant.place;
 				recordedRace.time = entrant.time;
-				recordedRace.bestTime =
-					recordedRace.bestTime > race.time
-						? race.time
-						: recordedRace.bestTime;
+				recordedRace.bestTime = recordedRace.bestTime > race.time;
 				updated = true;
 			}
 		});
@@ -391,7 +388,7 @@ function updateUserRaceHistory(raceHistory, race, entrant) {
 				status: entrant.statetext,
 				place: entrant.place,
 				time: entrant.time,
-				bestTime: entrant.time,
+				bestTime: recordedRace.bestTime > race.time,
 			});
 		}
 		//resolve raceHistory with changes
@@ -414,7 +411,7 @@ function updateUserGameHistory(gameHistory, race, entrant) {
 				gameObj.categories.set(goalEdited, {
 					goal: race.goal,
 					avgTime: 0,
-					bestTime: 0,
+					bestTime: false,
 					winRatio: 0,
 					numWins: 0,
 					numEntries: 1,
@@ -431,7 +428,7 @@ function updateUserGameHistory(gameHistory, race, entrant) {
 						{
 							goal: race.goal,
 							avgTime: 0,
-							bestTime: 0,
+							bestTime: false,
 							winRatio: 0,
 							numWins: 0,
 							numEntries: 1,
