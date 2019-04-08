@@ -375,7 +375,7 @@ function updateUserRaceHistory(raceHistory, race, entrant) {
 				recordedRace.status = entrant.statetext;
 				recordedRace.place = entrant.place;
 				recordedRace.time = entrant.time;
-				recordedRace.bestTime = recordedRace.bestTime > race.time;
+				recordedRace.bestTime = entrant.time > recordedRace.bestTime;
 				updated = true;
 			}
 		});
@@ -388,7 +388,7 @@ function updateUserRaceHistory(raceHistory, race, entrant) {
 				status: entrant.statetext,
 				place: entrant.place,
 				time: entrant.time,
-				bestTime: recordedRace.bestTime > race.time,
+				bestTime: false,
 			});
 		}
 		//resolve raceHistory with changes
