@@ -189,7 +189,7 @@ function updateRaceData(races) {
 				throw Error(err);
 			}
 			if (doc) {
-				let editedGoal = race.goal.replace(/[.]/g, "_");
+				let editedGoal = race.goal.replace(/\W/g, "");
 				//check if race is recorded in game history
 				if (!doc.raceHistory.includes(race.id)) {
 					doc.raceHistory.push(race.id);
@@ -231,7 +231,7 @@ function updateRaceData(races) {
 				});
 			} else {
 				//create a new game if it can't already be found in the database
-				let editedGoal = race.goal.replace(/[.]/g, "_");
+				let editedGoal = race.goal.replace(/\W/g, "");
 				let gameDoc = new Game({
 					gameID: race.game.id,
 					gameTitle: race.game.name,
@@ -288,26 +288,40 @@ function recordRaceEntrants(races) {
 							doc.status !== "Entry Open" &&
 							doc.status !== "Entry Closed"
 						) {
-							updateUserRaceHistory(
-								doc.raceHistory,
-								race,
-								race.entrants[entrant]
-							).then(newHistory => {
-								doc.raceHistory = newHistory;
-								doc.markModified("raceHistory");
-							});
-							updateUserGameHistory(
-								doc.gameHistory,
-								race,
-								race.entrants[entrant]
-							).then(newHistory => {
-								doc.gameHistory = newHistory;
-								doc.markModified("gameHistory");
-							});
-							doc.save(err => {
-								if (err) {
-									throw Error(err);
-								}
+							let promises = [];
+							promises.push(
+								new Promise(resolve => {
+									updateUserRaceHistory(
+										doc.raceHistory,
+										race,
+										race.entrants[entrant]
+									).then(newHistory => {
+										doc.raceHistory = newHistory;
+										doc.markModified("raceHistory");
+										resolve(doc.raceHistory);
+									});
+								})
+							);
+							promises.push(
+								new Promise(resolve => {
+									updateUserGameHistory(
+										doc.gameHistory,
+										race,
+										race.entrants[entrant]
+									).then(newHistory => {
+										doc.gameHistory = newHistory;
+										doc.markModified("gameHistory");
+										resolve(doc.gameHistory);
+									});
+								})
+							);
+							//wait for game and race history to update before saving
+							Promise.all(promises).then(() => {
+								doc.save(err => {
+									if (err) {
+										throw Error(err);
+									}
+								});
 							});
 						}
 					} else {
@@ -325,15 +339,15 @@ function recordRaceEntrants(races) {
 								],
 								gameHistory: new Map([
 									[
-										race.game.name.replace(/[.]/g, "_"),
+										race.game.name.replace(/\W/g, ""),
 										{
 											gameID: race.game.id,
 											gameTitle: race.game.name,
 											categories: new Map([
 												[
 													race.goal.replace(
-														/[.]/g,
-														"_"
+														/\W/g,
+														""
 													),
 													{
 														goal: race.goal,
@@ -369,30 +383,39 @@ function recordRaceEntrants(races) {
 function updateUserRaceHistory(raceHistory, race, entrant) {
 	return new Promise((resolve, reject) => {
 		let updated = false;
+		let promises = [];
 		raceHistory.forEach(recordedRace => {
-			//if the race is already in history, update it
-			if (recordedRace.raceID === race.id) {
-				recordedRace.status = entrant.statetext;
-				recordedRace.place = entrant.place;
-				recordedRace.time = entrant.time;
-				recordedRace.bestTime = entrant.time > recordedRace.bestTime;
-				updated = true;
-			}
+			promises.push(
+				new Promise(resolve => {
+					//if the race is already in history, update it
+					if (recordedRace.raceID === race.id) {
+						recordedRace.status = entrant.statetext;
+						recordedRace.place = entrant.place;
+						recordedRace.time = entrant.time;
+						recordedRace.bestTime =
+							entrant.time > recordedRace.bestTime;
+						updated = true;
+					}
+					resolve();
+				})
+			);
 		});
-		//if the race isn't in the current user's raceHistory, add a new race object to the raceHistory
-		if (!updated) {
-			raceHistory.push({
-				raceID: race.id,
-				game: race.game.name,
-				goal: race.goal,
-				status: entrant.statetext,
-				place: entrant.place,
-				time: entrant.time,
-				bestTime: false,
-			});
-		}
-		//resolve raceHistory with changes
-		resolve(raceHistory);
+		Promise.all(promises).then(() => {
+			//if the race isn't in the current user's raceHistory, add a new race object to the raceHistory
+			if (!updated) {
+				raceHistory.push({
+					raceID: race.id,
+					game: race.game.name,
+					goal: race.goal,
+					status: entrant.statetext,
+					place: entrant.place,
+					time: entrant.time,
+					bestTime: false,
+				});
+			}
+			//resolve raceHistory with changes
+			resolve(raceHistory);
+		});
 	});
 }
 
@@ -403,7 +426,7 @@ function updateUserGameHistory(gameHistory, race, entrant) {
 		//checks if game is already in history
 		if (gameHistory.has(race.game)) {
 			let gameObj = gameHistory.get(race.game.name);
-			let goalEdited = race.goal.replace(/[.]/g, "_");
+			let goalEdited = race.goal.replace(/\W/g, "");
 			//check if category already exists
 			if (gameObj.categories.has(goalEdited)) {
 				//update the category if new info is present
@@ -417,9 +440,10 @@ function updateUserGameHistory(gameHistory, race, entrant) {
 					numEntries: 1,
 				});
 			}
+			resolve(gameHistory);
 		} else {
-			let goalEdited = race.goal.replace(/[.]/g, "_");
-			gameHistory.set(race.game.name.replace(/[.]/g, "_"), {
+			let goalEdited = race.goal.replace(/\W/g, "");
+			gameHistory.set(race.game.name.replace(/\W/g, ""), {
 				gameID: race.game.id,
 				gameTitle: race.game.name,
 				categories: new Map([
@@ -436,9 +460,8 @@ function updateUserGameHistory(gameHistory, race, entrant) {
 					],
 				]),
 			});
+			resolve(gameHistory);
 		}
-		//resolve raceHistory with changes
-		resolve(gameHistory);
 	});
 }
 
