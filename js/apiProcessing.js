@@ -189,7 +189,7 @@ function updateRaceData(races) {
 				throw Error(err);
 			}
 			if (doc) {
-				let editedGoal = race.goal.replace(/\W/g, "");
+				let editedGoal = race.goal.replace(/\W/g, " ");
 				//check if race is recorded in game history
 				if (!doc.raceHistory.includes(race.id)) {
 					doc.raceHistory.push(race.id);
@@ -214,6 +214,12 @@ function updateRaceData(races) {
 						time: 0,
 					},
 				};
+				if (
+					editedGoal.toLowerCase().includes("randomizer") ||
+					editedGoal.toLowerCase().includes("seed")
+				) {
+					editedGoal = "Randomizer";
+				}
 				if (doc.categories.has(editedGoal)) {
 					let previous = doc.categories.get(editedGoal);
 					newCat.goal = previous.goal;
@@ -231,12 +237,19 @@ function updateRaceData(races) {
 				});
 			} else {
 				//create a new game if it can't already be found in the database
-				let editedGoal = race.goal.replace(/\W/g, "");
+				let editedGoal = race.goal.replace(/\W/g, " ");
 				let gameDoc = new Game({
 					gameID: race.game.id,
 					gameTitle: race.game.name,
 					raceHistory: [race.id],
-					categories: new Map([
+				});
+				if (
+					!(
+						editedGoal.toLowerCase().includes("randomizer") ||
+						editedGoal.toLowerCase().includes("seed")
+					)
+				) {
+					gameDoc.categories = new Map([
 						[
 							editedGoal,
 							{
@@ -259,8 +272,10 @@ function updateRaceData(races) {
 								},
 							},
 						],
-					]),
-				});
+					]);
+				} else {
+					gameDoc.categories = new Map();
+				}
 				Game.create(gameDoc);
 			}
 		});
@@ -288,35 +303,29 @@ function recordRaceEntrants(races) {
 							doc.status !== "Entry Open" &&
 							doc.status !== "Entry Closed"
 						) {
-							let promises = [];
-							promises.push(
-								new Promise(resolve => {
-									updateUserRaceHistory(
-										doc.raceHistory,
-										race,
-										race.entrants[entrant]
-									).then(newHistory => {
-										doc.raceHistory = newHistory;
-										doc.markModified("raceHistory");
-										resolve(doc.raceHistory);
-									});
-								})
-							);
-							promises.push(
-								new Promise(resolve => {
+							let promise = new Promise(resolve => {
+								updateUserRaceHistory(
+									doc.raceHistory,
+									race,
+									race.entrants[entrant]
+								).then(newRaceHistory => {
+									doc.raceHistory = newRaceHistory;
 									updateUserGameHistory(
 										doc.gameHistory,
 										race,
 										race.entrants[entrant]
-									).then(newHistory => {
-										doc.gameHistory = newHistory;
+									).then(newGameHistory => {
+										doc.gameHistory = new Map([
+											...newGameHistory,
+										]);
+										doc.markModified("raceHistory");
 										doc.markModified("gameHistory");
-										resolve(doc.gameHistory);
+										resolve();
 									});
-								})
-							);
+								});
+							});
 							//wait for game and race history to update before saving
-							Promise.all(promises).then(() => {
+							promise.then(() => {
 								doc.save(err => {
 									if (err) {
 										throw Error(err);
@@ -339,7 +348,7 @@ function recordRaceEntrants(races) {
 								],
 								gameHistory: new Map([
 									[
-										race.game.name.replace(/\W/g, ""),
+										race.game.name.replace(/\W/g, " "),
 										{
 											gameID: race.game.id,
 											gameTitle: race.game.name,
@@ -347,7 +356,7 @@ function recordRaceEntrants(races) {
 												[
 													race.goal.replace(
 														/\W/g,
-														""
+														" "
 													),
 													{
 														goal: race.goal,
@@ -414,7 +423,7 @@ function updateUserRaceHistory(raceHistory, race, entrant) {
 				});
 			}
 			//resolve raceHistory with changes
-			resolve(raceHistory);
+			resolve(new Array(...raceHistory));
 		});
 	});
 }
@@ -426,12 +435,31 @@ function updateUserGameHistory(gameHistory, race, entrant) {
 		//checks if game is already in history
 		if (gameHistory.has(race.game)) {
 			let gameObj = gameHistory.get(race.game.name);
-			let goalEdited = race.goal.replace(/\W/g, "");
-			//check if category already exists
-			if (gameObj.categories.has(goalEdited)) {
-				//update the category if new info is present
+			let editedGoal;
+			//trys to find out if race is a randomizer
+			//if it is, group all randomizer races into one game category
+			if (
+				!(
+					editedGoal.toLowerCase().includes("randomizer") ||
+					editedGoal.toLowerCase().includes("seed")
+				)
+			) {
+				editedGoal = "Randomizer";
 			} else {
-				gameObj.categories.set(goalEdited, {
+				editedGoal = race.goal.replace(/\W/g, " ");
+			}
+			//check if category already exists
+			if (gameObj.categories.has(editedGoal)) {
+				//update the category if new info is present
+				gameObj.categories.set(editedGoal, {
+					avgTime: 0,
+					bestTime: false,
+					winRatio: 0,
+					numWins: 0,
+					numEntries: 1,
+				});
+			} else {
+				gameObj.categories.set(editedGoal, {
 					goal: race.goal,
 					avgTime: 0,
 					bestTime: false,
@@ -440,15 +468,25 @@ function updateUserGameHistory(gameHistory, race, entrant) {
 					numEntries: 1,
 				});
 			}
-			resolve(gameHistory);
+			resolve(new Map([...gameHistory]));
 		} else {
-			let goalEdited = race.goal.replace(/\W/g, "");
-			gameHistory.set(race.game.name.replace(/\W/g, ""), {
+			let editedGoal;
+			//trys to find out if race is a randomizer
+			//if it is, group all randomizer races into one game category
+			if (
+				race.goal.toLowerCase().includes("randomizer") ||
+				race.goal.toLowerCase().includes("seed")
+			) {
+				editedGoal = "Randomizer";
+			} else {
+				editedGoal = race.goal.replace(/\W/g, " ");
+			}
+			gameHistory.set(race.game.name.replace(/\W/g, " "), {
 				gameID: race.game.id,
 				gameTitle: race.game.name,
 				categories: new Map([
 					[
-						goalEdited,
+						editedGoal,
 						{
 							goal: race.goal,
 							avgTime: 0,
@@ -460,7 +498,7 @@ function updateUserGameHistory(gameHistory, race, entrant) {
 					],
 				]),
 			});
-			resolve(gameHistory);
+			resolve(new Map([...gameHistory]));
 		}
 	});
 }
