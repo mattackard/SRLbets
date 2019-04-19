@@ -68,7 +68,7 @@ router.get("/twitchLogout", (req, res, next) => {
 
 //GET currently logged in user's information
 router.get("/getLoggedInUser", (req, res, next) => {
-	console.log(req.session.username);
+	console.log(req.session.username || "no user logged in");
 	User.findOne({
 		twitchUsername: req.session.username,
 		twitchID: req.session.twitchUserID,
