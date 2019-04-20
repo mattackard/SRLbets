@@ -30,6 +30,7 @@ app.use(cors(corsOptions));
 
 // connects our back end code with the database
 mongoose.connect(process.env.DB_HOST, { useNewUrlParser: true });
+//mongoose.set("debug", true);
 
 let db = mongoose.connection;
 
