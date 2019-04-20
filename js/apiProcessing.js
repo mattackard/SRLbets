@@ -285,104 +285,120 @@ function updateRaceData(races) {
 //takes SRL API formatted race and adds or updates all the race entrants into the user db
 function recordRaceEntrants(races) {
 	races.forEach(race => {
-		for (let entrant in race.entrants) {
-			User.findOne(
-				{
-					$or: [
-						{ srlName: race.entrants[entrant].displayname },
-						{ twitchUsername: race.entrants[entrant].twitch },
-					],
-				},
-				async (err, doc) => {
-					if (err) {
-						throw Error(err);
-					}
-					if (doc) {
-						//update user race and game history
-						if (
-							doc.status !== "Entry Open" &&
-							doc.status !== "Entry Closed"
-						) {
-							let promise = new Promise(resolve => {
-								updateUserRaceHistory(
-									doc.raceHistory,
+		if (race.statetext === "In Progress" || race.statetext === "Complete") {
+			for (let entrant in race.entrants) {
+				User.findOne(
+					{
+						$or: [
+							{ srlName: race.entrants[entrant].displayname },
+							{ twitchUsername: race.entrants[entrant].twitch },
+						],
+					},
+					(err, doc) => {
+						if (err) {
+							throw Error(err);
+						}
+						if (doc) {
+							//update user race and game history
+
+							updateUserRaceHistory(
+								doc.raceHistory,
+								race,
+								race.entrants[entrant]
+							).then(newRaceHistory => {
+								updateUserGameHistory(
+									doc.gameHistory,
 									race,
 									race.entrants[entrant]
-								).then(newRaceHistory => {
-									doc.raceHistory = newRaceHistory;
-									updateUserGameHistory(
-										doc.gameHistory,
-										race,
-										race.entrants[entrant]
-									).then(newGameHistory => {
-										doc.gameHistory = new Map([
-											...newGameHistory,
-										]);
-										doc.markModified("raceHistory");
-										doc.markModified("gameHistory");
-										resolve();
-									});
-								});
-							});
-							//wait for game and race history to update before saving
-							promise.then(() => {
-								doc.save(err => {
-									if (err) {
-										throw Error(err);
-									}
-								});
-							});
-						}
-					} else {
-						User.create(
-							{
-								srlName: race.entrants[entrant].displayname,
-								twitchUsername: race.entrants[entrant].twitch,
-								raceHistory: [
-									{
-										raceID: race.id,
-										game: race.game.name,
-										goal: race.goal,
-										status: race.statetext,
-									},
-								],
-								gameHistory: new Map([
-									[
-										race.game.name.replace(/\W/g, " "),
+								).then(newGameHistory => {
+									// doc.gameHistory = new Map([
+									// 	...newGameHistory,
+									// ]);
+									// doc.raceHistory = newRaceHistory;
+									// doc.markModified("raceHistory");
+									// doc.markModified("gameHistory");
+									// doc.save(err => {
+									// 	if (err) {
+									// 		console.log(doc);
+									// 		throw Error(err);
+									// 	}
+									// });
+									User.updateOne(
 										{
-											gameID: race.game.id,
-											gameTitle: race.game.name,
-											categories: new Map([
-												[
-													race.goal.replace(
-														/\W/g,
-														" "
-													),
-													{
-														goal: race.goal,
-														avgTime: 0,
-														bestTime: 0,
-														winRatio: 0,
-														numWins: 0,
-														numEntries: 1,
-													},
-												],
-											]),
+											$or: [
+												{
+													srlName:
+														race.entrants[entrant]
+															.displayname,
+												},
+												{
+													twitchUsername:
+														race.entrants[entrant]
+															.twitch,
+												},
+											],
+										},
+										{
+											$set: {
+												raceHistory: newRaceHistory,
+												gameHistory: newGameHistory,
+											},
+										}
+									);
+								});
+							});
+						} else {
+							User.create(
+								{
+									srlName: race.entrants[entrant].displayname,
+									twitchUsername:
+										race.entrants[entrant].twitch,
+									raceHistory: [
+										{
+											raceID: race.id,
+											game: race.game.name,
+											goal: race.goal,
+											status: race.statetext,
 										},
 									],
-								]),
-							},
-							err => {
-								if (err) {
-									err.message =
-										"Error in creating new user from race entrant";
-									throw Error(err);
+									gameHistory: new Map([
+										[
+											race.game.name.replace(/\W/g, " "),
+											{
+												gameID: race.game.id,
+												gameTitle: race.game.name,
+												categories: new Map([
+													[
+														race.goal.replace(
+															/\W/g,
+															" "
+														),
+														{
+															goal: race.goal,
+															avgTime: 0,
+															bestTime: 0,
+															winRatio: 0,
+															numWins: 0,
+															numEntries: 1,
+														},
+													],
+												]),
+											},
+										],
+									]),
+								},
+								err => {
+									if (err) {
+										err.message =
+											"Error in creating new user from race entrant";
+										throw Error(err);
+									}
 								}
-							}
-						);
+							);
+						}
 					}
-				}
-			);
+				);
+			}
 		}
 	});
 }
