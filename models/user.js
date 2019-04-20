@@ -5,9 +5,9 @@ const RaceHistory = new mongoose.Schema({
 	game: { type: String, required: true },
 	goal: String,
 	status: { type: String, required: true },
-	place: Number,
-	time: Number,
-	bestTime: { type: Boolean, required: true, default: false }, //needs implemented
+	place: { type: Number, required: true },
+	time: { type: Number, required: true },
+	isBestTime: { type: Boolean, required: true, default: false },
 });
 
 const BetHistory = new mongoose.Schema({
@@ -34,10 +34,9 @@ const GameCategory = new mongoose.Schema({
 });
 
 const GameHistory = new mongoose.Schema({
-	//needs implemented
 	gameID: { type: String, required: true },
 	gameTitle: { type: String, required: true },
-	categories: { type: Map, of: GameCategory, default: new Map() }, //goal as map key
+	categories: { type: Map, of: GameCategory, default: new Map() },
 });
 
 const UserSchema = new mongoose.Schema({
@@ -52,7 +51,7 @@ const UserSchema = new mongoose.Schema({
 	betTotal: { type: Number, default: 0, required: true }, //needs implemented
 	raceHistory: [RaceHistory],
 	raceRatio: { type: Number, default: 0, required: true }, //needs implemented
-	gameHistory: { type: Map, of: GameHistory, default: new Map() }, //needs implemented
+	gameHistory: { type: Map, of: GameHistory, default: new Map() },
 });
 
 module.exports = mongoose.model("user", UserSchema);
