@@ -7,6 +7,7 @@ const RaceHistory = new mongoose.Schema({
 	status: { type: String, required: true },
 	place: { type: Number, required: true },
 	time: { type: Number, required: true },
+	date: { type: Date, required: true },
 	isBestTime: { type: Boolean, required: true, default: false },
 });
 
@@ -16,6 +17,7 @@ const BetHistory = new mongoose.Schema({
 	goal: String,
 	entrant: { type: String, required: true },
 	amountBet: { type: Number, required: true },
+	date: { type: Date, required: true, default: new Date() },
 	result: {
 		type: String,
 		required: true,

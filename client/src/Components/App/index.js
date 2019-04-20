@@ -97,6 +97,110 @@ class App extends Component {
 		});
 	};
 
+	//converts date to a string without timezone information
+	simplifyDate = date => {
+		let pretty = new Date(date);
+		console.log(pretty);
+		pretty = pretty.toString().split(" ");
+		console.log(pretty);
+		//["Sun", "Feb", "05", "2322", "12:08:10", "GMT-0800", "(Pacific", "Standard", "Time)"]
+
+		pretty[1] = this.numberedMonth(pretty[1]);
+		console.log(pretty);
+		//assumes 21st century
+		pretty[3] = pretty[3].substring(2);
+		pretty[4] = this.twelveHour(pretty[4]);
+
+		//removes time zone information
+		pretty.pop();
+		pretty.pop();
+		return `${pretty[0]} ${pretty[1]}/${pretty[2]}/${pretty[3]} ${
+			pretty[4]
+		}`;
+	};
+
+	//converts from 24 hour clock to 12 hour clock with am and pm
+	twelveHour = time => {
+		let amPm = "am";
+		let pretty = time.split(":");
+
+		//remove seconds from time
+		pretty.pop();
+
+		//checks for am vs pm and sets hour 24 to 12
+		pretty.forEach(x => {
+			return parseInt(x);
+		});
+		if (pretty[0] > 12) {
+			pretty[0] -= 12;
+			amPm = "pm";
+		}
+		if (pretty[0] === 12) {
+			amPm = "pm";
+		}
+		if (pretty[0] === 0) {
+			pretty[0] = 12;
+		}
+		return `${pretty.join(":")} ${amPm}`;
+	};
+
+	//takes an abbreviated month string and returns the number of the month
+	numberedMonth = month => {
+		switch (month) {
+			case "Jan":
+				return 1;
+			case "Feb":
+				return 2;
+			case "Mar":
+				return 3;
+			case "Apr":
+				return 4;
+			case "May":
+				return 5;
+			case "Jun":
+				return 6;
+			case "Jul":
+				return 7;
+			case "Aug":
+				return 8;
+			case "Sep":
+				return 9;
+			case "Oct":
+				return 10;
+			case "Nov":
+				return 11;
+			case "Dec":
+				return 12;
+			default:
+				return 0;
+		}
+	};
+
+	//takes entrant's time from the API and returns a string
+	convertRunTime = apiTime => {
+		if (apiTime === 0) {
+			//with standard HH:MM:SS, "In Progress", or "Race not started"
+			return "Race has not started";
+		} else if (apiTime === -3) {
+			return "Race in progress";
+		} else if (apiTime === -1) {
+			return "Forfeit";
+		} else if (apiTime > 0) {
+			let hours = Math.floor(apiTime / 3600);
+
+			let minutes = Math.floor((apiTime % 3600) / 60);
+			if (minutes < 10) {
+				minutes = `0${minutes}`;
+			}
+
+			let seconds = Math.floor((apiTime % 3600) % 60);
+			if (seconds < 10) {
+				seconds = `0${seconds}`;
+			}
+			return `${hours}:${minutes}:${seconds}`;
+		}
+	};
+
 	render() {
 		return (
 			<React.Fragment>
@@ -128,12 +232,20 @@ class App extends Component {
 								user={this.state.user}
 								getUser={this.getUser}
 								loggedIn={this.state.loggedIn}
+								simplifyDate={this.simplifyDate}
+								convertRunTime={this.convertRunTime}
 							/>
 						)}
 					/>
 					<Route
 						path="/user/:username"
-						render={props => <UserPage {...props} />}
+						render={props => (
+							<UserPage
+								{...props}
+								simplifyDate={this.simplifyDate}
+								convertRunTime={this.convertRunTime}
+							/>
+						)}
 					/>
 					<Route
 						path="/game/:gameTitle"

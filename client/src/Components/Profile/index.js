@@ -24,12 +24,20 @@ class Profile extends Component {
 						</ul>
 						<h3>Points: {user.points}</h3>
 						{user.betHistory ? (
-							<BetHistory user={user} />
+							<BetHistory
+								user={user}
+								simplifyDate={this.props.simplifyDate}
+								convertRunTime={this.props.convertRunTime}
+							/>
 						) : (
 							<Loading />
 						)}
 						{user.raceHistory ? (
-							<RaceHistory user={user} />
+							<RaceHistory
+								user={user}
+								simplifyDate={this.props.simplifyDate}
+								convertRunTime={this.props.convertRunTime}
+							/>
 						) : (
 							<Loading />
 						)}

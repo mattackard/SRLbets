@@ -9,13 +9,19 @@ const BetHistory = props => {
 			<h2>Bet History</h2>
 			<ul id="bet-history" className="column">
 				<li className="list-header">
+					<p className="bet-date">Date</p>
 					<p className="entrant-name">Race Entrant</p>
 					<p className="entrant-bet">Points Bet</p>
 					<p className="entrant-result">Result</p>
 				</li>
 				{props.user.betHistory.length ? (
 					props.user.betHistory.map((bet, index) => (
-						<UserBet key={index} bet={bet} />
+						<UserBet
+							key={index}
+							bet={bet}
+							simplifyDate={props.simplifyDate}
+							convertRunTime={props.convertRunTime}
+						/>
 					))
 				) : (
 					<p>User has not made any bets</p>
