@@ -61,7 +61,7 @@ function handleEntrantChange(race, newEntrantObj) {
 			oldEntrants = doc.entrants;
 			oldEntrants.forEach(entrant => {
 				if (!newEntrantObj.has(entrant.name)) {
-					console.log("found entrant that has left race");
+					console.log(`${entrant.name} has left race ${race.goal}`);
 					refundBetsForEntrant(entrant, race.id);
 				}
 			});
@@ -284,120 +284,141 @@ function updateRaceData(races) {
 
 //takes SRL API formatted race and adds or updates all the race entrants into the user db
 function recordRaceEntrants(races) {
+	let openUsers = [];
 	races.forEach(race => {
 		if (race.statetext === "In Progress" || race.statetext === "Complete") {
 			for (let entrant in race.entrants) {
-				User.findOne(
-					{
-						$or: [
-							{ srlName: race.entrants[entrant].displayname },
-							{ twitchUsername: race.entrants[entrant].twitch },
-						],
-					},
-					(err, doc) => {
-						if (err) {
-							throw Error(err);
-						}
-						if (doc) {
-							//update user race and game history
-
-							updateUserRaceHistory(
-								doc.raceHistory,
-								race,
-								race.entrants[entrant]
-							).then(newRaceHistory => {
-								updateUserGameHistory(
-									doc.gameHistory,
-									race,
-									race.entrants[entrant]
-								).then(newGameHistory => {
-									// doc.gameHistory = new Map([
-									// 	...newGameHistory,
-									// ]);
-									// doc.raceHistory = newRaceHistory;
-									// doc.markModified("raceHistory");
-									// doc.markModified("gameHistory");
-									// doc.save(err => {
-									// 	if (err) {
-									// 		console.log(doc);
-									// 		throw Error(err);
-									// 	}
-									// });
-									User.updateOne(
-										{
-											$or: [
-												{
-													srlName:
-														race.entrants[entrant]
-															.displayname,
-												},
-												{
-													twitchUsername:
-														race.entrants[entrant]
-															.twitch,
-												},
-											],
-										},
-										{
-											$set: {
-												raceHistory: newRaceHistory,
-												gameHistory: newGameHistory,
-											},
-										}
-									);
-								});
-							});
-						} else {
-							User.create(
+				//prevents opening the user entry more than once if the user is in multiple races simultaneously
+				if (!openUsers.includes(race.entrants[entrant].displayname)) {
+					openUsers.push(race.entrants[entrant].displayname);
+					User.findOne(
+						{
+							$or: [
+								{ srlName: race.entrants[entrant].displayname },
 								{
-									srlName: race.entrants[entrant].displayname,
 									twitchUsername:
 										race.entrants[entrant].twitch,
-									raceHistory: [
-										{
-											raceID: race.id,
-											game: race.game.name,
-											goal: race.goal,
-											status: race.statetext,
-										},
-									],
-									gameHistory: new Map([
-										[
-											race.game.name.replace(/\W/g, " "),
+								},
+							],
+						},
+						(err, doc) => {
+							if (err) {
+								throw Error(err);
+							}
+							if (doc) {
+								//update user race and game history
+								updateUserRaceHistory(
+									doc.raceHistory,
+									race,
+									race.entrants[entrant]
+								).then(newRaceHistory => {
+									updateUserGameHistory(
+										doc.gameHistory,
+										race,
+										race.entrants[entrant]
+									).then(async newGameHistory => {
+										// doc.raceHistory = newRaceHistory;
+										// doc.gameHistory = newGameHistory;
+										// doc.markModified("newRaceHistory");
+										// doc.markModified("newGameHistory");
+										// doc.save(err => {
+										// 	if (err) {
+										// 		throw Error(err);
+										// 	}
+										// });
+										User.updateOne(
 											{
-												gameID: race.game.id,
-												gameTitle: race.game.name,
-												categories: new Map([
-													[
-														race.goal.replace(
-															/\W/g,
-															" "
-														),
-														{
-															goal: race.goal,
-															avgTime: 0,
-															bestTime: 0,
-															winRatio: 0,
-															numWins: 0,
-															numEntries: 1,
-														},
-													],
-												]),
+												$or: [
+													{
+														srlName:
+															race.entrants[
+																entrant
+															].displayname,
+													},
+													{
+														twitchUsername:
+															race.entrants[
+																entrant
+															].twitch,
+													},
+												],
+											},
+											{
+												$set: {
+													raceHistory: newRaceHistory,
+													gameHistory: newGameHistory,
+												},
+											}
+										);
+									});
+								});
+							} else {
+								User.create(
+									{
+										srlName:
+											race.entrants[entrant].displayname,
+										twitchUsername:
+											race.entrants[entrant].twitch,
+										raceHistory: [
+											{
+												raceID: race.id,
+												game: race.game.name,
+												goal: race.goal,
+												status: race.statetext,
+												time:
+													race.entrants[entrant].time,
+												place:
+													race.entrants[entrant]
+														.place,
 											},
 										],
-									]),
-								},
-								err => {
-									if (err) {
-										err.message =
-											"Error in creating new user from race entrant";
-										throw Error(err);
+										gameHistory: new Map([
+											[
+												race.game.name.replace(
+													/\W/g,
+													" "
+												),
+												{
+													gameID: race.game.id,
+													gameTitle: race.game.name,
+													categories: new Map([
+														[
+															race.goal.replace(
+																/\W/g,
+																" "
+															),
+															{
+																goal: race.goal,
+																avgTime: 0,
+																bestTime: 0,
+																winRatio: 0,
+																numWins: 0,
+																numEntries: 1,
+															},
+														],
+													]),
+												},
+											],
+										]),
+									},
+									err => {
+										if (err) {
+											err.message =
+												"Error in creating new user from race entrant";
+											throw Error(err);
+										}
 									}
-								}
-							);
+								);
+							}
 						}
-					}
-				);
+					);
+				} else {
+					console.log(
+						`${
+							race.entrants[entrant].displayname
+						} is in multiple races!`
+					);
+				}
 			}
 		}
 	});
@@ -409,16 +430,16 @@ function updateUserRaceHistory(raceHistory, race, entrant) {
 	return new Promise((resolve, reject) => {
 		let updated = false;
 		let promises = [];
-		raceHistory.forEach(recordedRace => {
+		raceHistory.forEach((recordedRace, index) => {
 			promises.push(
 				new Promise(resolve => {
 					//if the race is already in history, update it
 					if (recordedRace.raceID === race.id) {
-						recordedRace.status = entrant.statetext;
-						recordedRace.place = entrant.place;
-						recordedRace.time = entrant.time;
-						recordedRace.bestTime =
-							entrant.time > recordedRace.bestTime;
+						raceHistory[index].status = entrant.statetext;
+						raceHistory[index].place = entrant.place;
+						raceHistory[index].time = entrant.time;
+						raceHistory[index].isBestTime =
+							entrant.time > recordedRace.isBestTime;
 						updated = true;
 					}
 					resolve();
@@ -428,18 +449,18 @@ function updateUserRaceHistory(raceHistory, race, entrant) {
 		Promise.all(promises).then(() => {
 			//if the race isn't in the current user's raceHistory, add a new race object to the raceHistory
 			if (!updated) {
-				raceHistory.push({
+				raceHistory.unshift({
 					raceID: race.id,
 					game: race.game.name,
 					goal: race.goal,
 					status: entrant.statetext,
 					place: entrant.place,
 					time: entrant.time,
-					bestTime: false,
+					isBestTime: false,
 				});
 			}
 			//resolve raceHistory with changes
-			resolve(new Array(...raceHistory));
+			resolve(raceHistory);
 		});
 	});
 }
