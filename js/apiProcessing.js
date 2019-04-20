@@ -317,15 +317,6 @@ function recordRaceEntrants(races) {
 										race,
 										race.entrants[entrant]
 									).then(async newGameHistory => {
-										// doc.raceHistory = newRaceHistory;
-										// doc.gameHistory = newGameHistory;
-										// doc.markModified("newRaceHistory");
-										// doc.markModified("newGameHistory");
-										// doc.save(err => {
-										// 	if (err) {
-										// 		throw Error(err);
-										// 	}
-										// });
 										User.updateOne(
 											{
 												$or: [
@@ -367,6 +358,9 @@ function recordRaceEntrants(races) {
 												status: race.statetext,
 												time:
 													race.entrants[entrant].time,
+												date: convertRaceStartTime(
+													race.time
+												),
 												place:
 													race.entrants[entrant]
 														.place,
@@ -412,12 +406,6 @@ function recordRaceEntrants(races) {
 							}
 						}
 					);
-				} else {
-					console.log(
-						`${
-							race.entrants[entrant].displayname
-						} is in multiple races!`
-					);
 				}
 			}
 		}
@@ -455,6 +443,7 @@ function updateUserRaceHistory(raceHistory, race, entrant) {
 					goal: race.goal,
 					status: entrant.statetext,
 					place: entrant.place,
+					date: convertRaceStartTime(race.time),
 					time: entrant.time,
 					isBestTime: false,
 				});
