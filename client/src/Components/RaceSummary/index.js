@@ -10,8 +10,9 @@ const RaceSummary = ({ race }) => {
 			</NavLink>
 			<h2>{race.goal}</h2>
 			<p>Status : {race.status}</p>
-			<p>Finish position: {race.place}</p>
-			<p>Finish time: {race.time}</p>
+			{race.place < 1000 ? <p>Finish position: {race.place}</p> : null}
+			{race.place === 9998 ? <p>Finish position: Forfeit</p> : null}
+			{race.time > 0 ? <p>Finish time: {race.time}</p> : null}
 		</div>
 	);
 };
