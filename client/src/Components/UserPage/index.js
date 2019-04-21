@@ -31,7 +31,7 @@ class UserPage extends Component {
 
 	render() {
 		return (
-			<div>
+			<div id="main-content">
 				{Object.keys(this.state.user) < 1 ||
 				this.state.user === "no user" ? (
 					<Loading />

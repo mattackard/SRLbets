@@ -28,14 +28,14 @@ class GamePage extends Component {
 
 	render() {
 		return (
-			<div>
+			<div id="main-content">
 				<h1>{this.state.gameTitle} Race Page</h1>
 				{this.state.races.length < 1 ||
 				this.state.game === "no game found" ? (
 					<Loading />
 				) : (
 					//show race history for game
-					<div>
+					<div className="race-list">
 						{this.state.races.map(race => (
 							<RaceTile
 								key={race.raceID}

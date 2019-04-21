@@ -8,6 +8,17 @@ body {
 	font-family: $text-font;
 }
 
+.wrapper {
+	min-height: 100vh;
+	display: grid;
+	grid-template-rows: auto 1fr auto;
+}
+
+#main-content {
+	min-width: 0;
+	padding: 0 1rem;
+}
+
 a:hover {
 	opacity: 0.5;
 }
