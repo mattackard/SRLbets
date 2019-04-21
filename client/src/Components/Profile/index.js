@@ -11,7 +11,7 @@ class Profile extends Component {
 	render() {
 		const { user, loggedIn } = this.props;
 		return (
-			<div id="profile-container">
+			<div id="profile-container main-content">
 				{loggedIn ? (
 					<React.Fragment>
 						<ul className="user-display">
@@ -22,7 +22,7 @@ class Profile extends Component {
 							/>
 							<h2>{user.twitchUsername}</h2>
 						</ul>
-						<h3>Points: {user.points}</h3>
+						<h3>Bet Balance: {user.points}</h3>
 						{user.betHistory ? (
 							<BetHistory
 								user={user}

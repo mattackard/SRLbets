@@ -11,6 +11,7 @@ const BetHistory = props => {
 				<li className="list-header">
 					<p className="bet-date">Date</p>
 					<p className="entrant-name">Race Entrant</p>
+					<p className="entrant-game">Game</p>
 					<p className="entrant-bet">Points Bet</p>
 					<p className="entrant-result">Result</p>
 				</li>
@@ -24,7 +25,7 @@ const BetHistory = props => {
 						/>
 					))
 				) : (
-					<p>User has not made any bets</p>
+					<h3>User has not made any bets</h3>
 				)}
 			</ul>
 		</div>

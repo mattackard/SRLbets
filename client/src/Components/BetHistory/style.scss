@@ -1,1 +1,22 @@
 @import "../../variables.scss";
+
+#bet-history {
+	list-style: none;
+	display: flex;
+	flex-direction: column;
+	padding: 0;
+	margin: 0 0 3rem;
+	li {
+		display: flex;
+		flex-direction: row;
+		border: 2px solid $color-bg;
+		background-color: $color-content-bg;
+		padding: 0.5rem;
+	}
+}
+
+.list-header p {
+	width: 20%;
+	text-align: left;
+	text-decoration: underline;
+}

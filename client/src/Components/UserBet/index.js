@@ -10,6 +10,9 @@ const UserBet = props => {
 			<p className="entrant-name">
 				<NavLink to={`/user/${bet.entrant}`}>{bet.entrant}</NavLink>
 			</p>
+			<p className="entrant-game">
+				<NavLink to={`/game/${bet.game}`}>{bet.game}</NavLink>
+			</p>
 			<p className="entrant-bet">{bet.amountBet}</p>
 			<p className="entrant-result">{bet.result}</p>
 		</li>

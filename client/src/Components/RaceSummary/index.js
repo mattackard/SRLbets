@@ -4,19 +4,20 @@ import "./style.scss";
 
 const RaceSummary = ({ race, simplifyDate, convertRunTime }) => {
 	return (
-		<div className="race-summary">
-			<NavLink to={`/game/${race.game}`}>
-				<h1>{race.game}</h1>
-			</NavLink>
-			<h2>{race.goal}</h2>
+		<li className="race-summary">
 			<p>{simplifyDate(race.date)}</p>
-			<p>Status : {race.status}</p>
-			{race.place < 1000 ? <p>Finish position: {race.place}</p> : null}
-			{race.place === 9998 ? <p>Finish position: Forfeit</p> : null}
+			<NavLink to={`/game/${race.game}`}>
+				<p>{race.game}</p>
+			</NavLink>
+			<p>{race.goal}</p>
+			{race.place < 1000 ? <p>{race.place}</p> : <p>Race In Progress</p>}
+			{/* {race.place === 9998 ? <p>Forfeit</p> : null} */}
 			{race.time > 0 ? (
 				<p>Finish time: {convertRunTime(race.time)}</p>
-			) : null}
-		</div>
+			) : (
+				<p>Race In Progress</p>
+			)}
+		</li>
 	);
 };
 

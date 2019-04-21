@@ -100,13 +100,10 @@ class App extends Component {
 	//converts date to a string without timezone information
 	simplifyDate = date => {
 		let pretty = new Date(date);
-		console.log(pretty);
 		pretty = pretty.toString().split(" ");
-		console.log(pretty);
 		//["Sun", "Feb", "05", "2322", "12:08:10", "GMT-0800", "(Pacific", "Standard", "Time)"]
 
 		pretty[1] = this.numberedMonth(pretty[1]);
-		console.log(pretty);
 		//assumes 21st century
 		pretty[3] = pretty[3].substring(2);
 		pretty[4] = this.twelveHour(pretty[4]);
@@ -203,7 +200,7 @@ class App extends Component {
 
 	render() {
 		return (
-			<React.Fragment>
+			<div className="wrapper">
 				<Header
 					twitchAuthPath={this.state.twitchAuthPath}
 					user={this.state.user}
@@ -258,7 +255,7 @@ class App extends Component {
 					/>
 				</Switch>
 				<Footer />
-			</React.Fragment>
+			</div>
 		);
 	}
 }

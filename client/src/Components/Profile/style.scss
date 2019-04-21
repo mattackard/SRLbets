@@ -1,62 +1,24 @@
 @import "../../variables.scss";
 #profile-container {
-    padding: 0 5%;
-    display: flex;
-    flex-direction: column;
-    margin: auto;
-    h3 {
-        text-align: center;
-    }
+	h3 {
+		text-align: center;
+	}
 }
 
 .user-display {
-    padding: 1rem 0 0;
-    text-align: center;
-    img {
-        width: 100px;
-        height: 100px;
-        margin: auto;
-    }
-    h2 {
-        font-size: 2rem;
-        margin: 0;
-        padding-left: 1rem;
-    }
+	padding: 1rem 0 0;
+	text-align: center;
+	img {
+		width: 100px;
+		height: 100px;
+		margin: auto;
+	}
+	h2 {
+		font-size: 2rem;
+		margin: 0;
+		padding-left: 1rem;
+	}
 }
 
-#bet-history {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    padding: 0;
-    margin: 0;
-    li {
-        display: flex;
-        flex-direction: row;
-        border: 2px solid $color-bg;
-        background-color: $color-content-bg;
-        padding: 0.5rem;
-    }
+@media (min-width: 1000px) {
 }
-
-.list-header {
-    p {
-        text-decoration: underline;
-        margin: 0.2rem;
-    }
-}
-
-.entrant-name {
-    width: 50%;
-    font-weight: bold;
-}
-
-.entrant-bet {
-    width: 25%;
-}
-
-.entrant-result {
-    width: 25%;
-}
-
-@media (min-width: 1000px) {}
