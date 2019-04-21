@@ -21,7 +21,7 @@ const BetHistory = new mongoose.Schema({
 	result: {
 		type: String,
 		required: true,
-		default: "Race has not finished",
+		default: "Race In Progress",
 	},
 });
 

@@ -171,6 +171,12 @@ const saveUser = userData => {
 						twitchUsername: userData.login,
 						twitchProfileImg: userData.profile_image_url,
 						following: userData.following,
+						betHistory: [],
+						betRatio: 0,
+						betTotal: 0,
+						raceHistory: [],
+						raceRatio: 0,
+						gameHistory: new Map(),
 					},
 					(err, saved) => {
 						if (err) {
