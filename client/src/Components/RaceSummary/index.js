@@ -24,7 +24,7 @@ class RaceSummary extends Component {
 				<p>{race.goal}</p>
 				<p>{this.getPlace(race.place)}</p>
 				{race.time > 0 ? (
-					<p>Finish time: {convertRunTime(race.time)}</p>
+					<p>{convertRunTime(race.time)}</p>
 				) : race.time === -1 ? (
 					<p>Forfeit</p>
 				) : (
