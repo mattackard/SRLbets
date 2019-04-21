@@ -120,6 +120,7 @@ function sortEntrants(entrantMap) {
 
 function updateRaceData(races) {
 	races.forEach(async race => {
+		//looks for all races retrieved from API in the database
 		Race.findOne({ raceID: race.id }, async (err, doc) => {
 			if (err) {
 				throw Error(err);
@@ -184,48 +185,51 @@ function updateRaceData(races) {
 				Race.create(raceDoc);
 			}
 		});
+		//looks for each game being raced in the databse
 		Game.findOne({ gameID: race.game.id }, async (err, doc) => {
 			if (err) {
 				throw Error(err);
 			}
+			let newCat = {
+				goal: "",
+				avgTime: 0,
+				mostWins: {
+					srlName: "",
+					twitchUsername: "",
+					numWins: 0,
+				},
+				mostEntries: {
+					srlName: "",
+					twitchUsername: "",
+					numEntries: 0,
+				},
+				bestTime: {
+					srlName: "",
+					twitchUsername: "",
+					time: 0,
+				},
+			};
 			if (doc) {
+				//goal string cannot contain . characters and be used as a map key, so all specail characters are filtered here
 				let editedGoal = race.goal.replace(/\W/g, " ");
 				//check if race is recorded in game history
 				if (!doc.raceHistory.includes(race.id)) {
 					doc.raceHistory.push(race.id);
 				}
-				//checks if category already exists and updates it
-				let newCat = {
-					goal: "",
-					avgTime: 0,
-					mostWins: {
-						srlName: "",
-						twitchUsername: "",
-						numWins: 0,
-					},
-					mostEntries: {
-						srlName: "",
-						twitchUsername: "",
-						numEntries: 0,
-					},
-					bestTime: {
-						srlName: "",
-						twitchUsername: "",
-						time: 0,
-					},
-				};
+				//checks if the race is a randomizer and sets category if so
 				if (
 					editedGoal.toLowerCase().includes("randomizer") ||
 					editedGoal.toLowerCase().includes("seed")
 				) {
 					editedGoal = "Randomizer";
 				}
+				//checks if category already exists and updates it
 				if (doc.categories.has(editedGoal)) {
 					let previous = doc.categories.get(editedGoal);
 					newCat.goal = previous.goal;
 					newCat.avgTime = previous.avgTime;
 				} else {
-					//create a new category object
+					//create a new category object with current race's category
 					newCat.goal = editedGoal;
 				}
 				doc.categories.set(editedGoal, newCat);
@@ -237,45 +241,22 @@ function updateRaceData(races) {
 				});
 			} else {
 				//create a new game if it can't already be found in the database
+
 				let editedGoal = race.goal.replace(/\W/g, " ");
+				if (
+					editedGoal.toLowerCase().includes("randomizer") ||
+					editedGoal.toLowerCase().includes("seed")
+				) {
+					newCat.goal = "Randomizer";
+				} else {
+					newCat.goal = race.goal;
+				}
 				let gameDoc = new Game({
 					gameID: race.game.id,
 					gameTitle: race.game.name,
 					raceHistory: [race.id],
+					categories: new Map([[editedGoal, newCat]]),
 				});
-				if (
-					!(
-						editedGoal.toLowerCase().includes("randomizer") ||
-						editedGoal.toLowerCase().includes("seed")
-					)
-				) {
-					gameDoc.categories = new Map([
-						[
-							editedGoal,
-							{
-								goal: race.goal,
-								avgTime: 0,
-								mostWins: {
-									srlName: "",
-									twitchUsername: "",
-									numWins: 0,
-								},
-								mostEntries: {
-									srlName: "",
-									twitchUsername: "",
-									numEntries: 0,
-								},
-								bestTime: {
-									srlName: "",
-									twitchUsername: "",
-									time: 0,
-								},
-							},
-						],
-					]);
-				} else {
-					gameDoc.categories = new Map();
-				}
 				Game.create(gameDoc);
 			}
 		});
@@ -316,31 +297,41 @@ function recordRaceEntrants(races) {
 										doc.gameHistory,
 										race,
 										race.entrants[entrant]
-									).then(async newGameHistory => {
-										User.updateOne(
-											{
-												$or: [
-													{
-														srlName:
-															race.entrants[
-																entrant
-															].displayname,
-													},
-													{
-														twitchUsername:
-															race.entrants[
-																entrant
-															].twitch,
-													},
-												],
-											},
-											{
-												$set: {
-													raceHistory: newRaceHistory,
-													gameHistory: newGameHistory,
-												},
+									).then(newGameHistory => {
+										doc.raceHistory = newRaceHistory;
+										doc.gameHistory = newGameHistory;
+										doc.markModified("raceHistory");
+										doc.markModified("gameHistory");
+										doc.save(err => {
+											if (err) {
+												throw Error(err);
 											}
-										);
+										});
+										//leaving this in because I've had so many problems here
+										// 	User.updateOne(
+										// 		{
+										// 			$or: [
+										// 				{
+										// 					srlName:
+										// 						race.entrants[
+										// 							entrant
+										// 						].displayname,
+										// 				},
+										// 				{
+										// 					twitchUsername:
+										// 						race.entrants[
+										// 							entrant
+										// 						].twitch,
+										// 				},
+										// 			],
+										// 		},
+										// 		{
+										// 			$set: {
+										// 				raceHistory: newRaceHistory,
+										// 				gameHistory: newGameHistory,
+										// 			},
+										// 		}
+										// 	);
 									});
 								});
 							} else {
