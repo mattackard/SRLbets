@@ -305,8 +305,10 @@ function closeBet(entrant, race) {
 	});
 }
 
-function refundBetsForEntrant(entrant, raceID) {
-	entrant.bets.forEach(bet => {
+//refunds bets made on an entrant that was entered but left the race before it started
+function refundBetsForEntrant(oldEntrant, raceID) {
+	//get the user entry of each user that has bet on the old entrant
+	oldEntrant.bets.forEach(bet => {
 		User.findOne(
 			{
 				twitchUsername: bet.twitchUsername,
@@ -317,13 +319,14 @@ function refundBetsForEntrant(entrant, raceID) {
 					throw Error(err);
 				}
 				if (doc) {
-					doc.betHistory.forEach(userBet => {
-						//find the race in the user's bet history and refund the points
+					console.log(doc.twitchUsername);
+					//find the bet to refund in the user's bet history
+					doc.betHistory.forEach((userBet, index) => {
 						if (
 							userBet.raceID === raceID &&
-							userBet.entrant === entrant.name
+							userBet.oldEntrant === oldEntrant.name
 						) {
-							userBet.result = `entrant left race`;
+							doc.betHistory[index].result = `entrant left race`;
 							doc.points += userBet.amount;
 						}
 					});
