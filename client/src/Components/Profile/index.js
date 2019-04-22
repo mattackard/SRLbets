@@ -11,7 +11,7 @@ class Profile extends Component {
 	render() {
 		const { user, loggedIn } = this.props;
 		return (
-			<div id="main-content" class="profile-container">
+			<div id="main-content" className="profile-container">
 				{loggedIn ? (
 					<React.Fragment>
 						<ul className="user-display">

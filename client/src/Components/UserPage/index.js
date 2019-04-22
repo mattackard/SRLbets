@@ -23,9 +23,11 @@ class UserPage extends Component {
 				},
 			})
 			.then(res => {
-				this.setState({
-					user: res.data.user,
-				});
+				if (res.data !== "no user") {
+					this.setState({
+						user: res.data.user,
+					});
+				}
 			});
 	}
 
@@ -50,13 +52,11 @@ class UserPage extends Component {
 										this.state.twitchUsername
 									}`}
 									target="_blank"
-									rel="noopener noreferrer"
-								>
+									rel="noopener noreferrer">
 									<svg
 										className="twitch-svg"
 										xmlns="http://www.w3.org/2000/svg"
-										viewBox="0 0 128 134"
-									>
+										viewBox="0 0 128 134">
 										<title>Twitch Stream Link</title>
 										<path
 											d="M89,77l-9,23v94h32v17h18l17-17h26l35-35V77H89Zm107,76-20,20H144l-17,17V173H100V89h96v64Zm-20-41v35H164V112h12Zm-32,0v35H132V112h12Z"

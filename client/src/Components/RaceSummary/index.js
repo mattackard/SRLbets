@@ -3,9 +3,22 @@ import { NavLink } from "react-router-dom";
 import "./style.scss";
 
 class RaceSummary extends Component {
+	addPositionSuffix = num => {
+		if (num !== 11 && num % 10 === 1) {
+			return `${num}st`;
+		}
+		if (num !== 12 && num % 10 === 2) {
+			return `${num}nd`;
+		}
+		if (num !== 13 && num % 10 === 3) {
+			return `${num}rd`;
+		}
+		return `${num}th`;
+	};
+
 	getPlace = place => {
 		if (place < 1000) {
-			return place;
+			return this.addPositionSuffix(place);
 		} else if (place === 9998) {
 			return "Forfeit";
 		} else {

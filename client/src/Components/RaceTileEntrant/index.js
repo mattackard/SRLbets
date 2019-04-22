@@ -10,7 +10,7 @@ class RaceTileEntrant extends Component {
 		entrantDetails: false,
 	};
 
-	positionWithSuffix = num => {
+	addPositionSuffix = num => {
 		if (num !== 11 && num % 10 === 1) {
 			return `${num}st`;
 		}
@@ -45,8 +45,7 @@ class RaceTileEntrant extends Component {
 					{entrant.status === "Finished" ? (
 						<React.Fragment>
 							<li className={entrant.status}>
-								Finished{" "}
-								{this.positionWithSuffix(entrant.place)}
+								Finished {this.addPositionSuffix(entrant.place)}
 							</li>
 							<li>{entrant.time}</li>
 						</React.Fragment>
@@ -63,13 +62,11 @@ class RaceTileEntrant extends Component {
 							<a
 								href={`https://twitch.tv/${entrant.twitch}`}
 								target="_blank"
-								rel="noopener noreferrer"
-							>
+								rel="noopener noreferrer">
 								<svg
 									className="twitch-svg"
 									xmlns="http://www.w3.org/2000/svg"
-									viewBox="0 0 128 134"
-								>
+									viewBox="0 0 128 134">
 									<title>Twitch Stream Link</title>
 									<path
 										d="M89,77l-9,23v94h32v17h18l17-17h26l35-35V77H89Zm107,76-20,20H144l-17,17V173H100V89h96v64Zm-20-41v35H164V112h12Zm-32,0v35H132V112h12Z"
@@ -83,8 +80,7 @@ class RaceTileEntrant extends Component {
 					raceStatus === "Entry Closed" ? (
 						<button
 							className="entrant-dropdown"
-							onClick={() => this.toggleEntrantDetails()}
-						>
+							onClick={() => this.toggleEntrantDetails()}>
 							&#9660;
 						</button>
 					) : null}
