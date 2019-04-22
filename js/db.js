@@ -319,21 +319,26 @@ function refundBetsForEntrant(oldEntrant, raceID) {
 					throw Error(err);
 				}
 				if (doc) {
-					console.log(doc.twitchUsername);
+					console.log(1, doc.twitchUsername);
+					newBetHistory = [];
 					//find the bet to refund in the user's bet history
-					doc.betHistory.forEach((userBet, index) => {
+					doc.betHistory.forEach(userBet => {
 						if (
 							userBet.raceID === raceID &&
-							userBet.oldEntrant === oldEntrant.name
+							userBet.entrant === oldEntrant.name
 						) {
-							doc.betHistory[index].result = `entrant left race`;
-							doc.points += userBet.amount;
+							console.log(2, userBet);
+							userBet.result = `entrant left race`;
+							doc.points += userBet.amountBet;
 						}
+						newBetHistory.push(userBet);
 					});
+					doc.betHistory = newBetHistory;
 					doc.markModified("betHistory");
 					doc.save(err => {
 						if (err) {
-							throw Error(err);
+							//using console.error to prevent app crashing
+							console.error(err);
 						}
 						bet.isPaid = true;
 					});
