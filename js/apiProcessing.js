@@ -298,40 +298,40 @@ function recordRaceEntrants(races) {
 										race,
 										race.entrants[entrant]
 									).then(newGameHistory => {
-										doc.raceHistory = newRaceHistory;
-										doc.gameHistory = newGameHistory;
-										doc.markModified("raceHistory");
-										doc.markModified("gameHistory");
-										doc.save(err => {
-											if (err) {
-												throw Error(err);
-											}
-										});
+										// doc.raceHistory = newRaceHistory;
+										// doc.gameHistory = newGameHistory;
+										// doc.markModified("raceHistory");
+										// doc.markModified("gameHistory");
+										// doc.save(err => {
+										// 	if (err) {
+										// 		throw Error(err);
+										// 	}
+										// });
 										//leaving this in because I've had so many problems here
-										// 	User.updateOne(
-										// 		{
-										// 			$or: [
-										// 				{
-										// 					srlName:
-										// 						race.entrants[
-										// 							entrant
-										// 						].displayname,
-										// 				},
-										// 				{
-										// 					twitchUsername:
-										// 						race.entrants[
-										// 							entrant
-										// 						].twitch,
-										// 				},
-										// 			],
-										// 		},
-										// 		{
-										// 			$set: {
-										// 				raceHistory: newRaceHistory,
-										// 				gameHistory: newGameHistory,
-										// 			},
-										// 		}
-										// 	);
+										User.updateOne(
+											{
+												$or: [
+													{
+														srlName:
+															race.entrants[
+																entrant
+															].displayname,
+													},
+													{
+														twitchUsername:
+															race.entrants[
+																entrant
+															].twitch,
+													},
+												],
+											},
+											{
+												$set: {
+													raceHistory: newRaceHistory,
+													gameHistory: newGameHistory,
+												},
+											}
+										);
 									});
 								});
 							} else {
