@@ -2,21 +2,16 @@ const mongoose = require("mongoose");
 
 const GameCategory = new mongoose.Schema({
 	goal: { type: String, required: true },
-	//needs implemented
-	avgTime: { type: Number, required: true },
-	//needs implemented
 	mostWins: {
 		srlName: String,
 		twitchUsername: String,
 		numWins: Number,
 	},
-	//needs implemented
 	mostEntries: {
 		srlName: String,
 		twitchUsername: String,
 		numEntries: Number,
 	},
-	//needs implemented
 	bestTime: {
 		srlName: String,
 		twitchUsername: String,

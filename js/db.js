@@ -62,7 +62,7 @@ function makeBet(username, raceID, entrant, amount) {
 							amount
 						);
 						user.points -= amount;
-
+						user.numBets++;
 						user.save(err => {
 							if (err) {
 								err.message =
@@ -235,13 +235,15 @@ function betPayout(entrant, race) {
 									"Could not find user in bet payout";
 								throw Error(err);
 							}
-							doc.points += betReward;
 							doc.betHistory.forEach(userBet => {
 								if (
 									userBet.raceID === race.raceID &&
 									userBet.entrant === entrant.name
 								) {
+									doc.points += betReward;
 									userBet.result = `+${betReward}`;
+									doc.betsWon++;
+									doc.betRatio = betsWon / numBets;
 								}
 							});
 							doc.save((err, saved) => {
@@ -284,6 +286,7 @@ function closeBet(entrant, race) {
 									userBet.entrant === entrant.name
 								) {
 									userBet.result = `-${bet.betAmount}`;
+									doc.betRatio = betsWon / numBets;
 								}
 							});
 							doc.save(err => {
@@ -319,7 +322,6 @@ function refundBetsForEntrant(oldEntrant, raceID) {
 					throw Error(err);
 				}
 				if (doc) {
-					console.log(1, doc.twitchUsername);
 					newBetHistory = [];
 					//find the bet to refund in the user's bet history
 					doc.betHistory.forEach(userBet => {
@@ -327,9 +329,9 @@ function refundBetsForEntrant(oldEntrant, raceID) {
 							userBet.raceID === raceID &&
 							userBet.entrant === oldEntrant.name
 						) {
-							console.log(2, userBet);
 							userBet.result = `entrant left race`;
 							doc.points += userBet.amountBet;
+							doc.numBets--;
 						}
 						newBetHistory.push(userBet);
 					});

@@ -192,7 +192,6 @@ function updateRaceData(races) {
 			}
 			let newCat = {
 				goal: "",
-				avgTime: 0,
 				mostWins: {
 					srlName: "",
 					twitchUsername: "",
@@ -211,26 +210,34 @@ function updateRaceData(races) {
 			};
 			if (doc) {
 				//goal string cannot contain . characters and be used as a map key, so all specail characters are filtered here
-				let editedGoal = race.goal.replace(/\W/g, " ");
+				let editedGoal = race.goal.replace(/\W/g, " ").toLowerCase();
 				//check if race is recorded in game history
 				if (!doc.raceHistory.includes(race.id)) {
 					doc.raceHistory.push(race.id);
 				}
 				//checks if the race is a randomizer and sets category if so
 				if (
-					editedGoal.toLowerCase().includes("randomizer") ||
-					editedGoal.toLowerCase().includes("seed")
+					editedGoal.includes("randomizer") ||
+					editedGoal.includes("seed")
 				) {
-					editedGoal = "Randomizer";
+					editedGoal = "randomizer";
 				}
 				//checks if category already exists and updates it
 				if (doc.categories.has(editedGoal)) {
 					let previous = doc.categories.get(editedGoal);
 					newCat.goal = previous.goal;
-					newCat.avgTime = previous.avgTime;
+					//update wins and stuff
+					let updated = await updateGameCategory(
+						race,
+						editedGoal,
+						previous
+					);
+					newCat.mostEntries = updated.mostEntries;
+					newCat.mostWins = updated.mostWins;
+					newCat.bestTime = updated.bestTime;
 				} else {
 					//create a new category object with current race's category
-					newCat.goal = editedGoal;
+					newCat.goal = race.goal;
 				}
 				doc.categories.set(editedGoal, newCat);
 				doc.markModified("categories");
@@ -241,16 +248,14 @@ function updateRaceData(races) {
 				});
 			} else {
 				//create a new game if it can't already be found in the database
-
-				let editedGoal = race.goal.replace(/\W/g, " ");
+				let editedGoal = race.goal.replace(/\W/g, " ").toLowerCase();
 				if (
-					editedGoal.toLowerCase().includes("randomizer") ||
-					editedGoal.toLowerCase().includes("seed")
+					editedGoal.includes("randomizer") ||
+					editedGoal.includes("seed")
 				) {
-					newCat.goal = "Randomizer";
-				} else {
-					newCat.goal = race.goal;
+					editedGoal = "randomizer";
 				}
+				newCat.goal = race.goal;
 				let gameDoc = new Game({
 					gameID: race.game.id,
 					gameTitle: race.game.name,
@@ -259,6 +264,95 @@ function updateRaceData(races) {
 				});
 				Game.create(gameDoc);
 			}
+		});
+	});
+}
+
+function updateGameCategory(srlRace, editedGoal, gameCat) {
+	let promises = [];
+	for (let entrant in srlRace.entrants) {
+		promises.push(
+			new Promise((resolve, reject) => {
+				User.findOne(
+					{ srlName: srlRace.entrants[entrant].displayname },
+					(err, user) => {
+						if (err) {
+							reject(err);
+							throw Error(err);
+						}
+
+						if (user) {
+							let userGame = user.gameHistory.get(
+								srlRace.game.name
+									.replace(/\W/g, " ")
+									.toLowerCase()
+							);
+							let userCategory;
+							if (userGame) {
+								userCategory = userGame.categories.get(
+									editedGoal
+								);
+							} else {
+								console.log(
+									`couldnt find ${editedGoal} in user's game history`
+								);
+							}
+							if (userCategory) {
+								if (
+									userCategory.numEntries >
+									gameCat.mostEntries.numEntries
+								) {
+									gameCat.mostEntries = {
+										srlName:
+											srlRace.entrants[entrant]
+												.displayname,
+										twitchUsername:
+											srlRace.entrants[entrant].twitch ||
+											"",
+										numEntries: userCategory.numEntries,
+									};
+								}
+								if (
+									userCategory.numWins >
+									gameCat.mostWins.numWins
+								) {
+									gameCat.mostWins = {
+										srlName:
+											srlRace.entrants[entrant]
+												.displayname,
+										twitchUsername:
+											srlRace.entrants[entrant].twitch ||
+											"",
+										numWins: userCategory.numwins,
+									};
+								}
+							} else {
+								console.error(
+									`Game category ${editedGoal} could not be found in ${
+										srlRace.entrants[entrant].displayname
+									}'s database entry `
+								);
+							}
+						}
+						resolve();
+					}
+				);
+				if (
+					srlRace.entrants[entrant].time < gameCat.bestTime.time &&
+					srlRace.entrants[entrant].time > 0
+				) {
+					gameCat.besTime = {
+						srlName: srlRace.entrants[entrant].displayname,
+						twitchUsername: srlRace.entrants[entrant].twitch || "",
+						time: srlRace.entrants[entrant].time,
+					};
+				}
+			})
+		);
+	}
+	return Promise.all(promises).then(() => {
+		return new Promise(resolve => {
+			resolve(gameCat);
 		});
 	});
 }
@@ -287,6 +381,17 @@ function recordRaceEntrants(races) {
 								throw Error(err);
 							}
 							if (doc) {
+								//updates user stats if they have finished the race
+								if (
+									race.entrants[entrant].place < 9000 ||
+									race.entrants[entrant].place === 9998
+								) {
+									if (race.entrants[entrant].place === 1) {
+										doc.racesWon++;
+									}
+									doc.raceRatio =
+										doc.racesWon / doc.raceHistory.length;
+								}
 								//update user race and game history
 								updateUserRaceHistory(
 									doc.raceHistory,
@@ -298,13 +403,14 @@ function recordRaceEntrants(races) {
 										race,
 										race.entrants[entrant]
 									).then(newGameHistory => {
-										// doc.raceHistory = newRaceHistory;
-										// doc.gameHistory = newGameHistory;
-										// doc.markModified("raceHistory");
-										// doc.markModified("gameHistory");
+										doc.raceHistory = newRaceHistory;
+										doc.gameHistory = newGameHistory;
+										doc.markModified("raceHistory");
+										doc.markModified("gameHistory");
 										// doc.save(err => {
 										// 	if (err) {
-										// 		throw Error(err);
+										// 		//throw Error(err);
+										// 		console.error(err);
 										// 	}
 										// });
 										//leaving this in because I've had so many problems here
@@ -335,6 +441,15 @@ function recordRaceEntrants(races) {
 									});
 								});
 							} else {
+								let editedGoal = race.goal
+									.replace(/\W/g, " ")
+									.toLowerCase();
+								if (
+									editedGoal.includes("randomizer") ||
+									editedGoal.includes("seed")
+								) {
+									editedGoal = "randomizer";
+								}
 								User.create(
 									{
 										srlName:
@@ -359,22 +474,19 @@ function recordRaceEntrants(races) {
 										],
 										gameHistory: new Map([
 											[
-												race.game.name.replace(
-													/\W/g,
-													" "
-												),
+												race.game.name
+													.replace(/\W/g, " ")
+													.toLowerCase(),
 												{
 													gameID: race.game.id,
 													gameTitle: race.game.name,
 													categories: new Map([
 														[
-															race.goal.replace(
-																/\W/g,
-																" "
-															),
+															editedGoal,
 															{
 																goal: race.goal,
 																avgTime: 0,
+																totalTime: 0,
 																bestTime: 0,
 																winRatio: 0,
 																numWins: 0,
@@ -449,36 +561,31 @@ function updateUserRaceHistory(raceHistory, race, entrant) {
 //history if the race isn't already present
 function updateUserGameHistory(gameHistory, race, entrant) {
 	return new Promise((resolve, reject) => {
+		let editedGoal = race.goal.replace(/\W/g, " ").toLowerCase();
+		//trys to find out if race is a randomizer
+		//if it is, group all randomizer races into one game category
+		if (editedGoal.includes("randomizer") || editedGoal.includes("seed")) {
+			editedGoal = "randomizer";
+		}
 		//checks if game is already in history
-		if (gameHistory.has(race.game)) {
-			let gameObj = gameHistory.get(race.game.name);
-			let editedGoal;
-			//trys to find out if race is a randomizer
-			//if it is, group all randomizer races into one game category
-			if (
-				!(
-					editedGoal.toLowerCase().includes("randomizer") ||
-					editedGoal.toLowerCase().includes("seed")
-				)
-			) {
-				editedGoal = "Randomizer";
-			} else {
-				editedGoal = race.goal.replace(/\W/g, " ");
-			}
+		if (gameHistory.has(race.game.name.replace(/\W/g, " ").toLowerCase())) {
+			let gameObj = gameHistory.get(
+				race.game.name.replace(/\W/g, " ").toLowerCase()
+			);
+
 			//check if category already exists
 			if (gameObj.categories.has(editedGoal)) {
-				//update the category if new info is present
-				gameObj.categories.set(editedGoal, {
-					avgTime: 0,
-					bestTime: false,
-					winRatio: 0,
-					numWins: 0,
-					numEntries: 1,
-				});
+				let oldGameCat = gameObj.categories.get(editedGoal);
+				//update the category with new info
+				gameObj.categories.set(
+					editedGoal,
+					updateUserGameCategory(oldGameCat, entrant)
+				);
 			} else {
 				gameObj.categories.set(editedGoal, {
 					goal: race.goal,
 					avgTime: 0,
+					totalTime: 0,
 					bestTime: false,
 					winRatio: 0,
 					numWins: 0,
@@ -487,18 +594,7 @@ function updateUserGameHistory(gameHistory, race, entrant) {
 			}
 			resolve(new Map([...gameHistory]));
 		} else {
-			let editedGoal;
-			//trys to find out if race is a randomizer
-			//if it is, group all randomizer races into one game category
-			if (
-				race.goal.toLowerCase().includes("randomizer") ||
-				race.goal.toLowerCase().includes("seed")
-			) {
-				editedGoal = "Randomizer";
-			} else {
-				editedGoal = race.goal.replace(/\W/g, " ");
-			}
-			gameHistory.set(race.game.name.replace(/\W/g, " "), {
+			gameHistory.set(race.game.name.replace(/\W/g, " ").toLowerCase(), {
 				gameID: race.game.id,
 				gameTitle: race.game.name,
 				categories: new Map([
@@ -507,6 +603,7 @@ function updateUserGameHistory(gameHistory, race, entrant) {
 						{
 							goal: race.goal,
 							avgTime: 0,
+							totalTime: 0,
 							bestTime: false,
 							winRatio: 0,
 							numWins: 0,
@@ -518,6 +615,23 @@ function updateUserGameHistory(gameHistory, race, entrant) {
 			resolve(new Map([...gameHistory]));
 		}
 	});
+}
+
+function updateUserGameCategory(oldGameCat, srlEntrant) {
+	let newGameCat = oldGameCat;
+	newGameCat.numEntries++;
+	if (srlEntrant.time > 0) {
+		newGameCat.totalTime += srlEntrant.time;
+		newGameCat.avgTime = newGameCat.totalTime / newGameCat.numEntries;
+		if (srlEntrant.time < oldGameCat.bestTime) {
+			newGameCat.bestTime = srlEntrant.time;
+		}
+		if (srlEntrant.place === 1) {
+			newGameCat.numWins++;
+			newGameCat.winRatio = newGameCat.numWins / newGameCat.numEntries;
+		}
+	}
+	return newGameCat;
 }
 
 //runs any time a race's status has changed from the last api call

@@ -26,9 +26,9 @@ const BetHistory = new mongoose.Schema({
 });
 
 const GameCategory = new mongoose.Schema({
-	//needs implemented
 	goal: { type: String, required: true },
 	avgTime: { type: Number, required: true },
+	totalTime: { type: Number, required: true },
 	bestTime: { type: Number, required: true },
 	winRatio: { type: Number, required: true },
 	numWins: { type: Number, required: true },
@@ -49,10 +49,12 @@ const UserSchema = new mongoose.Schema({
 	twitchProfileImg: String,
 	following: { type: Map, of: Object, default: new Map() },
 	betHistory: [BetHistory],
-	betRatio: { type: Number, default: 0, required: true }, //needs implemented
-	betTotal: { type: Number, default: 0, required: true }, //needs implemented
+	betRatio: { type: Number, default: 0, required: true },
+	numBets: { type: Number, default: 0, required: true },
+	betsWon: { type: Number, default: 0, required: true },
 	raceHistory: [RaceHistory],
-	raceRatio: { type: Number, default: 0, required: true }, //needs implemented
+	raceRatio: { type: Number, default: 0, required: true },
+	racesWon: { type: Number, default: 0, required: true },
 	gameHistory: { type: Map, of: GameHistory, default: new Map() },
 });
 
