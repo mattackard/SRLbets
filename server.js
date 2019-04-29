@@ -7,7 +7,6 @@ const MongoStore = require("connect-mongo")(session);
 const ircConnect = require("./js/irc").ircConnect;
 const path = require("path");
 const getRaceDataFromSRL = require("./js/apiProcessing").getRaceDataFromSRL;
-const updateRaceData = require("./js/apiProcessing").updateRaceData;
 require("dotenv").config();
 
 //60,000 ms = 1 minute
@@ -62,7 +61,7 @@ app.use("/api", router);
 
 //get race data and update the db at set interval
 setInterval(() => {
-	getRaceDataFromSRL(updateRaceData);
+	getRaceDataFromSRL();
 }, dbUpdateInterval);
 
 //catch 404 and forward to error handler

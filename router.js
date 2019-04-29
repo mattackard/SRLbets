@@ -4,7 +4,7 @@ const User = require("./models/user");
 const Race = require("./models/race");
 const axios = require("axios");
 const getRaceDataFromDB = require("./js/db").getRaceDataFromDB;
-const makeBet = require("./js/db").makeBet;
+const makeBet = require("./js/bet").makeBet;
 const getUserFromTwitch = require("./js/twitch").getUserFromTwitch;
 const hash = require("./js/twitch").hash;
 require("dotenv").config();
