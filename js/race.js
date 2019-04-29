@@ -25,73 +25,71 @@ how the data needs to be processed for each race
 
 */
 
-function updateRaceData(races) {
-	races.forEach(async race => {
-		//looks for all races retrieved from API in the database
-		Race.findOne({ raceID: race.id }, async (err, doc) => {
-			if (err) {
-				throw Error(err);
-			}
-			if (doc) {
-				//checks if race status has changed
-				const oldStatus = doc.status;
-				doc.raceID = race.id;
-				doc.gameID = race.game.id;
-				doc.gameTitle = race.game.name;
-				doc.goal = race.goal;
-				doc.status = race.statetext;
-				doc.timeStarted = convertRaceStartTime(race.time);
-				doc.simpleTime = simplifyDate(convertRaceStartTime(race.time));
+function updateRaceData(race) {
+	//looks for all races retrieved from API in the database
+	Race.findOne({ raceID: race.id }, async (err, doc) => {
+		if (err) {
+			throw Error(err);
+		}
+		if (doc) {
+			//checks if race status has changed
+			const oldStatus = doc.status;
+			doc.raceID = race.id;
+			doc.gameID = race.game.id;
+			doc.gameTitle = race.game.name;
+			doc.goal = race.goal;
+			doc.status = race.statetext;
+			doc.timeStarted = convertRaceStartTime(race.time);
+			doc.simpleTime = simplifyDate(convertRaceStartTime(race.time));
 
-				//build the object of entrants
-				createEntrantObj(race)
-					.then(entrantObj => restoreUserBets(entrantObj, doc))
-					.then(objWithBets => sortEntrants(objWithBets))
-					.then(sortedEntrants => {
-						if (sortedEntrants.size === race.numentrants) {
-							doc.entrants = sortedEntrants;
-							//markModified tells mongo that the contents were modified in an indexed variable
-							doc.markModified("entrants");
-							doc.save((err, saved) => {
-								if (err) {
-									err.message =
-										"Error when updating existing race";
-									throw Error(err);
-								}
-								if (saved.status !== oldStatus) {
-									handleRaceStatusChange(
-										race,
-										saved.status,
-										oldStatus
-									);
-								} else if (
-									saved.status === "In Progress" &&
-									!saved.allBetsPaid
-								) {
-									resolveBets(saved);
-								}
-							});
-						} else {
-							throw Error(
-								"the new entrant object does not match the api response"
-							);
-						}
-					});
-			} else {
-				//create a new race document if it can't already be found in the database
-				let raceDoc = new Race({
-					raceID: race.id,
-					gameID: race.game.id,
-					gameTitle: race.game.name,
-					goal: race.goal,
-					status: race.statetext,
-					timeStarted: convertRaceStartTime(race.time),
-					simpleTime: simplifyDate(convertRaceStartTime(race.time)),
-					entrants: await createEntrantObj(race),
+			//build the object of entrants
+			createEntrantObj(race)
+				.then(entrantObj => restoreUserBets(entrantObj, doc))
+				.then(objWithBets => sortEntrants(objWithBets))
+				.then(sortedEntrants => {
+					if (sortedEntrants.size === race.numentrants) {
+						doc.entrants = sortedEntrants;
+						//markModified tells mongo that the contents were modified in an indexed variable
+						doc.markModified("entrants");
+						doc.save((err, saved) => {
+							if (err) {
+								err.message =
+									"Error when updating existing race";
+								throw Error(err);
+							}
+							if (saved.status !== oldStatus) {
+								handleRaceStatusChange(
+									race,
+									saved.status,
+									oldStatus
+								);
+							} else if (
+								saved.status === "In Progress" &&
+								!saved.allBetsPaid
+							) {
+								resolveBets(saved);
+							}
+						});
+					} else {
+						throw Error(
+							"the new entrant object does not match the api response"
+						);
+					}
 				});
-				Race.create(raceDoc);
-			}
-		});
+		} else {
+			//create a new race document if it can't already be found in the database
+			let raceDoc = new Race({
+				raceID: race.id,
+				gameID: race.game.id,
+				gameTitle: race.game.name,
+				goal: race.goal,
+				status: race.statetext,
+				timeStarted: convertRaceStartTime(race.time),
+				simpleTime: simplifyDate(convertRaceStartTime(race.time)),
+				entrants: await createEntrantObj(race),
+			});
+			Race.create(raceDoc);
+		}
 	});
 }
 
