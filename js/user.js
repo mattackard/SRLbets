@@ -29,129 +29,132 @@ how the data needs to be processed for each race
 */
 
 //takes SRL API formatted race and adds or updates all the race entrants into the user db
-function updateUserData(race) {
-	let openUsers = [];
-	if (race.statetext === "In Progress" || race.statetext === "Complete") {
-		for (let entrant in race.entrants) {
-			//prevents opening the user entry more than once if the user is in multiple races simultaneously
-			if (!openUsers.includes(race.entrants[entrant].displayname)) {
-				openUsers.push(race.entrants[entrant].displayname);
-				User.findOne(
-					{
-						$or: [
-							{ srlName: race.entrants[entrant].displayname },
-							{
-								twitchUsername: race.entrants[entrant].twitch,
-							},
-						],
-					},
-					(err, doc) => {
-						if (err) {
-							throw Error(err);
-						}
-						if (doc) {
-							//updates user stats if they have finished the race
-							if (
-								race.entrants[entrant].place < 9000 ||
-								race.entrants[entrant].place === 9998
-							) {
-								if (race.entrants[entrant].place === 1) {
-									doc.racesWon++;
+function updateUserData(userObj) {
+	Object.keys(userObj).forEach(user => {
+		User.findOne(
+			{
+				$or: [{ srlName: user }, { twitchUsername: user.twitch }],
+			},
+			(err, doc) => {
+				if (err) {
+					throw Error(err);
+				}
+				user.races.forEach(race => {
+					if (
+						race.statetext !== "Entry Open" &&
+						race.statetext !== "Entry Closed"
+					) {
+						for (let entrant in race.entrants) {
+							//prevents opening the user entry more than once if the user is in multiple races simultaneously
+
+							if (doc) {
+								//updates user stats if they have finished the race
+								if (
+									race.entrants[entrant].place < 9000 ||
+									race.entrants[entrant].place === 9998
+								) {
+									if (race.entrants[entrant].place === 1) {
+										doc.racesWon++;
+									}
+									doc.raceRatio =
+										doc.racesWon / doc.raceHistory.length;
 								}
-								doc.raceRatio =
-									doc.racesWon / doc.raceHistory.length;
-							}
-							//update user race and game history
-							updateUserRaceHistory(
-								doc.raceHistory,
-								race,
-								race.entrants[entrant]
-							).then(newRaceHistory => {
-								updateUserGameHistory(
-									doc.gameHistory,
+								//update user race and game history
+								updateUserRaceHistory(
+									doc.raceHistory,
 									race,
 									race.entrants[entrant]
-								).then(newGameHistory => {
-									doc.raceHistory = newRaceHistory;
-									doc.gameHistory = newGameHistory;
-									doc.markModified("raceHistory");
-									doc.markModified("gameHistory");
-									doc.save(err => {
-										if (err) {
-											//throw Error(err);
-											console.error(err);
-										}
+								).then(newRaceHistory => {
+									updateUserGameHistory(
+										doc.gameHistory,
+										race,
+										race.entrants[entrant]
+									).then(newGameHistory => {
+										doc.raceHistory = newRaceHistory;
+										doc.gameHistory = newGameHistory;
+										doc.markModified("raceHistory");
+										doc.markModified("gameHistory");
+										doc.save(err => {
+											if (err) {
+												//throw Error(err);
+												console.error(err);
+											}
+										});
 									});
 								});
-							});
-						} else {
-							let editedGoal = race.goal
-								.replace(/\W/g, " ")
-								.toLowerCase();
-							if (
-								editedGoal.includes("randomizer") ||
-								editedGoal.includes("seed")
-							) {
-								editedGoal = "randomizer";
-							}
-							User.create(
-								{
-									srlName: race.entrants[entrant].displayname,
-									twitchUsername:
-										race.entrants[entrant].twitch,
-									raceHistory: [
-										{
-											raceID: race.id,
-											game: race.game.name,
-											goal: race.goal,
-											status: race.statetext,
-											time: race.entrants[entrant].time,
-											date: convertRaceStartTime(
-												race.time
-											),
-											place: race.entrants[entrant].place,
-										},
-									],
-									gameHistory: new Map([
-										[
-											race.game.name
-												.replace(/\W/g, " ")
-												.toLowerCase(),
+							} else {
+								let editedGoal = race.goal
+									.replace(/\W/g, " ")
+									.toLowerCase();
+								if (
+									editedGoal.includes("randomizer") ||
+									editedGoal.includes("seed")
+								) {
+									editedGoal = "randomizer";
+								}
+								User.create(
+									{
+										srlName:
+											race.entrants[entrant].displayname,
+										twitchUsername:
+											race.entrants[entrant].twitch,
+										raceHistory: [
 											{
-												gameID: race.game.id,
-												gameTitle: race.game.name,
-												categories: new Map([
-													[
-														editedGoal,
-														{
-															goal: race.goal,
-															avgTime: 0,
-															totalTime: 0,
-															bestTime: 0,
-															winRatio: 0,
-															numWins: 0,
-															numEntries: 1,
-														},
-													],
-												]),
+												raceID: race.id,
+												game: race.game.name,
+												goal: race.goal,
+												status: race.statetext,
+												time:
+													race.entrants[entrant].time,
+												date: convertRaceStartTime(
+													race.time
+												),
+												place:
+													race.entrants[entrant]
+														.place,
 											},
 										],
-									]),
-								},
-								err => {
-									if (err) {
-										err.message =
-											"Error in creating new user from race entrant";
-										throw Error(err);
+										gameHistory: new Map([
+											[
+												race.game.name
+													.replace(/\W/g, " ")
+													.toLowerCase(),
+												{
+													gameID: race.game.id,
+													gameTitle: race.game.name,
+													categories: new Map([
+														[
+															editedGoal,
+															{
+																goal: race.goal,
+																avgTime: 0,
+																totalTime: 0,
+																bestTime: 0,
+																winRatio: 0,
+																numWins: 0,
+																numEntries: 1,
+															},
+														],
+													]),
+												},
+											],
+										]),
+									},
+									err => {
+										if (err) {
+											err.message =
+												"Error in creating new user from race entrant";
+											throw Error(err);
+										}
 									}
-								}
-							);
+								);
+							}
 						}
 					}
-				);
+				});
 			}
-		}
-	}
+		);
+	});
 }
 
 //updates a user's race history or adds a new entry to the
