@@ -108,11 +108,11 @@ function updateUserData(userObj) {
 											game: race.game.name,
 											goal: race.goal,
 											status: race.statetext,
-											time: race.entrants[entrant].time,
+											time: entrant.time,
 											date: convertRaceStartTime(
 												race.time
 											),
-											place: race.entrants[entrant].place,
+											place: entrant.place,
 										});
 										newUser.gameHistory.set(
 											race.game.name
