@@ -1,5 +1,6 @@
 const Race = require("../models/race");
 const User = require("../models/user");
+const getRaceDataFromDB = require("./db").getRaceDataFromDB;
 
 // functions for betting, recording bets, making bets, paying bets
 

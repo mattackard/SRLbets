@@ -28,83 +28,91 @@ function updateGameData(gameObj) {
 				throw Error(err);
 			}
 			let newGame = {
-				gameID: game.races[0].game.id,
-				gameTitle: game.races[0].game.name,
+				gameID: gameObj[game].races[0].game.id,
+				gameTitle: gameObj[game].races[0].game.name,
 				raceHistory: [],
-				categories: new Map()
+				categories: new Map(),
 			};
-			game.races.forEach(race => {
-				let newCat = {
-					goal: "",
-					mostWins: {
-						srlName: "",
-						twitchUsername: "",
-						numWins: 0,
-					},
-					mostEntries: {
-						srlName: "",
-						twitchUsername: "",
-						numEntries: 0,
-					},
-					bestTime: {
-						srlName: "",
-						twitchUsername: "",
-						time: 0,
-					},
-				};
-				//if the game is already in the database, iterate through each race of the game and
-				//update the categories from each race
-				if (doc) {
-					//goal string cannot contain . characters and be used as a map key, so all specail characters are filtered here
-					let editedGoal = race.goal.replace(/\W/g, " ").toLowerCase();
-					//check if race is recorded in game history
-					if (!doc.raceHistory.includes(race.id)) {
-						doc.raceHistory.push(race.id);
+			gameObj[game].races.forEach(race => {
+				if (
+					race.statetext !== "Entry Open" &&
+					race.statetext !== "Entry Closed"
+				) {
+					let newCat = {
+						goal: "",
+						mostWins: {
+							srlName: "",
+							twitchUsername: "",
+							numWins: 0,
+						},
+						mostEntries: {
+							srlName: "",
+							twitchUsername: "",
+							numEntries: 0,
+						},
+						bestTime: {
+							srlName: "",
+							twitchUsername: "",
+							time: 0,
+						},
+					};
+					//if the game is already in the database, iterate through each race of the game and
+					//update the categories from each race
+					if (doc) {
+						//goal string cannot contain . characters and be used as a map key, so all specail characters are filtered here
+						let editedGoal = race.goal
+							.replace(/\W/g, " ")
+							.toLowerCase();
+						//check if race is recorded in game history
+						if (!doc.raceHistory.includes(race.id)) {
+							doc.raceHistory.push(race.id);
+						}
+						//checks if the race is a randomizer and sets category if so
+						if (
+							editedGoal.includes("randomizer") ||
+							editedGoal.includes("seed")
+						) {
+							editedGoal = "randomizer";
+						}
+						//checks if category already exists and updates it
+						if (doc.categories.has(editedGoal)) {
+							let previous = doc.categories.get(editedGoal);
+							newCat.goal = previous.goal;
+							let updated = updateGameCategory(
+								race,
+								editedGoal,
+								previous
+							);
+							newCat.mostEntries = updated.mostEntries;
+							newCat.mostWins = updated.mostWins;
+							newCat.bestTime = updated.bestTime;
+						} else {
+							//create a new category object with current race's category
+							newCat.goal = race.goal;
+						}
+						doc.categories.set(editedGoal, newCat);
+						doc.markModified("categories");
 					}
-					//checks if the race is a randomizer and sets category if so
-					if (
-						editedGoal.includes("randomizer") ||
-						editedGoal.includes("seed")
-					) {
-						editedGoal = "randomizer";
-					}
-					//checks if category already exists and updates it
-					if (doc.categories.has(editedGoal)) {
-						let previous = doc.categories.get(editedGoal);
-						newCat.goal = previous.goal;
-						//update wins and stuff
-						let updated = await updateGameCategory(
-							race,
-							editedGoal,
-							previous
-						);
-						newCat.mostEntries = updated.mostEntries;
-						newCat.mostWins = updated.mostWins;
-						newCat.bestTime = updated.bestTime;
-					} else {
-						//create a new category object with current race's category
+					//if the game can't be found in the database, create a new game document
+					//and initiailize a category for each race of the game
+					else {
+						//create a new game if it can't already be found in the database
+						let editedGoal = race.goal
+							.replace(/\W/g, " ")
+							.toLowerCase();
+						if (
+							editedGoal.includes("randomizer") ||
+							editedGoal.includes("seed")
+						) {
+							editedGoal = "randomizer";
+						}
 						newCat.goal = race.goal;
+						newGame.raceHistory.push(race.id);
+						newGame.categories.set(editedGoal, newCat);
 					}
-					doc.categories.set(editedGoal, newCat);
-					doc.markModified("categories");
-				} 
-				//if the game can't be found in the database, create a new game document
-				//and initiailize a category for each race of the game
-				else {
-					//create a new game if it can't already be found in the database
-					let editedGoal = race.goal.replace(/\W/g, " ").toLowerCase();
-					if (
-						editedGoal.includes("randomizer") ||
-						editedGoal.includes("seed")
-					) {
-						editedGoal = "randomizer";
-					}
-					newCat.goal = race.goal;
-					newGame.raceHistory.push(race.id);
-					newGame.categories.set(editedGoal, newCat);
 				}
-			});	
-			if (doc) {		
+			});
+			if (doc) {
 				doc.save(err => {
 					if (err) {
 						throw Error(err);
@@ -113,7 +121,7 @@ function updateGameData(gameObj) {
 			} else {
 				Game.create(newGame);
 			}
-		}); 
+		});
 	});
 }
 
@@ -143,7 +151,9 @@ function updateGameCategory(srlRace, editedGoal, gameCat) {
 								);
 							} else {
 								console.log(
-									`couldnt find ${editedGoal} in user's game history`
+									`couldnt find ${srlRace.game.name} in ${
+										srlRace.entrants[entrant].displayname
+									}'s game history`
 								);
 							}
 							if (userCategory) {

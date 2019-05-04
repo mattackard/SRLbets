@@ -31,125 +31,173 @@ how the data needs to be processed for each race
 //takes SRL API formatted race and adds or updates all the race entrants into the user db
 function updateUserData(userObj) {
 	Object.keys(userObj).forEach(user => {
+		//creating this var stops mongo from getting whatever user with an empty twitch username it finds first
+		let userTwitch =
+			userObj[user].twitch === "" ? null : userObj[user].twitch;
 		User.findOne(
 			{
-				$or: [{ srlName: user }, { twitchUsername: user.twitch }],
+				$or: [{ srlName: user }, { twitchUsername: userTwitch }],
 			},
 			(err, doc) => {
 				if (err) {
 					throw Error(err);
 				}
-				user.races.forEach(race => {
-					if (
-						race.statetext !== "Entry Open" &&
-						race.statetext !== "Entry Closed"
-					) {
-						for (let entrant in race.entrants) {
-							//prevents opening the user entry more than once if the user is in multiple races simultaneously
-
-							if (doc) {
-								//updates user stats if they have finished the race
-								if (
-									race.entrants[entrant].place < 9000 ||
-									race.entrants[entrant].place === 9998
-								) {
-									if (race.entrants[entrant].place === 1) {
-										doc.racesWon++;
+				//initialize variable in case new user entry needs to be created
+				let newUser = {};
+				let promises = [];
+				userObj[user].races.forEach(race => {
+					promises.push(
+						new Promise(resolve => {
+							if (
+								race.statetext !== "Entry Open" &&
+								race.statetext !== "Entry Closed"
+							) {
+								//finds the user's entrant object in each race
+								let entrant = race.entrants[user];
+								//updates user information if user entry exists
+								if (doc) {
+									//updates twitch & srl usernames in case accounts are linked after user is created
+									doc.twitchUsername = entrant.twitch;
+									doc.srlName = entrant.displayname;
+									//updates user stats if they have finished the race
+									if (
+										entrant.place < 9000 ||
+										entrant.place === 9998
+									) {
+										if (entrant.place === 1) {
+											doc.racesWon++;
+										}
+										doc.raceRatio =
+											doc.racesWon /
+											doc.raceHistory.length;
 									}
-									doc.raceRatio =
-										doc.racesWon / doc.raceHistory.length;
-								}
-								//update user race and game history
-								updateUserRaceHistory(
-									doc.raceHistory,
-									race,
-									race.entrants[entrant]
-								).then(newRaceHistory => {
-									updateUserGameHistory(
-										doc.gameHistory,
+									//update user race and game history
+									updateUserRaceHistory(
+										doc.raceHistory,
 										race,
-										race.entrants[entrant]
-									).then(newGameHistory => {
-										doc.raceHistory = newRaceHistory;
-										doc.gameHistory = newGameHistory;
-										doc.markModified("raceHistory");
-										doc.markModified("gameHistory");
-										doc.save(err => {
-											if (err) {
-												//throw Error(err);
-												console.error(err);
-											}
+										entrant
+									).then(newRaceHistory => {
+										updateUserGameHistory(
+											doc.gameHistory,
+											race,
+											entrant
+										).then(newGameHistory => {
+											doc.raceHistory = newRaceHistory;
+											doc.gameHistory = newGameHistory;
+											doc.markModified("raceHistory");
+											doc.markModified("gameHistory");
+											resolve();
 										});
 									});
-								});
-							} else {
-								let editedGoal = race.goal
-									.replace(/\W/g, " ")
-									.toLowerCase();
-								if (
-									editedGoal.includes("randomizer") ||
-									editedGoal.includes("seed")
-								) {
-									editedGoal = "randomizer";
-								}
-								User.create(
-									{
-										srlName:
-											race.entrants[entrant].displayname,
-										twitchUsername:
-											race.entrants[entrant].twitch,
-										raceHistory: [
+								} else {
+									//build the new user object
+									let editedGoal = race.goal
+										.replace(/\W/g, " ")
+										.toLowerCase();
+									if (
+										editedGoal.includes("randomizer") ||
+										editedGoal.includes("seed")
+									) {
+										editedGoal = "randomizer";
+									}
+									//checks if new user has already been populated from another race
+									//if it has, it adds to the race and game history of the new user
+									if (newUser.srlName) {
+										newUser.raceHistory.push({
+											raceID: race.id,
+											game: race.game.name,
+											goal: race.goal,
+											status: race.statetext,
+											time: race.entrants[entrant].time,
+											date: convertRaceStartTime(
+												race.time
+											),
+											place: race.entrants[entrant].place,
+										});
+										newUser.gameHistory.set(
+											race.game.name
+												.replace(/\W/g, " ")
+												.toLowerCase(),
 											{
-												raceID: race.id,
-												game: race.game.name,
-												goal: race.goal,
-												status: race.statetext,
-												time:
-													race.entrants[entrant].time,
-												date: convertRaceStartTime(
-													race.time
-												),
-												place:
-													race.entrants[entrant]
-														.place,
-											},
-										],
-										gameHistory: new Map([
-											[
-												race.game.name
-													.replace(/\W/g, " ")
-													.toLowerCase(),
+												gameID: race.game.id,
+												gameTitle: race.game.name,
+												categories: new Map([
+													[
+														editedGoal,
+														{
+															goal: race.goal,
+															avgTime: 0,
+															totalTime: 0,
+															bestTime: 0,
+															winRatio: 0,
+															numWins: 0,
+															numEntries: 1,
+														},
+													],
+												]),
+											}
+										);
+									} else {
+										newUser = {
+											srlName: entrant.displayname,
+											twitchUsername: entrant.twitch,
+											raceHistory: [
 												{
-													gameID: race.game.id,
-													gameTitle: race.game.name,
-													categories: new Map([
-														[
-															editedGoal,
-															{
-																goal: race.goal,
-																avgTime: 0,
-																totalTime: 0,
-																bestTime: 0,
-																winRatio: 0,
-																numWins: 0,
-																numEntries: 1,
-															},
-														],
-													]),
+													raceID: race.id,
+													game: race.game.name,
+													goal: race.goal,
+													status: race.statetext,
+													time: entrant.time,
+													date: convertRaceStartTime(
+														race.time
+													),
+													place: entrant.place,
 												},
 											],
-										]),
-									},
-									err => {
-										if (err) {
-											err.message =
-												"Error in creating new user from race entrant";
-											throw Error(err);
-										}
+											gameHistory: new Map([
+												[
+													race.game.name
+														.replace(/\W/g, " ")
+														.toLowerCase(),
+													{
+														gameID: race.game.id,
+														gameTitle:
+															race.game.name,
+														categories: new Map([
+															[
+																editedGoal,
+																{
+																	goal:
+																		race.goal,
+																	avgTime: 0,
+																	totalTime: 0,
+																	bestTime: 0,
+																	winRatio: 0,
+																	numWins: 0,
+																	numEntries: 1,
+																},
+															],
+														]),
+													},
+												],
+											]),
+										};
 									}
-								);
+									resolve();
+								}
 							}
-						}
+						})
+					);
+				});
+				Promise.all(promises).then(() => {
+					if (doc) {
+						doc.save(err => {
+							if (err) {
+								throw Error(err);
+							}
+						});
+					} else {
+						User.create(newUser);
 					}
 				});
 			}
