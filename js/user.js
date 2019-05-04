@@ -220,7 +220,7 @@ function updateUserRaceHistory(raceHistory, race, entrant) {
 						raceHistory[index].place = entrant.place;
 						raceHistory[index].time = entrant.time;
 						raceHistory[index].isBestTime =
-							entrant.time > recordedRace.isBestTime;
+							entrant.time > recordedRace.time;
 						updated = true;
 					}
 					resolve();
@@ -276,7 +276,7 @@ function updateUserGameHistory(gameHistory, race, entrant) {
 					goal: race.goal,
 					avgTime: 0,
 					totalTime: 0,
-					bestTime: false,
+					bestTime: 0,
 					winRatio: 0,
 					numWins: 0,
 					numEntries: 1,
@@ -294,7 +294,7 @@ function updateUserGameHistory(gameHistory, race, entrant) {
 							goal: race.goal,
 							avgTime: 0,
 							totalTime: 0,
-							bestTime: false,
+							bestTime: 0,
 							winRatio: 0,
 							numWins: 0,
 							numEntries: 1,
