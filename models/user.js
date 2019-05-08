@@ -33,6 +33,7 @@ const GameCategory = new mongoose.Schema({
 	winRatio: { type: Number, required: true },
 	numWins: { type: Number, required: true },
 	numEntries: { type: Number, required: true },
+	numForfeits: { type: Number, required: true },
 });
 
 const GameHistory = new mongoose.Schema({
@@ -53,6 +54,7 @@ const UserSchema = new mongoose.Schema({
 	numBets: { type: Number, default: 0, required: true },
 	betsWon: { type: Number, default: 0, required: true },
 	raceHistory: [RaceHistory],
+	archivedRaces: { type: Array, of: String },
 	raceRatio: { type: Number, default: 0, required: true },
 	racesWon: { type: Number, default: 0, required: true },
 	gameHistory: { type: Map, of: GameHistory, default: new Map() },
