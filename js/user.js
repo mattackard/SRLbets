@@ -54,8 +54,11 @@ function updateUserData(userObj) {
 							) {
 								//finds the user's entrant object in each race
 								let entrant = race.entrants[user];
-								//updates user information if user entry exists
-								if (doc) {
+								//updates user information if user entry exists and race has not already been archived
+								if (
+									doc &&
+									!doc.archivedRaces.includes(race.id)
+								) {
 									//updates twitch & srl usernames in case accounts are linked after user is created
 									doc.twitchUsername = entrant.twitch;
 									doc.srlName = entrant.displayname;
@@ -70,6 +73,9 @@ function updateUserData(userObj) {
 										doc.raceRatio =
 											doc.racesWon /
 											doc.raceHistory.length;
+										//if entrant has finished the race, archive the race
+										doc.archivedRaces.push(race.id);
+										doc.markModified("archivedRaces");
 									}
 									//update user race and game history
 									updateUserRaceHistory(
@@ -131,7 +137,8 @@ function updateUserData(userObj) {
 															bestTime: 0,
 															winRatio: 0,
 															numWins: 0,
-															numEntries: 1,
+															numEntries: 0,
+															numForfeits: 0,
 														},
 													],
 												]),
@@ -174,7 +181,8 @@ function updateUserData(userObj) {
 																	bestTime: 0,
 																	winRatio: 0,
 																	numWins: 0,
-																	numEntries: 1,
+																	numEntries: 0,
+																	numForfeits: 0,
 																},
 															],
 														]),
@@ -220,7 +228,8 @@ function updateUserRaceHistory(raceHistory, race, entrant) {
 						raceHistory[index].place = entrant.place;
 						raceHistory[index].time = entrant.time;
 						raceHistory[index].isBestTime =
-							entrant.time > recordedRace.time;
+							entrant.time < recordedRace.time &&
+							entrant.time > 0;
 						updated = true;
 					}
 					resolve();
@@ -279,7 +288,8 @@ function updateUserGameHistory(gameHistory, race, entrant) {
 					bestTime: 0,
 					winRatio: 0,
 					numWins: 0,
-					numEntries: 1,
+					numEntries: 0,
+					numForfeits: 0,
 				});
 			}
 			resolve(new Map([...gameHistory]));
@@ -297,7 +307,8 @@ function updateUserGameHistory(gameHistory, race, entrant) {
 							bestTime: 0,
 							winRatio: 0,
 							numWins: 0,
-							numEntries: 1,
+							numEntries: 0,
+							numForfeits: 0,
 						},
 					],
 				]),
@@ -309,17 +320,26 @@ function updateUserGameHistory(gameHistory, race, entrant) {
 
 function updateUserGameCategory(oldGameCat, srlEntrant) {
 	let newGameCat = oldGameCat;
-	newGameCat.numEntries++;
 	if (srlEntrant.time > 0) {
+		newGameCat.numEntries++;
 		newGameCat.totalTime += srlEntrant.time;
-		newGameCat.avgTime = newGameCat.totalTime / newGameCat.numEntries;
-		if (srlEntrant.time < oldGameCat.bestTime) {
+		newGameCat.avgTime =
+			newGameCat.totalTime /
+			(newGameCat.numEntries - newGameCat.numForfeits);
+		if (
+			srlEntrant.time < oldGameCat.bestTime ||
+			oldGameCat.bestTime === 0
+		) {
 			newGameCat.bestTime = srlEntrant.time;
 		}
 		if (srlEntrant.place === 1) {
 			newGameCat.numWins++;
 			newGameCat.winRatio = newGameCat.numWins / newGameCat.numEntries;
 		}
+	}
+	if (srlEntrant.place === 9998) {
+		newGameCat.numEntries++;
+		newGameCat.numForfeits++;
 	}
 	return newGameCat;
 }
