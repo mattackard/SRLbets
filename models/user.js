@@ -8,7 +8,6 @@ const RaceHistory = new mongoose.Schema({
 	place: { type: Number, required: true },
 	time: { type: Number, required: true },
 	date: { type: Date, required: true },
-	isBestTime: { type: Boolean, required: true, default: false },
 });
 
 const BetHistory = new mongoose.Schema({

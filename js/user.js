@@ -2,32 +2,6 @@ const User = require("../models/user");
 
 // does all processing for user database entries
 
-/*
-
-how the data needs to be processed for each race
-
-- find user in db
-    - create user if not found
-    - update twitch username in case twitch is linked to SRL after first user recording
-- find out if user is in multiple races
-    - get all races to record all at once
-- look for race in race history
-    - update status, goal, place, time, bestTime
-    - create if can't be found
-- leave bet history alone
-- look for game in gameHistory
-    - create if not present
-    - check if game has already been recorded in game history
-        - new race array in gameHistory or check from user raceHistory?
-            - process gameHistory before raceHistory
-        - incement numEntries if necessary
-    - look for game category in gameHistory
-        - create if not present
-        - check if entrant has placed in race already
-            - update avgTime, winRatio, bestTime, numWins, totalTime, raceRatio, racesWon
-
-*/
-
 //takes SRL API formatted race and adds or updates all the race entrants into the user db
 function updateUserData(userObj) {
 	Object.keys(userObj).forEach(user => {
@@ -227,9 +201,6 @@ function updateUserRaceHistory(raceHistory, race, entrant) {
 						raceHistory[index].status = entrant.statetext;
 						raceHistory[index].place = entrant.place;
 						raceHistory[index].time = entrant.time;
-						raceHistory[index].isBestTime =
-							entrant.time < recordedRace.time &&
-							entrant.time > 0;
 						updated = true;
 					}
 					resolve();
@@ -247,7 +218,6 @@ function updateUserRaceHistory(raceHistory, race, entrant) {
 					place: entrant.place,
 					date: convertRaceStartTime(race.time),
 					time: entrant.time,
-					isBestTime: false,
 				});
 			}
 			//resolve raceHistory with changes
