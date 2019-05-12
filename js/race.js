@@ -396,3 +396,5 @@ function convertRunTime(apiTime) {
 
 module.exports.updateRaceData = updateRaceData;
 module.exports.handleCancelledRaces = handleCancelledRaces;
+module.exports.sortEntrants = sortEntrants;
+module.exports.createEntrantObj = createEntrantObj;

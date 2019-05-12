@@ -1,5 +1,5 @@
 const expect = require("chai").expect;
-const apiProcessing = require("../js/apiProcessing");
+const race = require("../js/race");
 
 describe("API RESPONSE TESTING", () => {
 	describe("createEntrantObj", () => {
@@ -149,11 +149,11 @@ describe("API RESPONSE TESTING", () => {
 			);
 		});
 		it("should return a promise", () => {
-			expect(apiProcessing.createEntrantObj(testRace)).to.be.a("promise");
+			expect(race.createEntrantObj(testRace)).to.be.a("promise");
 		});
 		it("the promise should contain a map", () => {
 			const myFunc = async () => {
-				let myMap = await apiProcessing.createEntrantObj(testRace);
+				let myMap = await race.createEntrantObj(testRace);
 				return myMap;
 			};
 			myFunc().then(map => {
@@ -163,7 +163,7 @@ describe("API RESPONSE TESTING", () => {
 		});
 		it("the map should be the same size as the input object's entrant array", () => {
 			const myFunc = async () => {
-				let myMap = await apiProcessing.createEntrantObj(testRace);
+				let myMap = await race.createEntrantObj(testRace);
 				return myMap;
 			};
 
@@ -333,21 +333,21 @@ describe("API RESPONSE TESTING", () => {
 			]);
 		});
 		it("should return a promise", () => {
-			expect(apiProcessing.sortEntrants(testMap)).to.be.a("promise");
+			expect(race.sortEntrants(testMap)).to.be.a("promise");
 		});
 		it("should return a map", () => {
-			apiProcessing.sortEntrants(testMap).then(data => {
+			race.sortEntrants(testMap).then(data => {
 				expect(data).to.be.a("map");
 				expect(data.get("Marco")).to.not.throw;
 			});
 		});
 		it("the returned map should be the same size as the input map", () => {
-			apiProcessing.sortEntrants(testMap).then(data => {
+			race.sortEntrants(testMap).then(data => {
 				expect(data.size).to.equal(expectedMap.size);
 			});
 		});
 		it("the returned map should be sorted by finish position", () => {
-			apiProcessing.sortEntrants(testMap).then(data => {
+			race.sortEntrants(testMap).then(data => {
 				expect([...data]).to.deep.equal([...expectedMap]);
 			});
 		});
