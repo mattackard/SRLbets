@@ -3,23 +3,6 @@ const User = require("../models/user");
 
 // does all processing for game database entries
 
-/*
-
-how the data needs to be processed for each race
-
-- check if any entrants have finished 1st yet
-    - if not nothing needs to be done for game db
-- look for game in db
-    - create if not found
-- check if raceID is already in raceHistory
-    - if so you're done!
-    - else add raceID to raceHistory
-- check for race goal in categories
-    - if not found create new category
-    - else update mostWins, mostEntries, and bestTime
-
-*/
-
 function updateGameData(gameObj) {
 	Object.keys(gameObj).forEach(game => {
 		//looks for each game being raced in the databse

@@ -5,26 +5,6 @@ const refundBets = require("./bet").refundBets;
 
 // does all processing for race database entries
 
-/*
-
-how the data needs to be processed for each race
-
-- check for the race in db
-    - if not present create
-- update race info (goal, status)
-- update race entrants
-- check if any race entrants left
-    - refund bets made on entrant that left
-- check if anyone has won the race yet
-    - set winner in db
-    - pay out all bets
-    - set allBetsPaid to true
-- get entrant payRatio after it has been updated in user db
-
-- maybe do all entrant processing after user db processing is complete?
-
-*/
-
 function updateRaceData(race) {
 	//looks for all races retrieved from API in the database
 	Race.findOne({ raceID: race.id }, async (err, doc) => {
