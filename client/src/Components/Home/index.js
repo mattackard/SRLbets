@@ -6,6 +6,7 @@ import "./style.scss";
 //component imports
 import RaceTile from "../RaceTile";
 import Loading from "../Loading";
+import StreamVS from "../StreamVS";
 
 class Home extends Component {
 	state = {
@@ -25,6 +26,12 @@ class Home extends Component {
 	render() {
 		return (
 			<div id="main-content">
+				{this.props.races.ongoing.length ? (
+					<StreamVS
+						getStreams={this.props.getStreams}
+						ongoingRaces={this.props.races.ongoing.length}
+					/>
+				) : null}
 				<h1>Currently Open Races</h1>
 				<div className="race-list">
 					{this.props.races.finished.length ? null : <Loading />}

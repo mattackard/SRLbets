@@ -90,6 +90,33 @@ class App extends Component {
 			});
 	};
 
+	//gets the twitch stream link for the top 2 entrants
+	//in the race with the highest bet total
+	getStreams = () => {
+		let streams = [];
+		let highestTotal = -1;
+		let targetRace;
+		this.state.races.ongoing.forEach(race => {
+			if (race.betTotal > highestTotal && race.entrants.size > 1) {
+				highestTotal = race.betTotal;
+				targetRace = race;
+			}
+		});
+		if (targetRace) {
+			targetRace.entrants.forEach(entrant => {
+				if (entrant.twitch && streams.length < 2) {
+					streams.push(entrant.twitch);
+				}
+			});
+		}
+		console.log(streams);
+		if (streams.length < 2) {
+			throw Error("not enough entrants had twitch account linked");
+		} else {
+			return streams;
+		}
+	};
+
 	clearUserState = () => {
 		this.setState({
 			user: {},
@@ -218,6 +245,7 @@ class App extends Component {
 								getDataFromDb={this.getDataFromDb}
 								intervalIsSet={this.state.intervalIsSet}
 								twitchLogin={this.twitchLogin}
+								getStreams={this.getStreams}
 							/>
 						)}
 					/>
