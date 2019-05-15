@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import "./style.scss";
 
 class StreamVS extends Component {
 	state = {
@@ -15,10 +16,29 @@ class StreamVS extends Component {
 	}
 	render() {
 		return (
-			<div>
-				<p>yo here is some text</p>
-				<p>{`twitch.tv/${this.state.stream1}`}</p>
-				<p>{`twitch.tv/${this.state.stream2}`}</p>
+			<div id="stream-container">
+				<iframe
+					src={`https://player.twitch.tv/?channel=${
+						this.state.stream1
+					}`}
+					title={`${this.state.stream1}'s livestream`}
+					height="400"
+					width="600"
+					frameBorder="0"
+					scrolling="no"
+					allowFullScreen={true}
+				/>
+				<iframe
+					src={`https://player.twitch.tv/?channel=${
+						this.state.stream2
+					}`}
+					title={`${this.state.stream2}'s livestream`}
+					height="400"
+					width="600"
+					frameBorder="0"
+					scrolling="no"
+					allowFullScreen={true}
+				/>
 			</div>
 		);
 	}

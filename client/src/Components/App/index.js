@@ -95,21 +95,21 @@ class App extends Component {
 	getStreams = () => {
 		let streams = [];
 		let highestTotal = -1;
-		let targetRace;
+		let targetRace = {};
 		this.state.races.ongoing.forEach(race => {
-			if (race.betTotal > highestTotal && race.entrants.size > 1) {
+			if (
+				race.betTotal > highestTotal &&
+				Object.keys(race.entrants).length > 1
+			) {
 				highestTotal = race.betTotal;
 				targetRace = race;
 			}
 		});
-		if (targetRace) {
-			targetRace.entrants.forEach(entrant => {
-				if (entrant.twitch && streams.length < 2) {
-					streams.push(entrant.twitch);
-				}
-			});
-		}
-		console.log(streams);
+		Object.keys(targetRace.entrants).forEach(entrant => {
+			if (targetRace.entrants[entrant].twitch && streams.length < 3) {
+				streams.push(targetRace.entrants[entrant].twitch);
+			}
+		});
 		if (streams.length < 2) {
 			throw Error("not enough entrants had twitch account linked");
 		} else {
