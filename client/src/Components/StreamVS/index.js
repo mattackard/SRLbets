@@ -22,8 +22,6 @@ class StreamVS extends Component {
 						this.state.stream1
 					}`}
 					title={`${this.state.stream1}'s livestream`}
-					height="400"
-					width="600"
 					frameBorder="0"
 					scrolling="no"
 					allowFullScreen={true}
@@ -33,8 +31,6 @@ class StreamVS extends Component {
 						this.state.stream2
 					}`}
 					title={`${this.state.stream2}'s livestream`}
-					height="400"
-					width="600"
 					frameBorder="0"
 					scrolling="no"
 					allowFullScreen={true}
