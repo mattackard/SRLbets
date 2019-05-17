@@ -12,7 +12,6 @@ import UserPage from "../UserPage";
 import GamePage from "../GamePage";
 
 class App extends Component {
-	// initialize our state
 	state = {
 		races: {
 			open: [],
@@ -22,6 +21,7 @@ class App extends Component {
 		user: {},
 		intervalIsSet: false,
 		loggedIn: false,
+		stream: {},
 	};
 
 	//gets data from mongo at a recurring interval as long as app is mounted
@@ -92,28 +92,36 @@ class App extends Component {
 
 	//gets the twitch stream link for the top 2 entrants
 	//in the race with the highest bet total
-	getStreams = () => {
+	getStreams = numStreams => {
 		let streams = [];
 		let highestTotal = -1;
 		let targetRace = {};
 		this.state.races.ongoing.forEach(race => {
 			if (
 				race.betTotal > highestTotal &&
-				Object.keys(race.entrants).length > 1
+				Object.keys(race.entrants).length > numStreams - 1
 			) {
 				highestTotal = race.betTotal;
 				targetRace = race;
 			}
 		});
 		Object.keys(targetRace.entrants).forEach(entrant => {
-			if (targetRace.entrants[entrant].twitch && streams.length < 3) {
+			if (
+				targetRace.entrants[entrant].twitch &&
+				streams.length < numStreams
+			) {
 				streams.push(targetRace.entrants[entrant].twitch);
 			}
 		});
-		if (streams.length < 2) {
+		if (streams.length < numStreams) {
 			throw Error("not enough entrants had twitch account linked");
 		} else {
-			return streams;
+			this.setState({
+				stream: {
+					users: streams,
+					race: targetRace,
+				},
+			});
 		}
 	};
 
@@ -246,6 +254,7 @@ class App extends Component {
 								intervalIsSet={this.state.intervalIsSet}
 								twitchLogin={this.twitchLogin}
 								getStreams={this.getStreams}
+								stream={this.state.stream}
 							/>
 						)}
 					/>
