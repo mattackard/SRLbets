@@ -97,6 +97,18 @@ router.get("/getUser", (req, res, next) => {
 	});
 });
 
+//GET any race information
+router.get("/getRace", (req, res, next) => {
+	Race.findOne({ raceID: req.query.raceID }).exec((err, data) => {
+		if (err) {
+			err.message = "error in getRace route";
+			return next(err);
+		} else {
+			return data ? res.json({ race: data }) : res.send("no race");
+		}
+	});
+});
+
 //GET a game's race sumary
 router.get("/getGameSummary", (req, res, next) => {
 	Race.find({ gameTitle: req.query.gameTitle })

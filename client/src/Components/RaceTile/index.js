@@ -26,7 +26,9 @@ class RaceTile extends Component {
 				<NavLink to={`/game/${race.gameTitle}`}>
 					<h1>{race.gameTitle}</h1>
 				</NavLink>
-				<p className="race-goal">{race.goal || "No Goal Set"}</p>
+				<NavLink to={`/race/${race.raceID}`}>
+					<p className="race-goal">{race.goal || "No Goal Set"}</p>
+				</NavLink>
 				<p>{race.status}</p>
 				{race.status !== "Entry Open" &&
 				race.status !== "Entry Closed" ? (

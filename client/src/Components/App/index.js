@@ -10,6 +10,7 @@ import Home from "../Home";
 import Profile from "../Profile";
 import UserPage from "../UserPage";
 import GamePage from "../GamePage";
+import RacePage from "../RacePage";
 
 class App extends Component {
 	state = {
@@ -56,6 +57,22 @@ class App extends Component {
 			});
 	};
 
+	//gets a race from db by raceID
+	getRace = id => {
+		axios
+			.get("/api/getRace", {
+				withCredentials: true,
+				params: {
+					raceID: id,
+				},
+			})
+			.then(res => {
+				this.setState({
+					races: res.data.races,
+				});
+			});
+	};
+
 	//logs user into twitch after authorize redirect
 	twitchLogin = (queryCode, state) => {
 		axios
@@ -92,19 +109,23 @@ class App extends Component {
 
 	//gets the twitch stream link for the top 2 entrants
 	//in the race with the highest bet total
-	getStreams = numStreams => {
+	getStreams = (numStreams, race) => {
 		let streams = [];
 		let highestTotal = -1;
 		let targetRace = {};
-		this.state.races.ongoing.forEach(race => {
-			if (
-				race.betTotal > highestTotal &&
-				Object.keys(race.entrants).length > numStreams - 1
-			) {
-				highestTotal = race.betTotal;
-				targetRace = race;
-			}
-		});
+		if (race) {
+			targetRace = race;
+		} else {
+			this.state.races.ongoing.forEach(race => {
+				if (
+					race.betTotal > highestTotal &&
+					Object.keys(race.entrants).length > numStreams - 1
+				) {
+					highestTotal = race.betTotal;
+					targetRace = race;
+				}
+			});
+		}
 		Object.keys(targetRace.entrants).forEach(entrant => {
 			if (
 				targetRace.entrants[entrant].twitch &&
@@ -287,6 +308,17 @@ class App extends Component {
 							<GamePage
 								{...props}
 								getDataFromDb={this.getDataFromDb}
+							/>
+						)}
+					/>
+					<Route
+						path="/race/:raceID"
+						render={props => (
+							<RacePage
+								{...props}
+								getRace={this.getRace}
+								getStreams={this.getStreams}
+								stream={this.state.stream}
 							/>
 						)}
 					/>

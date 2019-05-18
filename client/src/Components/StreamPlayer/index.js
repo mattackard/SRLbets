@@ -1,5 +1,8 @@
 import React, { Component } from "react";
+import { NavLink } from "react-router-dom";
 import "./style.scss";
+
+import EntrantList from "../EntrantList";
 
 class StreamPlayer extends Component {
 	state = {
@@ -19,9 +22,6 @@ class StreamPlayer extends Component {
 	render() {
 		return (
 			<div id="streams">
-				<h2>{`${this.props.stream.race.gameTitle} - ${
-					this.props.stream.race.goal
-				}`}</h2>
 				<div id="stream-container">
 					{this.props.stream.users.map(userName => (
 						<iframe
@@ -37,6 +37,20 @@ class StreamPlayer extends Component {
 							allowFullScreen={true}
 						/>
 					))}
+				</div>
+				<NavLink to={`/race/${this.props.stream.race.raceID}`}>
+					<h2>{`${this.props.stream.race.gameTitle} - ${
+						this.props.stream.race.goal
+					}`}</h2>
+				</NavLink>
+				<div id="stream-info-panel">
+					<EntrantList
+						withScroll={true}
+						height={7}
+						race={this.props.stream.race}
+					/>
+					<p>cool graphics</p>
+					<p>more race info?</p>
 				</div>
 			</div>
 		);

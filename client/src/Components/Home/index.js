@@ -22,6 +22,9 @@ class Home extends Component {
 			//redirects to home to remove query string
 			this.props.history.push("/");
 		}
+		if (this.props.races.ongoing.length) {
+			this.props.getStreams(2);
+		}
 	}
 
 	componentDidUpdate() {
