@@ -146,6 +146,22 @@ class App extends Component {
 		}
 	};
 
+	changeStream = (newUser1, newUser2) => {
+		let newUsers = this.state.stream.users;
+		if (newUser2) {
+			newUsers = [newUser1, newUser2];
+		} else {
+			newUsers.shift();
+			newUsers.push(newUser1);
+		}
+		this.setState({
+			stream: {
+				race: this.state.stream.race,
+				users: newUsers,
+			},
+		});
+	};
+
 	clearUserState = () => {
 		this.setState({
 			user: {},
@@ -276,6 +292,7 @@ class App extends Component {
 								twitchLogin={this.twitchLogin}
 								getStreams={this.getStreams}
 								stream={this.state.stream}
+								changeStream={this.changeStream}
 							/>
 						)}
 					/>

@@ -42,3 +42,8 @@
     grid-column: 3;
     grid-row: 2;
 }
+
+.entrant-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}

@@ -5,7 +5,12 @@ const WatchSVG = props => (
 	<React.Fragment>
 		{props.twitch ? (
 			<svg
-				className="watch-svg"
+				className={
+					props.streamUsers.includes(props.entrantTwitch)
+						? "watch-svg selected-stream"
+						: "watch-svg"
+				}
+				onClick={() => props.changeStream(props.entrantTwitch)}
 				height="512px"
 				id="Layer_1"
 				version="1.1"

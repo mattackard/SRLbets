@@ -47,10 +47,10 @@ class StreamPlayer extends Component {
 					<EntrantList
 						withScroll={true}
 						height={7}
-						race={this.props.stream.race}
+						stream={this.props.stream}
+						changeStream={this.props.changeStream}
 					/>
-					<p>cool graphics</p>
-					<p>more race info?</p>
+					<p>d3 pie chart of bet distribution</p>
 				</div>
 			</div>
 		);

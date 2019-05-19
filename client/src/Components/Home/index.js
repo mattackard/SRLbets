@@ -37,7 +37,10 @@ class Home extends Component {
 		return (
 			<div id="main-content">
 				{this.props.stream.race ? (
-					<StreamPlayer stream={this.props.stream} />
+					<StreamPlayer
+						stream={this.props.stream}
+						changeStream={this.props.changeStream}
+					/>
 				) : null}
 				<h1>Currently Open Races</h1>
 				<div className="race-list">
