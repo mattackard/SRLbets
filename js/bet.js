@@ -229,7 +229,7 @@ function betPayout(entrant, race) {
 									doc.points += betReward;
 									userBet.result = `+${betReward}`;
 									doc.betsWon++;
-									doc.betRatio = betsWon / numBets;
+									doc.betRatio = doc.betsWon / doc.numBets;
 								}
 							});
 							doc.save((err, saved) => {
@@ -272,7 +272,7 @@ function closeBet(entrant, race) {
 									userBet.entrant === entrant.name
 								) {
 									userBet.result = `-${bet.betAmount}`;
-									doc.betRatio = betsWon / numBets;
+									doc.betRatio = doc.betsWon / doc.numBets;
 								}
 							});
 							doc.save(err => {
