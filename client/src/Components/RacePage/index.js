@@ -33,7 +33,10 @@ class RacePage extends Component {
 				{Object.keys(this.state.race).length ? (
 					<React.Fragment>
 						{this.props.stream.race ? (
-							<StreamPlayer stream={this.props.stream} />
+							<StreamPlayer
+								stream={this.props.stream}
+								changeStream={this.props.changeStream}
+							/>
 						) : null}
 						<h1>{this.state.race.gameTitle}</h1>
 						<h2>{this.state.race.goal}</h2>

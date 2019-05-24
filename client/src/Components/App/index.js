@@ -150,7 +150,9 @@ class App extends Component {
 		let newUsers = this.state.stream.users;
 		if (newUser2) {
 			newUsers = [newUser1, newUser2];
-		} else {
+		}
+		//prevents loading two of the same stream
+		else if (!newUsers.includes(newUser1)) {
 			newUsers.shift();
 			newUsers.push(newUser1);
 		}
@@ -336,6 +338,7 @@ class App extends Component {
 								getRace={this.getRace}
 								getStreams={this.getStreams}
 								stream={this.state.stream}
+								changeStream={this.changeStream}
 							/>
 						)}
 					/>

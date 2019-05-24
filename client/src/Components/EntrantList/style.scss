@@ -1,49 +1,57 @@
-@import '../../variables.scss';
+@import "../../variables.scss";
 
 #entrant-list {
-    border: 4px solid red;
-    margin: 0 1rem;
+	border: 4px solid $color-bg;
+	margin: 0 1rem;
 
-    svg {
-        height: 2vw;
-        width: 2vw;
-        fill: $color-bg;
-        stroke: $color-bg;
-    }
+	svg {
+		height: 2vw;
+		width: 2vw;
+		fill: $color-bg;
+		stroke: $color-bg;
+	}
+
+	.selected-stream {
+		fill: tomato;
+	}
+
+	.selected-entrant {
+		background-color: $color-content-selected;
+	}
 }
 
 .entrant-tile {
-    border: 1px solid blue;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
+	border: 1px solid $color-bg;
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
 }
 
 .grid-top-left {
-    grid-column: 1;
-    grid-row: 1;
+	grid-column: 1;
+	grid-row: 1;
 }
 
 .grid-bottom-left {
-    grid-column: 1;
-    grid-row: 2;
+	grid-column: 1;
+	grid-row: 2;
 }
 
 .grid-center {
-    grid-column: 2;
-    grid-row: 1/2;
+	grid-column: 2;
+	grid-row: 1/2;
 }
 
 .grid-top-right {
-    grid-column: 3;
-    grid-row: 1;
+	grid-column: 3;
+	grid-row: 1;
 }
 
 .grid-bottom-right {
-    grid-column: 3;
-    grid-row: 2;
+	grid-column: 3;
+	grid-row: 2;
 }
 
 .entrant-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
 }
