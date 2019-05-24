@@ -36,6 +36,7 @@ class RacePage extends Component {
 							<StreamPlayer
 								stream={this.props.stream}
 								changeStream={this.props.changeStream}
+								convertRunTime={this.props.convertRunTime}
 							/>
 						) : null}
 						<h1>{this.state.race.gameTitle}</h1>

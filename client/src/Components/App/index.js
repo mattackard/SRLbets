@@ -295,6 +295,7 @@ class App extends Component {
 								getStreams={this.getStreams}
 								stream={this.state.stream}
 								changeStream={this.changeStream}
+								convertRunTime={this.convertRunTime}
 							/>
 						)}
 					/>
@@ -339,6 +340,7 @@ class App extends Component {
 								getStreams={this.getStreams}
 								stream={this.state.stream}
 								changeStream={this.changeStream}
+								convertRunTime={this.convertRunTime}
 							/>
 						)}
 					/>
