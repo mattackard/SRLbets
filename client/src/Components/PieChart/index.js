@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import * as d3 from "d3";
+import "./style.scss";
 
 class PieChart extends Component {
 	componentDidMount() {
@@ -12,7 +13,7 @@ class PieChart extends Component {
 
 		// append the svg object to the div called 'my_dataviz'
 		var svg = d3
-			.select("#my_dataviz")
+			.select("#pie-chart")
 			.append("svg")
 			.attr("width", size)
 			.attr("height", size)
@@ -69,11 +70,9 @@ class PieChart extends Component {
 
 	render() {
 		return (
-			<div id="my_dataviz">
+			<div id="pie-chart">
 				<h1>Race Bets</h1>
-				<label>
-					Total: {this.props.values.reduce((a, b) => a + b)}
-				</label>
+				<p>Total: {this.props.values.reduce((a, b) => a + b)}</p>
 			</div>
 		);
 	}

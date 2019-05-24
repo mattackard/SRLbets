@@ -1,0 +1,14 @@
+@import "../../variables.scss";
+
+#pie-chart {
+	svg {
+		margin-top: -15%;
+		margin-left: 12%;
+	}
+	p {
+		position: relative;
+		top: 35%;
+		right: -36%;
+		font-size: 2rem;
+	}
+}
