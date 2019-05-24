@@ -3,6 +3,7 @@ import { NavLink } from "react-router-dom";
 import "./style.scss";
 
 import EntrantList from "../EntrantList";
+import PieChart from "../PieChart";
 
 class StreamPlayer extends Component {
 	state = {
@@ -20,6 +21,10 @@ class StreamPlayer extends Component {
 	}
 
 	render() {
+		let betArray = [];
+		Object.keys(this.props.stream.race.entrants).forEach(entrant => {
+			betArray.push(this.props.stream.race.entrants[entrant].betTotal);
+		});
 		return (
 			<div id="streams">
 				<div id="stream-container">
@@ -49,8 +54,9 @@ class StreamPlayer extends Component {
 						height={7}
 						stream={this.props.stream}
 						changeStream={this.props.changeStream}
+						convertRunTime={this.props.convertRunTime}
 					/>
-					<p>d3 pie chart of bet distribution</p>
+					<PieChart values={betArray} />
 				</div>
 			</div>
 		);
