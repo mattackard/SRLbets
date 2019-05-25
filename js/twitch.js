@@ -122,8 +122,12 @@ const getUsersFromID = userData => {
 		let idString = "";
 		let count = 0;
 		for (count; count < 100; count++) {
-			idString += `id=${userData.following[count]}&`;
-			count++;
+			if (userData.following[count]) {
+				idString += `id=${userData.following[count]}&`;
+				count++;
+			} else {
+				break;
+			}
 		}
 		//the request query is limited to 100 IDs, still need to allow for all user follows to be retrieved
 		if (count === 100) {
