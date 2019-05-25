@@ -121,8 +121,16 @@ class App extends Component {
 					race.betTotal > highestTotal &&
 					Object.keys(race.entrants).length > numStreams - 1
 				) {
-					highestTotal = race.betTotal;
-					targetRace = race;
+					let twitchUsers = 0;
+					Object.keys(race.entrants).forEach(entrant => {
+						if (race.entrants[entrant].twitch) {
+							twitchUsers++;
+						}
+					});
+					if (twitchUsers > 1) {
+						highestTotal = race.betTotal;
+						targetRace = race;
+					}
 				}
 			});
 		}
