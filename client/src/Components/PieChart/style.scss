@@ -1,6 +1,9 @@
 @import "../../variables.scss";
 
 #pie-chart {
+	h1 {
+		margin-top: 0;
+	}
 	svg {
 		margin-top: -15%;
 		margin-left: 12%;

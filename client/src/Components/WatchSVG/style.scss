@@ -1,11 +1,38 @@
-@import '../../variables.scss';
+@import "../../variables.scss";
 
-.watch-svg {
-    height: 3vw;
-    width: 3vw;
+.selected-stream {
+	fill: rgba(255, 0, 0, 1);
 }
 
 .selected-stream {
-    fill: red;
-    stroke: red;
+	animation: selected-stream 3s ease-in-out infinite both;
+}
+
+@keyframes selected-stream {
+	from {
+		transform: scale(1);
+		transform-origin: center center;
+		animation-timing-function: ease-out;
+		fill: rgba(255, 0, 0, 1);
+	}
+	10% {
+		transform: scale(0.97);
+		animation-timing-function: ease-in;
+		fill: rgba(255, 0, 0, 0.8);
+	}
+	17% {
+		transform: scale(1);
+		animation-timing-function: ease-out;
+		fill: rgba(255, 0, 0, 1);
+	}
+	33% {
+		transform: scale(0.94);
+		animation-timing-function: ease-in;
+		fill: rgba(255, 0, 0, 0.6);
+	}
+	100% {
+		transform: scale(1);
+		animation-timing-function: ease-out;
+		fill: rgba(255, 0, 0, 1);
+	}
 }

@@ -44,19 +44,21 @@ class StreamPlayer extends Component {
 					))}
 				</div>
 				<NavLink to={`/race/${this.props.stream.race.raceID}`}>
-					<h2>{`${this.props.stream.race.gameTitle} - ${
+					<h1>{`${this.props.stream.race.gameTitle} - ${
 						this.props.stream.race.goal
-					}`}</h2>
+					}`}</h1>
 				</NavLink>
 				<div id="stream-info-panel">
 					<EntrantList
 						withScroll={true}
-						height={7}
+						height={9}
 						stream={this.props.stream}
 						changeStream={this.props.changeStream}
 						convertRunTime={this.props.convertRunTime}
 					/>
-					<PieChart values={betArray} />
+					{betArray.reduce((a, b) => a + b) === 0 ? null : (
+						<PieChart values={betArray} />
+					)}
 				</div>
 			</div>
 		);
