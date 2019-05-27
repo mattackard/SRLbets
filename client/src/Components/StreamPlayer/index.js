@@ -10,9 +10,11 @@ class StreamPlayer extends Component {
 		width: "0vw",
 		height: "0vw",
 		betArray: [],
+		betsLoaded: false,
 	};
 
 	componentDidMount() {
+		//builds a new bet value array for charting
 		let newBets = [];
 		Object.keys(this.props.stream.race.entrants).forEach(entrant => {
 			newBets.push(this.props.stream.race.entrants[entrant].betTotal);
@@ -23,6 +25,7 @@ class StreamPlayer extends Component {
 			width: 90 / this.props.stream.users.length + "vw",
 			height: 90 / this.props.stream.users.length / (16 / 9) + "vw",
 			betArray: newBets,
+			betsLoaded: true,
 		});
 	}
 
@@ -58,10 +61,10 @@ class StreamPlayer extends Component {
 						changeStream={this.props.changeStream}
 						convertRunTime={this.props.convertRunTime}
 					/>
-					{this.state.betArray.length === 0 ||
-					this.state.betArray.reduce((a, b) => a + b) === 0 ? null : (
+					{this.state.betsLoaded &&
+					this.state.betArray.reduce((a, b) => a + b) !== 0 ? (
 						<PieChart values={this.state.betArray} />
-					)}
+					) : null}
 				</div>
 			</div>
 		);

@@ -8,10 +8,10 @@ class PieChart extends Component {
 		const size = window.innerWidth / 5;
 		const margin = 10;
 
-		// The radius of the pieplot is half the width or half the height (smallest one). I substract a bit of margin.
+		// the radius of the pie is half the size
 		var radius = size / 2 - margin;
 
-		// append the svg object to the div called 'my_dataviz'
+		// append the svg object to the div
 		var svg = d3
 			.select("#pie-chart")
 			.append("svg")
@@ -20,12 +20,12 @@ class PieChart extends Component {
 			.append("g")
 			.attr("transform", "translate(" + size / 2 + "," + size / 2 + ")");
 
-		// Create dummy data
 		var data = this.props.values;
 
 		let colorRange = () => {
 			let colors = [];
 			this.props.values.forEach(() => {
+				//creates a random color for each chart value
 				colors.push(
 					"#" +
 						(0x1000000 + Math.random() * 0xffffff)
@@ -42,14 +42,14 @@ class PieChart extends Component {
 			.domain(data)
 			.range(colorRange());
 
-		// Compute the position of each group on the pie:
+		// compute the position of each group on the pie:
 		var pie = d3.pie().value(function(d) {
 			return d.value;
 		});
 		var data_ready = pie(d3.entries(data));
 
-		// Build the pie chart: Basically, each part of the pie is a path that we build using the arc function.
-		svg.selectAll("whatever")
+		// build the pie chart: basically, each part of the pie is a path that we build using the arc function.
+		svg.selectAll("svg")
 			.data(data_ready)
 			.enter()
 			.append("path")

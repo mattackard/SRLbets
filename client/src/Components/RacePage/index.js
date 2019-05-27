@@ -8,6 +8,7 @@ class RacePage extends Component {
 	state = {
 		race: {},
 		raceID: this.props.match.params.raceID,
+		gotStreams: false,
 	};
 
 	componentDidMount() {
@@ -20,10 +21,12 @@ class RacePage extends Component {
 				},
 			})
 			.then(res => {
-				this.setState({
-					race: res.data.race,
+				this.props.getStreams(2, res.data.race).then(() => {
+					this.setState({
+						race: res.data.race,
+						gotStreams: true,
+					});
 				});
-				this.props.getStreams(2, res.data.race);
 			});
 	}
 

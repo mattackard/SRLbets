@@ -2,7 +2,7 @@
 
 #entrant-list {
     border: 4px solid $color-bg;
-    margin: 0 1rem 1rem;
+    margin: 0 4rem 1rem;
 
     svg {
         height: 2vw;
@@ -23,7 +23,7 @@
 .entrant-tile {
     border: 1px solid $color-bg;
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: 1fr 1fr 1fr;
     padding: .3rem 1rem;
 
     span {
@@ -33,6 +33,7 @@
     }
 }
 
+//css-grid placement
 .grid-top-left {
     grid-column: 1;
     grid-row: 1;
@@ -66,14 +67,13 @@
 
 .entrant-container {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 2fr 1fr;
 }
 
 #entrant-info {
-    margin-top: 2rem;
 
     h1 {
-        margin-top: 0;
+        margin-top: 3rem;
     }
 
     ul {
@@ -89,11 +89,7 @@
 
 //scrollbar styling
 #entrant-list::-webkit-scrollbar {
-    width: 1em;
-}
-
-#entrant-list::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px $color-bg;
+    width: 0.6em;
 }
 
 #entrant-list::-webkit-scrollbar-thumb {

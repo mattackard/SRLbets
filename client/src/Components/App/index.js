@@ -110,48 +110,52 @@ class App extends Component {
 	//gets the twitch stream link for the top 2 entrants
 	//in the race with the highest bet total
 	getStreams = (numStreams, race) => {
-		let streams = [];
-		let highestTotal = -1;
-		let targetRace = {};
-		if (race) {
-			targetRace = race;
-		} else {
-			this.state.races.ongoing.forEach(race => {
-				if (
-					race.betTotal > highestTotal &&
-					Object.keys(race.entrants).length > numStreams - 1
-				) {
-					let twitchUsers = 0;
-					Object.keys(race.entrants).forEach(entrant => {
-						if (race.entrants[entrant].twitch) {
-							twitchUsers++;
+		return new Promise((resolve, reject) => {
+			let streams = [];
+			let highestTotal = -1;
+			let targetRace = {};
+			if (race) {
+				targetRace = race;
+			} else {
+				this.state.races.ongoing.forEach(race => {
+					if (
+						race.betTotal > highestTotal &&
+						Object.keys(race.entrants).length > numStreams - 1
+					) {
+						let twitchUsers = 0;
+						Object.keys(race.entrants).forEach(entrant => {
+							if (race.entrants[entrant].twitch) {
+								twitchUsers++;
+							}
+						});
+						if (twitchUsers > 1) {
+							highestTotal = race.betTotal;
+							targetRace = race;
 						}
-					});
-					if (twitchUsers > 1) {
-						highestTotal = race.betTotal;
-						targetRace = race;
 					}
+				});
+			}
+			Object.keys(targetRace.entrants).forEach(entrant => {
+				if (
+					targetRace.entrants[entrant].twitch &&
+					streams.length < numStreams
+				) {
+					streams.push(targetRace.entrants[entrant].twitch);
 				}
 			});
-		}
-		Object.keys(targetRace.entrants).forEach(entrant => {
-			if (
-				targetRace.entrants[entrant].twitch &&
-				streams.length < numStreams
-			) {
-				streams.push(targetRace.entrants[entrant].twitch);
+			if (streams.length < numStreams && !race) {
+				reject("not enough entrants had twitch account linked");
+				throw Error("not enough entrants had twitch account linked");
+			} else {
+				this.setState({
+					stream: {
+						users: streams,
+						race: targetRace,
+					},
+				});
+				resolve();
 			}
 		});
-		if (streams.length < numStreams && !race) {
-			throw Error("not enough entrants had twitch account linked");
-		} else {
-			this.setState({
-				stream: {
-					users: streams,
-					race: targetRace,
-				},
-			});
-		}
 	};
 
 	changeStream = (newUser1, newUser2) => {

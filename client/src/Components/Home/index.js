@@ -13,6 +13,7 @@ class Home extends Component {
 		minimizeOpen: true,
 		minimizeOngoing: true,
 		minimizeFinished: true,
+		gotStreams: false,
 	};
 
 	componentDidMount() {
@@ -23,20 +24,24 @@ class Home extends Component {
 			this.props.history.push("/");
 		}
 		if (this.props.races.ongoing.length) {
-			this.props.getStreams(2);
+			this.props.getStreams(2).then(() => {
+				this.setState({ gotStreams: true });
+			});
 		}
 	}
 
 	componentDidUpdate() {
 		if (this.props.races.ongoing.length && !this.props.stream.race) {
-			this.props.getStreams(2);
+			this.props.getStreams(2).then(() => {
+				this.setState({ gotStreams: true });
+			});
 		}
 	}
 
 	render() {
 		return (
 			<div id="main-content">
-				{this.props.stream.race ? (
+				{this.state.gotStreams ? (
 					<StreamPlayer
 						stream={this.props.stream}
 						changeStream={this.props.changeStream}

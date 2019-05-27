@@ -12,18 +12,15 @@ class EntrantList extends Component {
 			overflow: "auto",
 		},
 		selectedEntrant: {},
+		entrantsLoaded: false,
 	};
 
 	componentDidMount() {
-		//the timeout gives the changestream function enough time to set a new
-		//stream object in state
-		setTimeout(() => {
-			this.changeSelectedEntrant(
-				this.props.stream.race.entrants[
-					Object.keys(this.props.stream.race.entrants)[0]
-				]
-			);
-		}, 10);
+		this.changeSelectedEntrant(
+			this.props.stream.race.entrants[
+				Object.keys(this.props.stream.race.entrants)[0]
+			]
+		);
 	}
 
 	changeSelectedEntrant = entrantObj => {
@@ -34,12 +31,14 @@ class EntrantList extends Component {
 			.then(user => {
 				this.setState({
 					selectedEntrant: user.data.user,
+					entrantsLoaded: true,
 				});
 			});
 	};
 
 	render() {
 		let race = this.props.stream.race;
+		//creates map-friendly strings for searching within the mapped data
 		let editedGameTitle = race.gameTitle.replace(/\W/g, " ").toLowerCase();
 		let editedGoal = race.goal.replace(/\W/g, " ").toLowerCase();
 		if (editedGoal.includes("randomizer") || editedGoal.includes("seed")) {
@@ -129,7 +128,7 @@ class EntrantList extends Component {
 						}
 					)}
 				</div>
-				{this.state.selectedEntrant.srlName &&
+				{this.state.entrantsLoaded &&
 				this.state.selectedEntrant.gameHistory[editedGameTitle] ? (
 					<div id="entrant-info">
 						<NavLink
