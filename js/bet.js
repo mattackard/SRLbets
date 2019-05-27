@@ -380,7 +380,7 @@ function refundBets(IDArray) {
 																) {
 																	userBet.result = `race cancelled`;
 																	doc.points +=
-																		userBet.amount;
+																		userBet.amountBet;
 																}
 															}
 														);
