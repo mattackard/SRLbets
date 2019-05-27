@@ -142,7 +142,7 @@ class App extends Component {
 				streams.push(targetRace.entrants[entrant].twitch);
 			}
 		});
-		if (streams.length < numStreams) {
+		if (streams.length < numStreams && !race) {
 			throw Error("not enough entrants had twitch account linked");
 		} else {
 			this.setState({

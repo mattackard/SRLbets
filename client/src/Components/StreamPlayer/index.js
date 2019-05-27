@@ -9,22 +9,24 @@ class StreamPlayer extends Component {
 	state = {
 		width: "0vw",
 		height: "0vw",
+		betArray: [],
 	};
 
 	componentDidMount() {
+		let newBets = [];
+		Object.keys(this.props.stream.race.entrants).forEach(entrant => {
+			newBets.push(this.props.stream.race.entrants[entrant].betTotal);
+		});
 		//sets the height and width of each stream based on the number of streams showing
 		//this calculation keeps a 16:9 aspect ratio
 		this.setState({
 			width: 90 / this.props.stream.users.length + "vw",
 			height: 90 / this.props.stream.users.length / (16 / 9) + "vw",
+			betArray: newBets,
 		});
 	}
 
 	render() {
-		let betArray = [];
-		Object.keys(this.props.stream.race.entrants).forEach(entrant => {
-			betArray.push(this.props.stream.race.entrants[entrant].betTotal);
-		});
 		return (
 			<div id="streams">
 				<div id="stream-container">
@@ -56,8 +58,9 @@ class StreamPlayer extends Component {
 						changeStream={this.props.changeStream}
 						convertRunTime={this.props.convertRunTime}
 					/>
-					{betArray.reduce((a, b) => a + b) === 0 ? null : (
-						<PieChart values={betArray} />
+					{this.state.betArray.length === 0 ||
+					this.state.betArray.reduce((a, b) => a + b) === 0 ? null : (
+						<PieChart values={this.state.betArray} />
 					)}
 				</div>
 			</div>

@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { NavLink } from "react-router-dom";
 import axios from "axios";
 import "./style.scss";
 
@@ -14,11 +15,15 @@ class EntrantList extends Component {
 	};
 
 	componentDidMount() {
-		this.changeSelectedEntrant(
-			this.props.stream.race.entrants[
-				Object.keys(this.props.stream.race.entrants)[0]
-			]
-		);
+		//the timeout gives the changestream function enough time to set a new
+		//stream object in state
+		setTimeout(() => {
+			this.changeSelectedEntrant(
+				this.props.stream.race.entrants[
+					Object.keys(this.props.stream.race.entrants)[0]
+				]
+			);
+		}, 10);
 	}
 
 	changeSelectedEntrant = entrantObj => {
@@ -59,8 +64,7 @@ class EntrantList extends Component {
 									}
 									onClick={() =>
 										this.changeSelectedEntrant(entrant)
-									}
-								>
+									}>
 									<div className="grid-top-left">
 										<h3>{entrant.name}</h3>
 									</div>
@@ -90,14 +94,12 @@ class EntrantList extends Component {
 												fill: "none",
 												strokeLinejoin: "round",
 												strokeWidth: "2px",
-											}}
-										>
+											}}>
 											<defs />
 											<title />
 											<g
 												data-name="219-Dice"
-												id="_219-Dice"
-											>
+												id="_219-Dice">
 												<rect
 													height="30"
 													width="30"
@@ -118,8 +120,7 @@ class EntrantList extends Component {
 											id="Layer_1"
 											version="1.1"
 											viewBox="0 0 30 30"
-											xmlns="http://www.w3.org/2000/svg"
-										>
+											xmlns="http://www.w3.org/2000/svg">
 											<path d="M15,3C8.373,3,3,8.373,3,15c0,6.627,5.373,12,12,12s12-5.373,12-12C27,8.373,21.627,3,15,3z M16,20.857V23h-2v-2.137  c-2.13-0.284-3.471-1.523-3.546-3.359h2.281c0.109,0.914,1.031,1.5,2.359,1.5c1.227,0,2.094-0.594,2.094-1.445  c0-0.719-0.562-1.133-1.945-1.43l-1.469-0.312c-2.055-0.43-3.062-1.5-3.062-3.219c0-1.83,1.274-3.116,3.288-3.439V7h2v2.156  c1.956,0.317,3.276,1.584,3.337,3.317h-2.219c-0.109-0.891-0.938-1.484-2.078-1.484c-1.18,0-1.961,0.547-1.961,1.406  c0,0.695,0.539,1.094,1.859,1.375l1.359,0.289c2.266,0.477,3.242,1.453,3.242,3.203C19.54,19.244,18.214,20.554,16,20.857z" />
 										</svg>
 									</div>
@@ -131,7 +132,10 @@ class EntrantList extends Component {
 				{this.state.selectedEntrant.srlName &&
 				this.state.selectedEntrant.gameHistory[editedGameTitle] ? (
 					<div id="entrant-info">
-						<h1>{this.state.selectedEntrant.srlName}</h1>
+						<NavLink
+							to={`/user/${this.state.selectedEntrant.srlName}`}>
+							<h1>{this.state.selectedEntrant.srlName}</h1>
+						</NavLink>
 						<ul>
 							{this.state.selectedEntrant.twitchUsername ===
 							"" ? (
@@ -153,7 +157,7 @@ class EntrantList extends Component {
 									"%"}
 							</li>
 							<li>
-								Number of wins for this category:{" "}
+								Wins for this category:{" "}
 								{
 									this.state.selectedEntrant.gameHistory[
 										editedGameTitle
