@@ -39,17 +39,6 @@ class RacePage extends Component {
 								convertRunTime={this.props.convertRunTime}
 							/>
 						) : null}
-						<h1>{this.state.race.gameTitle}</h1>
-						<h2>{this.state.race.goal}</h2>
-						<ul>
-							<li>{`Race started on ${
-								this.state.race.simpleTime
-							}`}</li>
-							<li>{this.state.race.status}</li>
-							<li>{`${
-								Object.keys(this.state.race.entrants).length
-							} entrants`}</li>
-						</ul>
 					</React.Fragment>
 				) : (
 					<Loading />

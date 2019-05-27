@@ -1,38 +1,42 @@
 @import "../../variables.scss";
 
 .selected-stream {
-	fill: rgba(255, 0, 0, 1);
+    fill: rgba(255, 0, 0, 1);
 }
 
 .selected-stream {
-	animation: selected-stream 3s ease-in-out infinite both;
+    animation: selected-stream 3s ease-in-out infinite both;
 }
 
 @keyframes selected-stream {
-	from {
-		transform: scale(1);
-		transform-origin: center center;
-		animation-timing-function: ease-out;
-		fill: rgba(255, 0, 0, 1);
-	}
-	10% {
-		transform: scale(0.97);
-		animation-timing-function: ease-in;
-		fill: rgba(255, 0, 0, 0.8);
-	}
-	17% {
-		transform: scale(1);
-		animation-timing-function: ease-out;
-		fill: rgba(255, 0, 0, 1);
-	}
-	33% {
-		transform: scale(0.94);
-		animation-timing-function: ease-in;
-		fill: rgba(255, 0, 0, 0.6);
-	}
-	100% {
-		transform: scale(1);
-		animation-timing-function: ease-out;
-		fill: rgba(255, 0, 0, 1);
-	}
+    from {
+        transform: scale(1);
+        transform-origin: center center;
+        animation-timing-function: ease-out;
+        fill: rgba(255, 0, 0, 1);
+    }
+
+    25% {
+        transform: scale(0.97);
+        animation-timing-function: ease-in;
+        fill: rgba(255, 0, 0, 0.8);
+    }
+
+    50% {
+        transform: scale(1);
+        animation-timing-function: ease-out;
+        fill: rgba(255, 0, 0, 1);
+    }
+
+    75% {
+        transform: scale(0.94);
+        animation-timing-function: ease-in;
+        fill: rgba(255, 0, 0, 0.6);
+    }
+
+    100% {
+        transform: scale(1);
+        animation-timing-function: ease-out;
+        fill: rgba(255, 0, 0, 1);
+    }
 }

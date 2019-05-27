@@ -1,14 +1,6 @@
 @import '../../variables.scss';
 
 #race-page {
-    ul {
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
-        list-style: none;
-
-        li {
-            padding: 0 1rem;
-        }
-    }
+    width: 80%;
+    margin: auto;
 }
