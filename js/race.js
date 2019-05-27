@@ -1,4 +1,5 @@
 const Race = require("../models/race");
+const User = require("../models/user");
 const resolveBets = require("./bet").resolveBets;
 const refundBetsForEntrant = require("./bet").refundBetsForEntrant;
 const refundBets = require("./bet").refundBets;
@@ -75,6 +76,12 @@ function updateRaceData(race) {
 
 function createEntrantObj(race) {
 	let entrantObj = new Map();
+	let editedGoal = race.goal.replace(/\W/g, " ").toLowerCase();
+	let gameName = race.game.name.replace(/\W/g, " ").toLowerCase();
+	//checks if the race is a randomizer and sets category if so
+	if (editedGoal.includes("randomizer") || editedGoal.includes("seed")) {
+		editedGoal = "randomizer";
+	}
 	return new Promise((resolve, reject) => {
 		for (let i in race.entrants) {
 			//adds each entrant from the API response to the map
@@ -85,7 +92,7 @@ function createEntrantObj(race) {
 				time: convertRunTime(race.entrants[i].time),
 				twitch: race.entrants[i].twitch,
 				betTotal: 0,
-				payRatio: getPayRatio(race.entrants[i]),
+				payRatio: getPayRatio(race.entrants[i], gameName, editedGoal),
 			});
 		}
 		if (Object.keys(race.entrants).length === entrantObj.size) {
@@ -164,10 +171,25 @@ function handleEntrantChange(race, newEntrantObj) {
 	});
 }
 
-function getPayRatio(raceEntrant) {
+function getPayRatio(raceEntrant, game, editedGoal) {
 	//get entrants raceHistory and check how many races of the same
 	//game the entrant has won or placed near top
-	return 2;
+	let payRatio = 2;
+	User.findOne({ srlName: raceEntrant.displayname }, (err, doc) => {
+		if (err) {
+			throw Error(err);
+		}
+		if (doc) {
+			let gameHistory = doc.gameHistory.get(game);
+			if (gameHistory) {
+				let category = gameHistory.categories.get(editedGoal);
+				if (category) {
+					payRatio = 4 * (1 - category.winRatio);
+				}
+			}
+		}
+	});
+	return payRatio;
 }
 
 //checks if entrant is already in the db and uses previous bet amount if so, otherwise set at 0
