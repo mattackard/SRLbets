@@ -7,6 +7,7 @@ import "./style.scss";
 import RaceTile from "../RaceTile";
 import Loading from "../Loading";
 import StreamPlayer from "../StreamPlayer";
+import FollowingRaces from "../FollowingRaces";
 
 class Home extends Component {
 	state = {
@@ -48,39 +49,56 @@ class Home extends Component {
 						convertRunTime={this.props.convertRunTime}
 					/>
 				) : null}
+				{this.props.loggedIn &&
+				this.props.user.following &&
+				this.props.races.finished.length ? (
+					<FollowingRaces
+						races={this.props.races}
+						user={this.props.user}
+					/>
+				) : null}
 				<h1>Currently Open Races</h1>
 				<div className="race-list">
-					{this.props.races.finished.length ? null : <Loading />}
-					{this.props.races.open.map(data => (
-						<RaceTile
-							key={data._id}
-							race={data}
-							getDataFromDb={this.props.getDataFromDb}
-						/>
-					))}
+					{this.props.races.finished.length ? (
+						this.props.races.open.map(data => (
+							<RaceTile
+								key={data._id}
+								race={data}
+								getDataFromDb={this.props.getDataFromDb}
+							/>
+						))
+					) : (
+						<Loading />
+					)}
 				</div>
 				<h1>Ongoing Races</h1>
 				<div className="race-list">
-					{this.props.races.finished.length ? null : <Loading />}
-					{this.props.races.ongoing.map(data => (
-						<RaceTile
-							key={data._id}
-							race={data}
-							getDataFromDb={this.props.getDataFromDb}
-						/>
-					))}
+					{this.props.races.finished.length ? (
+						this.props.races.ongoing.map(data => (
+							<RaceTile
+								key={data._id}
+								race={data}
+								getDataFromDb={this.props.getDataFromDb}
+							/>
+						))
+					) : (
+						<Loading />
+					)}
 				</div>
 				<h1>Recently Finished Races</h1>
 
 				<div className="race-list">
-					{this.props.races.finished.length ? null : <Loading />}
-					{this.props.races.finished.map(data => (
-						<RaceTile
-							key={data._id}
-							race={data}
-							getDataFromDb={this.props.getDataFromDb}
-						/>
-					))}
+					{this.props.races.finished.length ? (
+						this.props.races.finished.map(data => (
+							<RaceTile
+								key={data._id}
+								race={data}
+								getDataFromDb={this.props.getDataFromDb}
+							/>
+						))
+					) : (
+						<Loading />
+					)}
 				</div>
 			</div>
 		);

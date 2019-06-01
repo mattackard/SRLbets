@@ -308,6 +308,8 @@ class App extends Component {
 								stream={this.state.stream}
 								changeStream={this.changeStream}
 								convertRunTime={this.convertRunTime}
+								loggedIn={this.state.loggedIn}
+								user={this.state.user}
 							/>
 						)}
 					/>
