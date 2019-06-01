@@ -52,7 +52,7 @@ class App extends Component {
 			})
 			.then(res => {
 				this.setState({
-					races: res.data.races,
+					races: { ...this.state.races, ...res.data.races },
 				});
 			});
 	};
@@ -68,7 +68,7 @@ class App extends Component {
 			})
 			.then(res => {
 				this.setState({
-					races: res.data.races,
+					races: { ...this.state.races, ...res.data.races },
 				});
 			});
 	};

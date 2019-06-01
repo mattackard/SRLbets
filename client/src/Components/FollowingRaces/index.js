@@ -63,7 +63,7 @@ class FollowingRaces extends Component {
 	};
 
 	render() {
-		return (
+		return this.state.followerRaces.length ? (
 			<div id="following-races">
 				<h1>Follower Races</h1>
 				<div className="race-list">
@@ -84,7 +84,7 @@ class FollowingRaces extends Component {
 					)}
 				</div>
 			</div>
-		);
+		) : null;
 	}
 }
 
