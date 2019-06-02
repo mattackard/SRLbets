@@ -118,44 +118,60 @@ const getUserFollowsFromAPI = (
 //gets the user data from the user IDs provided in the getUserFollowsFromAPI function
 const getUsersFromID = userData => {
 	return new Promise((resolve, reject) => {
-		//generates a query string to attach to the get request url
+		buildTwitchUserIdString(userData.following).then(requestString => {
+			console.log(requestString.length);
+			axios
+				.get(`https://api.twitch.tv/helix/users?${requestString}`, {
+					headers: { "Client-ID": `${twitchClientID}` },
+				})
+				.then(data => {
+					//user data is then placed into a map for easier searching functionality
+					let followMap = new Map();
+					console.log(
+						"followed users retrieved from twitch api: ",
+						data.data.data.length
+					);
+					data.data.data.forEach(user => {
+						followMap.set(user.login, {
+							twitchID: user.id,
+							twitchUsername: user.login,
+							twitchProfileImg: user.profile_image_url,
+						});
+					});
+					//the map is added to the user object and returned
+					userData.following = followMap;
+					resolve(userData);
+				})
+				.catch(err => {
+					reject(err);
+				});
+		});
+	});
+};
+
+//generates a query string to attach to the get request url for users
+buildTwitchUserIdString = users => {
+	return new Promise((resolve, reject) => {
 		let idString = "";
 		let count = 0;
 		for (count; count < 100; count++) {
-			if (userData.following[count]) {
-				idString += `id=${userData.following[count]}&`;
-				count++;
+			if (users[count]) {
+				idString += `id=${users[count]}&`;
 			} else {
 				break;
 			}
 		}
-		//the request query is limited to 100 IDs, still need to allow for all user follows to be retrieved
-		if (count === 100) {
+		//the request query is limited to 100 IDs, still need to allow for all users to be retrieved
+		if (count === 100 || count === users.length) {
+			resolve(idString);
 			console.log(
 				"100 user retrieved, there are probably more past the request limit"
 			);
+		} else {
+			reject(
+				"less than 100 followed users retrieved, or retrieved less than the total amount of followed users"
+			);
 		}
-		axios
-			.get(`https://api.twitch.tv/helix/users?${idString}`, {
-				headers: { "Client-ID": `${twitchClientID}` },
-			})
-			.then(data => {
-				//user data is then placed into a map for easier searching functionality
-				let followMap = new Map();
-				data.data.data.forEach(user => {
-					followMap.set(user.login, {
-						twitchID: user.id,
-						twitchUsername: user.login,
-						twitchProfileImg: user.profile_image_url,
-					});
-				});
-				//the map is added to the user object and returned
-				userData.following = followMap;
-				resolve(userData);
-			})
-			.catch(err => {
-				reject(err);
-			});
 	});
 };
 
