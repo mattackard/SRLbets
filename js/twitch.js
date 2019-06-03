@@ -118,55 +118,83 @@ const getUserFollowsFromAPI = (
 //gets the user data from the user IDs provided in the getUserFollowsFromAPI function
 const getUsersFromID = userData => {
 	return new Promise((resolve, reject) => {
-		buildTwitchUserIdString(userData.following).then(requestString => {
-			console.log(requestString.length);
-			axios
-				.get(`https://api.twitch.tv/helix/users?${requestString}`, {
-					headers: { "Client-ID": `${twitchClientID}` },
-				})
-				.then(data => {
-					//user data is then placed into a map for easier searching functionality
-					let followMap = new Map();
-					console.log(
-						"followed users retrieved from twitch api: ",
-						data.data.data.length
-					);
-					data.data.data.forEach(user => {
-						followMap.set(user.login, {
-							twitchID: user.id,
-							twitchUsername: user.login,
-							twitchProfileImg: user.profile_image_url,
-						});
-					});
-					//the map is added to the user object and returned
-					userData.following = followMap;
-					resolve(userData);
-				})
-				.catch(err => {
-					reject(err);
-				});
+		buildTwitchUserIdString(userData.following).then(requestStrings => {
+			let promises = [];
+			let followMap = new Map();
+			requestStrings.forEach(requestString => {
+				promises.push(
+					new Promise(resolve => {
+						axios
+							.get(
+								`https://api.twitch.tv/helix/users?${requestString}`,
+								{
+									headers: {
+										"Client-ID": `${twitchClientID}`,
+									},
+								}
+							)
+							.then(data => {
+								//user data is then placed into a map for easier searching functionality
+
+								console.log(
+									"followed users retrieved from twitch api: ",
+									data.data.data.length
+								);
+								data.data.data.forEach(user => {
+									followMap.set(user.login, {
+										twitchID: user.id,
+										twitchUsername: user.login,
+										twitchProfileImg:
+											user.profile_image_url,
+									});
+								});
+								resolve();
+							})
+							.catch(err => {
+								reject(err);
+							});
+					})
+				);
+			});
+			//once all requests have finished the map is added to the user object and returned
+			Promise.all(promises).then(() => {
+				//
+				//currently loses 2 users on first run and 1 user on each recursive run?
+				//
+				console.log("total followed users saved ", followMap.size);
+				console.log(
+					"total followed users from account",
+					userData.following.length
+				);
+				userData.following = followMap;
+				resolve(userData);
+			});
 		});
 	});
 };
 
-//generates a query string to attach to the get request url for users
-buildTwitchUserIdString = users => {
+//generates an array of query strings to attach to the get request url for users
+//recursively adds strings when past the 100 user limit
+buildTwitchUserIdString = (users, idStrings = [], startCount = 0) => {
 	return new Promise((resolve, reject) => {
 		let idString = "";
-		let count = 0;
-		for (count; count < 100; count++) {
-			if (users[count]) {
-				idString += `id=${users[count]}&`;
+		let thisCount = startCount;
+		for (thisCount; thisCount < startCount + 100; thisCount++) {
+			if (users[thisCount]) {
+				idString += `id=${users[thisCount]}&`;
 			} else {
 				break;
 			}
 		}
-		//the request query is limited to 100 IDs, still need to allow for all users to be retrieved
-		if (count === 100 || count === users.length) {
-			resolve(idString);
-			console.log(
-				"100 user retrieved, there are probably more past the request limit"
-			);
+		//a new query string is built if the current string is at the 100 user limit
+		if (thisCount === startCount + 100 || thisCount <= users.length) {
+			idStrings.push(idString);
+			if (thisCount < users.length) {
+				buildTwitchUserIdString(users, idStrings, thisCount);
+			} else {
+				resolve(idStrings);
+			}
+			resolve(idStrings);
 		} else {
 			reject(
 				"less than 100 followed users retrieved, or retrieved less than the total amount of followed users"
@@ -177,56 +205,61 @@ buildTwitchUserIdString = users => {
 
 const saveUser = userData => {
 	return new Promise((resolve, reject) => {
-		//if the user doesnt already exists one is created
-		User.findOne({ twitchUsername: userData.login }, (err, doc) => {
-			if (err) {
-				err.message = "Could not find user in DB for saveUser function";
-				reject(err);
-			}
-			if (!doc) {
-				//no user found in DB, create new one
-				User.create(
-					{
-						twitchID: userData.id,
-						twitchUsername: userData.login,
-						twitchProfileImg: userData.profile_image_url,
-						following: userData.following,
-						betHistory: [],
-						betRatio: 0,
-						betTotal: 0,
-						raceHistory: [],
-						raceRatio: 0,
-						gameHistory: new Map(),
-					},
-					(err, saved) => {
-						if (err) {
-							reject(err);
-						} else {
-							console.log("user was saved");
-							resolve(saved);
+		if (userData.login) {
+			//if the user doesnt already exists one is created
+			User.findOne({ twitchUsername: userData.login }, (err, doc) => {
+				if (err) {
+					err.message =
+						"db findOne error in twitch.js saveUser function";
+					reject(err);
+				}
+				if (!doc) {
+					//no user found in DB, create new one
+					User.create(
+						{
+							twitchID: userData.id,
+							twitchUsername: userData.login,
+							twitchProfileImg: userData.profile_image_url,
+							following: userData.following,
+							betHistory: [],
+							betRatio: 0,
+							betTotal: 0,
+							raceHistory: [],
+							raceRatio: 0,
+							gameHistory: new Map(),
+						},
+						(err, saved) => {
+							if (err) {
+								reject(err);
+							} else {
+								console.log("user was saved");
+								resolve(saved);
+							}
 						}
-					}
-				);
-			} else {
-				//user found in DB, just need to update follows and profile img
-				User.updateOne(
-					{
-						profileImg: userData.profile_image_url,
-						following: userData.following,
-					},
-					(err, saved) => {
-						if (err) {
-							reject(err);
-						} else {
-							console.log(
-								"user already exists, data was updated"
-							);
-							resolve(saved);
+					);
+				} else {
+					//user found in DB, just need to update follows and profile img
+					User.updateOne(
+						{
+							profileImg: userData.profile_image_url,
+							following: userData.following,
+						},
+						(err, saved) => {
+							if (err) {
+								reject(err);
+							} else {
+								console.log(
+									"user already exists, data was updated"
+								);
+								resolve(saved);
+							}
 						}
-					}
-				);
-			}
-		});
+					);
+				}
+			});
+		} else {
+			throw Error("userData.login was not defined in twitch.js saveUser");
+		}
 	});
 };
 
