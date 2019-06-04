@@ -76,7 +76,10 @@ function updateGameData(gameObj) {
 									newCat.bestTime = updated.bestTime;
 								} else {
 									//create a new category object with current race's category
-									newCat.goal = race.goal;
+									newCat.goal =
+										race.goal === "randomizer"
+											? "randomizer"
+											: race.goal;
 								}
 								doc.categories.set(editedGoal, newCat);
 								doc.markModified("categories");
@@ -95,7 +98,10 @@ function updateGameData(gameObj) {
 								) {
 									editedGoal = "randomizer";
 								}
-								newCat.goal = race.goal;
+								newCat.goal =
+									race.goal === "randomizer"
+										? "randomizer"
+										: race.goal;
 								newGame.raceHistory.push(race.id);
 								newGame.categories.set(editedGoal, newCat);
 								resolve();

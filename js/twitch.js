@@ -232,6 +232,10 @@ const saveUser = userData => {
 							if (err) {
 								reject(err);
 							} else {
+								console.log(
+									"created user ",
+									saved.twitchUsername
+								);
 								resolve(saved);
 							}
 						}
@@ -244,6 +248,10 @@ const saveUser = userData => {
 						if (err) {
 							reject(err);
 						} else {
+							console.log(
+								"saved follows to user ",
+								saved.twitchUsername
+							);
 							resolve(saved);
 						}
 					});

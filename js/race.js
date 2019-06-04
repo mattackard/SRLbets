@@ -84,6 +84,10 @@ function createEntrantObj(race) {
 	}
 	return new Promise((resolve, reject) => {
 		for (let i in race.entrants) {
+			console.log(
+				"pay raio = ",
+				getPayRatio(race.entrants[i], gameName, editedGoal)
+			);
 			//adds each entrant from the API response to the map
 			entrantObj.set(race.entrants[i].displayname, {
 				name: race.entrants[i].displayname,
@@ -184,12 +188,12 @@ function getPayRatio(raceEntrant, game, editedGoal) {
 			if (gameHistory) {
 				let category = gameHistory.categories.get(editedGoal);
 				if (category) {
-					payRatio = 4 * (1 - category.winRatio);
+					payRatio = 3 * (1 - category.winRatio) + 1.25;
 				}
 			}
+			return payRatio;
 		}
 	});
-	return payRatio;
 }
 
 //checks if entrant is already in the db and uses previous bet amount if so, otherwise set at 0
