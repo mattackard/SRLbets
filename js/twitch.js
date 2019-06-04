@@ -232,29 +232,21 @@ const saveUser = userData => {
 							if (err) {
 								reject(err);
 							} else {
-								console.log("user was saved");
 								resolve(saved);
 							}
 						}
 					);
 				} else {
 					//user found in DB, just need to update follows and profile img
-					User.updateOne(
-						{
-							profileImg: userData.profile_image_url,
-							following: userData.following,
-						},
-						(err, saved) => {
-							if (err) {
-								reject(err);
-							} else {
-								console.log(
-									"user already exists, data was updated"
-								);
-								resolve(saved);
-							}
+					doc.profileImg = userData.profile_image_url;
+					doc.following = userData.following;
+					doc.save((err, saved) => {
+						if (err) {
+							reject(err);
+						} else {
+							resolve(saved);
 						}
-					);
+					});
 				}
 			});
 		} else {

@@ -40,8 +40,8 @@ router.get("/twitchLoginUrl", (req, res) => {
 
 //GET twitch client data and send to client
 router.get("/twitchAuth", (req, res) => {
-	getUserFromTwitch(req, req.query.code, req.query.state, data => {
-		res.json(data);
+	getUserFromTwitch(req, req.query.code, req.query.state, user => {
+		res.json(user);
 	});
 });
 

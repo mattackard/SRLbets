@@ -14,7 +14,6 @@ class FollowingRaces extends Component {
 		this.getFollowerNames(this.props.user.following)
 			.then(this.searchRacesForFollowers)
 			.then(followerRaces => {
-				console.log("followerRaces", followerRaces);
 				this.setState({
 					followerRaces: [...followerRaces],
 					racesPopulated: true,
@@ -24,7 +23,6 @@ class FollowingRaces extends Component {
 
 	getFollowerNames = followList => {
 		let promises = [];
-		console.log(followList);
 		Object.values(followList).forEach(follower => {
 			promises.push(
 				new Promise(resolve => {
@@ -56,7 +54,6 @@ class FollowingRaces extends Component {
 				);
 			});
 		});
-		console.log(Promise.all(promises));
 		return Promise.all(promises).then(() => {
 			return followerRaces;
 		});
