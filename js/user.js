@@ -76,7 +76,8 @@ function updateUserData(userObj) {
 										.toLowerCase();
 									if (
 										editedGoal.includes("randomizer") ||
-										editedGoal.includes("seed")
+										editedGoal.includes("seed") ||
+										editedGoal.includes("hacks")
 									) {
 										editedGoal = "randomizer";
 									}
@@ -233,7 +234,11 @@ function updateUserGameHistory(gameHistory, race, entrant) {
 		let editedGoal = race.goal.replace(/\W/g, " ").toLowerCase();
 		//trys to find out if race is a randomizer
 		//if it is, group all randomizer races into one game category
-		if (editedGoal.includes("randomizer") || editedGoal.includes("seed")) {
+		if (
+			editedGoal.includes("randomizer") ||
+			editedGoal.includes("seed") ||
+			editedGoal.includes("hacks")
+		) {
 			editedGoal = "randomizer";
 		}
 		//checks if game is already in history

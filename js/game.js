@@ -56,7 +56,8 @@ function updateGameData(gameObj) {
 								//checks if the race is a randomizer and sets category if so
 								if (
 									editedGoal.includes("randomizer") ||
-									editedGoal.includes("seed")
+									editedGoal.includes("seed") ||
+									editedGoal.includes("hacks")
 								) {
 									editedGoal = "randomizer";
 								}
@@ -94,7 +95,8 @@ function updateGameData(gameObj) {
 									.toLowerCase();
 								if (
 									editedGoal.includes("randomizer") ||
-									editedGoal.includes("seed")
+									editedGoal.includes("seed") ||
+									editedGoal.includes("hacks")
 								) {
 									editedGoal = "randomizer";
 								}
