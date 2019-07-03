@@ -79,14 +79,23 @@ function createEntrantObj(race) {
 	let editedGoal = race.goal.replace(/\W/g, " ").toLowerCase();
 	let gameName = race.game.name.replace(/\W/g, " ").toLowerCase();
 	//checks if the race is a randomizer and sets category if so
-	if (editedGoal.includes("randomizer") || editedGoal.includes("seed")) {
+	if (
+		editedGoal.includes("randomizer") ||
+		editedGoal.includes("seed") ||
+		editedGoal.includes("hacks")
+	) {
 		editedGoal = "randomizer";
 	}
-	return new Promise((resolve, reject) => {
+	return new Promise(async (resolve, reject) => {
 		for (let i in race.entrants) {
 			console.log(
-				"pay raio = ",
-				getPayRatio(race.entrants[i], gameName, editedGoal)
+				"pay ratio = ",
+				await getPayRatio(
+					race.entrants[i],
+					gameName,
+					editedGoal,
+					Object.keys(race.entrants).length
+				)
 			);
 			//adds each entrant from the API response to the map
 			entrantObj.set(race.entrants[i].displayname, {
@@ -96,7 +105,12 @@ function createEntrantObj(race) {
 				time: convertRunTime(race.entrants[i].time),
 				twitch: race.entrants[i].twitch,
 				betTotal: 0,
-				payRatio: getPayRatio(race.entrants[i], gameName, editedGoal),
+				payRatio: await getPayRatio(
+					race.entrants[i],
+					gameName,
+					editedGoal,
+					Object.keys(race.entrants).length
+				),
 			});
 		}
 		if (Object.keys(race.entrants).length === entrantObj.size) {
@@ -175,24 +189,38 @@ function handleEntrantChange(race, newEntrantObj) {
 	});
 }
 
-function getPayRatio(raceEntrant, game, editedGoal) {
+function getPayRatio(raceEntrant, game, editedGoal, entrantCount) {
 	//get entrants raceHistory and check how many races of the same
 	//game the entrant has won or placed near top
 	let payRatio = 2;
-	User.findOne({ srlName: raceEntrant.displayname }, (err, doc) => {
-		if (err) {
-			throw Error(err);
-		}
-		if (doc) {
-			let gameHistory = doc.gameHistory.get(game);
-			if (gameHistory) {
-				let category = gameHistory.categories.get(editedGoal);
-				if (category) {
-					payRatio = 3 * (1 - category.winRatio) + 1.25;
+	let myPromise = User.findOne(
+		{ srlName: raceEntrant.displayname },
+		(err, doc) => {
+			if (err) {
+				throw Error(err);
+			}
+			if (doc) {
+				let gameHistory = doc.gameHistory.get(game);
+				if (gameHistory) {
+					let category = gameHistory.categories.get(editedGoal);
+					if (category) {
+						if (category.winRatio < 0.1) {
+							payRatio = entrantCount * (1 - 0.1);
+						} else if (category.winRatio > 0.9) {
+							payRatio = entrantCount * (1 - 0.9);
+						} else {
+							payRatio = entrantCount * (1 - category.winRatio);
+						}
+					}
 				}
 			}
-			return payRatio;
 		}
+	).exec();
+	return myPromise.then(() => {
+		if (payRatio < 1.2) {
+			payRatio = 1.2;
+		}
+		return payRatio.toFixed(2);
 	});
 }
 
