@@ -32,6 +32,7 @@ function makeBet(username, raceID, entrant, amount) {
 							place: previousEntrant.place,
 							time: previousEntrant.time,
 							twitch: previousEntrant.twitch,
+							payRatio: previousEntrant.payRatio,
 							betTotal: previousEntrant.betTotal + amount,
 							bets: await buildRaceBetHistory(
 								previousEntrant,

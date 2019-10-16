@@ -88,15 +88,6 @@ function createEntrantObj(race) {
 	}
 	return new Promise(async (resolve, reject) => {
 		for (let i in race.entrants) {
-			console.log(
-				"pay ratio = ",
-				await getPayRatio(
-					race.entrants[i],
-					gameName,
-					editedGoal,
-					Object.keys(race.entrants).length
-				)
-			);
 			//adds each entrant from the API response to the map
 			entrantObj.set(race.entrants[i].displayname, {
 				name: race.entrants[i].displayname,
