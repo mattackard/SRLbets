@@ -274,16 +274,17 @@ function handleCancelledRaces(srlRaces) {
 	let raceIDsToRemove = [];
 	let srlIDs = [];
 	Race.find(
-		{ status: { $in: ["Entry Open", "Entry Closed"] } },
+		{ status: { $in: ["Entry Open", "Entry Closed", "In Progress"] } },
 		(err, dbRaces) => {
 			if (err) {
 				throw Error(err);
 			} else {
-				//remove races that have already begun, those cannot be cancelled
+				//remove races that have disappeared from the SRL API since the last request
 				let filteredRaces = srlRaces.filter(
 					srlRace =>
 						srlRace.statetext === "Entry Open" ||
-						srlRace.statetext === "Entry Closed"
+						srlRace.statetext === "Entry Closed" || 
+						srlRace.statetext === "In Progress"
 				);
 				//dont bother iterating if no races need to be removed
 				if (dbRaces.length !== filteredRaces.length) {
