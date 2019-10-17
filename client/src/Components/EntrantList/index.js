@@ -144,15 +144,15 @@ class EntrantList extends Component {
 							) : null}
 							<li>
 								Overall Win Rate:{" "}
-								{this.state.selectedEntrant.raceRatio * 100 +
+								{(this.state.selectedEntrant.raceRatio * 100).toFixed(1) +
 									"%"}
 							</li>
 							<li>
 								Win rate for this category:{" "}
-								{this.state.selectedEntrant.gameHistory[
+								{(this.state.selectedEntrant.gameHistory[
 									editedGameTitle
 								].categories[editedGoal].winRatio *
-									100 +
+									100).toFixed(1) +
 									"%"}
 							</li>
 							<li>
